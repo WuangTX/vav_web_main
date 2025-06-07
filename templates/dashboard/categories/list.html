@@ -1,0 +1,62 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Quản Lý Danh Mục | VAV Furniture{% endblock %}
+
+{% block page_title %}Quản Lý Danh Mục{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:category_add' %}" class="btn btn-sm btn-primary">
+    <i class="fas fa-plus me-1"></i> Thêm Danh Mục Mới
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Danh Sách Danh Mục</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Tên Danh Mục</th>
+                        <th>Slug</th>
+                        <th>Mô Tả</th>
+                        <th>Số Sản Phẩm</th>
+                        <th width="120">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td><strong>{{ category.name }}</strong></td>
+                        <td>{{ category.slug }}</td>
+                        <td>{{ category.description|truncatechars:100 }}</td>
+                        <td>{{ category.products.count }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'dashboard:category_edit' category.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'dashboard:category_delete' category.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                <a href="{% url 'products_by_category' category.slug %}" target="_blank" class="btn btn-outline-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">Không có danh mục nào</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

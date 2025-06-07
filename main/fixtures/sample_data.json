@@ -1,0 +1,202 @@
+[
+  {
+    "model": "main.productcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Phòng Khách",
+      "slug": "phong-khach",
+      "description": "Nội thất cho phòng khách: sofa, bàn trà, kệ tivi, ..."
+    }
+  },
+  {
+    "model": "main.productcategory",
+    "pk": 2,
+    "fields": {
+      "name": "Phòng Ngủ",
+      "slug": "phong-ngu",
+      "description": "Nội thất cho phòng ngủ: giường, tủ quần áo, bàn trang điểm, ..."
+    }
+  },
+  {
+    "model": "main.productcategory",
+    "pk": 3,
+    "fields": {
+      "name": "Phòng Ăn",
+      "slug": "phong-an",
+      "description": "Nội thất cho phòng ăn: bàn ăn, ghế ăn, tủ rượu, ..."
+    }
+  },
+  {
+    "model": "main.productcategory",
+    "pk": 4,
+    "fields": {
+      "name": "Văn Phòng",
+      "slug": "van-phong",
+      "description": "Nội thất văn phòng: bàn làm việc, ghế văn phòng, tủ tài liệu, ..."
+    }
+  },
+  {
+    "model": "main.productcategory",
+    "pk": 5,
+    "fields": {
+      "name": "Nhà Bếp",
+      "slug": "nha-bep",
+      "description": "Nội thất nhà bếp: tủ bếp, đảo bếp, ..."
+    }
+  },
+  {
+    "model": "main.product",
+    "pk": 1,
+    "fields": {
+      "category": 1,
+      "name": "Sofa Da Cao Cấp",
+      "slug": "sofa-da-cao-cap",
+      "description": "Sofa da cao cấp nhập khẩu từ Ý, thiết kế hiện đại với chất liệu da bò thật 100%.",
+      "price": "25000000.00",
+      "image": "products/placeholder.jpg",
+      "featured": true,
+      "created_at": "2025-05-14T00:00:00Z",
+      "updated_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.product",
+    "pk": 2,
+    "fields": {
+      "category": 1,
+      "name": "Bàn Trà Mặt Đá",
+      "slug": "ban-tra-mat-da",
+      "description": "Bàn trà mặt đá cẩm thạch, chân kim loại mạ vàng sang trọng.",
+      "price": "12000000.00",
+      "image": "products/placeholder.jpg",
+      "featured": false,
+      "created_at": "2025-05-14T00:00:00Z",
+      "updated_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.product",
+    "pk": 3,
+    "fields": {
+      "category": 2,
+      "name": "Giường Ngủ Gỗ Óc Chó",
+      "slug": "giuong-ngu-go-oc-cho",
+      "description": "Giường ngủ được làm từ gỗ óc chó cao cấp, thiết kế sang trọng và bền đẹp.",
+      "price": "35000000.00",
+      "image": "products/placeholder.jpg",
+      "featured": true,
+      "created_at": "2025-05-14T00:00:00Z",
+      "updated_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.product",
+    "pk": 4,
+    "fields": {
+      "category": 3,
+      "name": "Bàn Ăn Gỗ Sồi",
+      "slug": "ban-an-go-soi",
+      "description": "Bàn ăn gỗ sồi tự nhiên dành cho 6 người, thiết kế hiện đại và tinh tế.",
+      "price": "18500000.00",
+      "image": "products/placeholder.jpg",
+      "featured": true,
+      "created_at": "2025-05-14T00:00:00Z",
+      "updated_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.product",
+    "pk": 5,
+    "fields": {
+      "category": 4,
+      "name": "Bàn Làm Việc Ergonomic",
+      "slug": "ban-lam-viec-ergonomic",
+      "description": "Bàn làm việc chỉnh điện với thiết kế ergonomic, giúp tăng hiệu suất làm việc và bảo vệ sức khỏe.",
+      "price": "15000000.00",
+      "image": "products/placeholder.jpg",
+      "featured": false,
+      "created_at": "2025-05-14T00:00:00Z",
+      "updated_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.project",
+    "pk": 1,
+    "fields": {
+      "title": "Biệt Thự Vinhomes Ocean Park",
+      "slug": "biet-thu-vinhomes-ocean-park",
+      "project_type": "villa",
+      "description": "Thiết kế và thi công nội thất hoàn thiện cho biệt thự 300m2 tại Vinhomes Ocean Park với phong cách hiện đại sang trọng.",
+      "image": "projects/placeholder.jpg",
+      "completed_date": "2025-01-15",
+      "client": "Nguyễn Văn A",
+      "location": "Hà Nội",
+      "featured": true,
+      "created_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.project",
+    "pk": 2,
+    "fields": {
+      "title": "Căn Hộ Masteri An Phú",
+      "slug": "can-ho-masteri-an-phu",
+      "project_type": "apartment",
+      "description": "Thiết kế và thi công nội thất trọn gói cho căn hộ 120m2 phong cách Scandinavian tối giản, tinh tế.",
+      "image": "projects/placeholder.jpg",
+      "completed_date": "2025-02-20",
+      "client": "Trần Thị B",
+      "location": "TP. Hồ Chí Minh",
+      "featured": true,
+      "created_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.project",
+    "pk": 3,
+    "fields": {
+      "title": "Văn Phòng Công Ty XYZ",
+      "slug": "van-phong-cong-ty-xyz",
+      "project_type": "office",
+      "description": "Thiết kế và thi công văn phòng 500m2 theo phong cách mở, hiện đại cho công ty công nghệ XYZ.",
+      "image": "projects/placeholder.jpg",
+      "completed_date": "2025-03-10",
+      "client": "Công ty XYZ",
+      "location": "Đà Nẵng",
+      "featured": true,
+      "created_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.project",
+    "pk": 4,
+    "fields": {
+      "title": "Nhà Hàng Le Monde",
+      "slug": "nha-hang-le-monde",
+      "project_type": "restaurant",
+      "description": "Thiết kế và thi công nhà hàng 400m2 phong cách Pháp sang trọng với sức chứa 150 khách.",
+      "image": "projects/placeholder.jpg",
+      "completed_date": "2025-04-05",
+      "client": "Công ty TNHH Le Monde",
+      "location": "TP. Hồ Chí Minh",
+      "featured": false,
+      "created_at": "2025-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "main.project",
+    "pk": 5,
+    "fields": {
+      "title": "Khách Sạn Golden Bay",
+      "slug": "khach-san-golden-bay",
+      "project_type": "hotel",
+      "description": "Thiết kế và thi công nội thất cho 20 phòng khách sạn 4 sao tại Nha Trang với phong cách ven biển sang trọng.",
+      "image": "projects/placeholder.jpg",
+      "completed_date": "2025-05-01",
+      "client": "Tập đoàn Golden Bay",
+      "location": "Nha Trang",
+      "featured": false,
+      "created_at": "2025-05-14T00:00:00Z"
+    }
+  }
+]

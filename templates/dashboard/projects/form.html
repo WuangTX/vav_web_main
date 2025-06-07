@@ -1,0 +1,171 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | VAV Furniture{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:project_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Tiêu Đề Dự Án</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.title.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.slug.id_for_label }}" class="form-label">Slug</label>
+                    {{ form.slug }}
+                    {% if form.slug.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.slug.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="form-text">Dùng cho đường dẫn URL, tự động tạo từ tiêu đề</div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.project_type.id_for_label }}" class="form-label">Loại Dự Án</label>
+                    {{ form.project_type }}
+                    {% if form.project_type.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.project_type.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.completed_date.id_for_label }}" class="form-label">Ngày Hoàn Thành</label>
+                    {{ form.completed_date }}
+                    {% if form.completed_date.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.completed_date.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.client.id_for_label }}" class="form-label">Khách Hàng</label>
+                    {{ form.client }}
+                    {% if form.client.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.client.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.location.id_for_label }}" class="form-label">Vị Trí</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.location.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Mô Tả</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in form.description.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.image.id_for_label }}" class="form-label">Hình Ảnh</label>
+                    {% if project and project.image %}
+                    <div class="mb-2">
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-thumbnail" style="max-height: 200px;">
+                    </div>
+                    {% endif %}
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.image.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="mt-4">
+                        <div class="form-check">
+                            {{ form.featured }}
+                            <label class="form-check-label" for="{{ form.featured.id_for_label }}">
+                                Dự án nổi bật
+                            </label>
+                        </div>
+                        <div class="form-text">Dự án nổi bật sẽ được hiển thị ở trang chủ</div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'dashboard:project_list' %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu Dự Án</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Automatically generate slug from title
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleInput = document.getElementById('{{ form.title.id_for_label }}');
+        const slugInput = document.getElementById('{{ form.slug.id_for_label }}');
+        
+        titleInput.addEventListener('keyup', function() {
+            if (!slugInput.dataset.userModified) {
+                const slug = this.value.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                slugInput.value = slug;
+            }
+        });
+        
+        slugInput.addEventListener('change', function() {
+            this.dataset.userModified = 'true';
+        });
+    });
+</script>
+{% endblock %}

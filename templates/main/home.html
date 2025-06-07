@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}VAV Furniture - Nội Thất Cao Cấp{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Large Banner -->
+<section class="hero-section">
+    <div class="hero-slider">
+        <div class="hero-slide" style="background-image: url('{% static 'images/hero-banner.jpg' %}');">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold">Nội Thất Đẳng Cấp</h1>
+                    <p class="lead mb-4">Không gian sống hoàn hảo với thiết kế tinh tế từ VAV Furniture</p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'products' %}" class="btn btn-primary btn-lg me-3">Khám Phá Ngay</a>
+                        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">Liên Hệ Tư Vấn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="{% static 'images/about-image.jpg' %}" alt="Về VAV Furniture" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-lg-6">
+                <div class="section-heading mb-4">
+                    <h6 class="text-primary">Về Chúng Tôi</h6>
+                    <h2>VAV Furniture - Kiến Tạo Không Gian Sống Đẳng Cấp</h2>
+                </div>
+                <p>VAV Furniture tự hào là đơn vị thiết kế, sản xuất và phân phối nội thất cao cấp hàng đầu tại Việt Nam với hơn 15 năm kinh nghiệm. Chúng tôi mang đến những sản phẩm nội thất tinh tế, hiện đại và đẳng cấp, được chế tác từ những nguyên liệu tốt nhất.</p>
+                <p>Với đội ngũ thiết kế giàu kinh nghiệm và đam mê, VAV Furniture cam kết mang đến những không gian sống hoàn hảo, phản ánh cá tính và phong cách của chủ nhân.</p>
+                <a href="{% url 'about' %}" class="btn btn-primary mt-3">Tìm Hiểu Thêm</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="products-section py-5 bg-light">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Sản Phẩm Nổi Bật</h6>
+            <h2>Khám Phá Bộ Sưu Tập Nội Thất</h2>
+            <p class="text-muted">Những sản phẩm nội thất cao cấp và độc đáo từ VAV Furniture</p>
+        </div>
+        
+        <div class="row g-4">
+            {% if featured_products %}
+                {% for product in featured_products %}
+                <!-- Product Item {{ forloop.counter }} -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">                        <div class="product-image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>{{ product.name }}</h5>
+                            <p class="text-muted">{{ product.category.name }}</p>
+                            <div class="product-price">
+                                <span class="price">{{ product.price|floatformat:0|intcomma }} ₫</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback Product Items if no featured products -->
+                <!-- Product Item 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-1.jpg' %}" alt="Ghế Sofa Hiện Đại" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Ghế Sofa Hiện Đại</h5>
+                            <p class="text-muted">Phòng Khách</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-2.jpg' %}" alt="Bàn Ăn Gỗ Óc Chó" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Bàn Ăn Gỗ Óc Chó</h5>
+                            <p class="text-muted">Phòng Ăn</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-3.jpg' %}" alt="Giường Ngủ Cao Cấp" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Giường Ngủ Cao Cấp</h5>
+                            <p class="text-muted">Phòng Ngủ</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-4.jpg' %}" alt="Tủ Quần Áo Hiện Đại" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Tủ Quần Áo Hiện Đại</h5>
+                            <p class="text-muted">Phòng Ngủ</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'products' %}" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Dịch Vụ Của Chúng Tôi</h6>
+            <h2>Giải Pháp Nội Thất Toàn Diện</h2>
+            <p class="text-muted">VAV Furniture cung cấp đầy đủ các dịch vụ từ tư vấn, thiết kế đến thi công và bảo hành</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Service 1 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-pencil-ruler fa-3x text-primary"></i>
+                    </div>
+                    <h5>Tư Vấn & Thiết Kế</h5>
+                    <p class="text-muted">Tư vấn và thiết kế không gian nội thất phù hợp với nhu cầu và phong cách của khách hàng.</p>
+                </div>
+            </div>
+            
+            <!-- Service 2 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-couch fa-3x text-primary"></i>
+                    </div>
+                    <h5>Sản Xuất Nội Thất</h5>
+                    <p class="text-muted">Sản xuất nội thất cao cấp từ các chất liệu tốt nhất với công nghệ hiện đại.</p>
+                </div>
+            </div>
+            
+            <!-- Service 3 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-truck fa-3x text-primary"></i>
+                    </div>
+                    <h5>Thi Công & Lắp Đặt</h5>
+                    <p class="text-muted">Dịch vụ thi công và lắp đặt nội thất chuyên nghiệp, nhanh chóng và tỉ mỉ.</p>
+                </div>
+            </div>
+            
+            <!-- Service 4 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-tools fa-3x text-primary"></i>
+                    </div>
+                    <h5>Bảo Hành & Bảo Trì</h5>
+                    <p class="text-muted">Dịch vụ bảo hành, bảo trì và sửa chữa nội thất lâu dài và chu đáo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Projects Gallery Section -->
+<section class="projects-section py-5 bg-light">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Dự Án Tiêu Biểu</h6>
+            <h2>Các Dự Án Nội Thất Nổi Bật</h2>
+            <p class="text-muted">Những không gian sống đẳng cấp được thiết kế và thi công bởi VAV Furniture</p>
+        </div>
+        
+        <div class="row g-4">
+            {% if featured_projects %}
+                {% for project in featured_projects %}
+                <!-- Project Item {{ forloop.counter }} -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-content">
+                                    <h5 class="text-white">{{ project.title }}</h5>
+                                    <p class="text-white-50">{{ project.get_project_type_display }} - {{ project.location }}</p>
+                                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-sm btn-light">Xem Chi Tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Project Item 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="{% static 'images/project-1.jpg' %}" alt="Biệt Thự Vinhomes" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-content">
+                                    <h5 class="text-white">Biệt Thự Vinhomes</h5>
+                                    <p class="text-white-50">Không gian sang trọng, hiện đại</p>
+                                    <a href="#" class="btn btn-sm btn-light">Xem Chi Tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Item 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="{% static 'images/project-2.jpg' %}" alt="Căn Hộ Masteri" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-content">
+                                    <h5 class="text-white">Căn Hộ Masteri</h5>
+                                    <p class="text-white-50">Phong cách tối giản, tinh tế</p>
+                                    <a href="#" class="btn btn-sm btn-light">Xem Chi Tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Item 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="{% static 'images/project-3.jpg' %}" alt="Văn Phòng ABC Corp" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-content">
+                                    <h5 class="text-white">Văn Phòng ABC Corp</h5>
+                                    <p class="text-white-50">Không gian làm việc hiện đại</p>
+                                    <a href="#" class="btn btn-sm btn-light">Xem Chi Tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'projects' %}" class="btn btn-primary">Xem Tất Cả Dự Án</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Khách Hàng Nói Gì</h6>
+            <h2>Phản Hồi Từ Khách Hàng</h2>
+            <p class="text-muted">Những đánh giá chân thực từ khách hàng đã sử dụng dịch vụ của VAV Furniture</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Testimonial 1 -->
+            <div class="col-md-4">
+                <div class="testimonial-card p-4 bg-white shadow-sm rounded">
+                    <div class="testimonial-quote mb-3">
+                        <i class="fas fa-quote-left fa-2x text-primary opacity-25"></i>
+                    </div>
+                    <p class="testimonial-text mb-4">"VAV Furniture đã mang đến cho gia đình tôi một không gian sống hoàn hảo. Từ thiết kế đến chất lượng sản phẩm đều rất tuyệt vời. Đặc biệt, dịch vụ chăm sóc khách hàng rất chu đáo."</p>
+                    <div class="testimonial-author d-flex align-items-center">
+                        <img src="{% static 'images/testimonial-1.jpg' %}" alt="Nguyễn Văn A" class="rounded-circle me-3" width="50">
+                        <div>
+                            <h6 class="mb-1">Nguyễn Văn A</h6>
+                            <p class="text-muted mb-0">Khách hàng tại Hà Nội</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial 2 -->
+            <div class="col-md-4">
+                <div class="testimonial-card p-4 bg-white shadow-sm rounded">
+                    <div class="testimonial-quote mb-3">
+                        <i class="fas fa-quote-left fa-2x text-primary opacity-25"></i>
+                    </div>
+                    <p class="testimonial-text mb-4">"Tôi rất hài lòng với chất lượng nội thất từ VAV Furniture. Đội ngũ thiết kế rất chuyên nghiệp, họ hiểu rõ nhu cầu và phong cách của tôi. Sản phẩm đẹp, bền và đúng tiến độ."</p>
+                    <div class="testimonial-author d-flex align-items-center">
+                        <img src="{% static 'images/testimonial-2.jpg' %}" alt="Trần Thị B" class="rounded-circle me-3" width="50">
+                        <div>
+                            <h6 class="mb-1">Trần Thị B</h6>
+                            <p class="text-muted mb-0">Khách hàng tại TP.HCM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial 3 -->
+            <div class="col-md-4">
+                <div class="testimonial-card p-4 bg-white shadow-sm rounded">
+                    <div class="testimonial-quote mb-3">
+                        <i class="fas fa-quote-left fa-2x text-primary opacity-25"></i>
+                    </div>
+                    <p class="testimonial-text mb-4">"Đã hợp tác với VAV Furniture trong dự án văn phòng công ty. Đội ngũ chuyên nghiệp, sản phẩm chất lượng cao và độ hoàn thiện tuyệt vời. Nhân viên văn phòng rất hài lòng với không gian mới."</p>
+                    <div class="testimonial-author d-flex align-items-center">
+                        <img src="{% static 'images/testimonial-3.jpg' %}" alt="Lê Văn C" class="rounded-circle me-3" width="50">
+                        <div>
+                            <h6 class="mb-1">Lê Văn C</h6>
+                            <p class="text-muted mb-0">Giám đốc Công ty XYZ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact CTA Section -->
+<section class="contact-cta py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <h2 class="mb-2">Bạn Muốn Tạo Không Gian Sống Mơ Ước?</h2>
+                <p class="lead mb-0">Liên hệ với VAV Furniture ngay hôm nay để được tư vấn miễn phí!</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'contact' %}" class="btn btn-light btn-lg">Liên Hệ Ngay</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

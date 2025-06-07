@@ -1,0 +1,91 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Quản Lý Dự Án | VAV Furniture{% endblock %}
+
+{% block page_title %}Quản Lý Dự Án{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:project_add' %}" class="btn btn-sm btn-primary">
+    <i class="fas fa-plus me-1"></i> Thêm Dự Án Mới
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">Danh Sách Dự Án</h5>
+            </div>
+            <div class="col-md-4">
+                <form method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm dự án..." value="{{ request.GET.search }}">
+                    <button type="submit" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Tiêu Đề</th>
+                        <th>Loại Dự Án</th>
+                        <th>Khách Hàng</th>
+                        <th>Vị Trí</th>
+                        <th>Hoàn Thành</th>
+                        <th>Nổi Bật</th>
+                        <th width="120">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" width="50" height="50" class="rounded" style="object-fit: cover;">
+                        </td>
+                        <td>
+                            <strong>{{ project.title }}</strong>
+                            <div><small class="text-muted">{{ project.slug }}</small></div>
+                        </td>
+                        <td>{{ project.get_project_type_display }}</td>
+                        <td>{{ project.client }}</td>
+                        <td>{{ project.location }}</td>
+                        <td>{{ project.completed_date|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if project.featured %}
+                            <span class="badge bg-success">Có</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Không</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'dashboard:project_edit' project.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'dashboard:project_delete' project.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                <a href="{% url 'project_detail' project.slug %}" target="_blank" class="btn btn-outline-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">Không tìm thấy dự án nào</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

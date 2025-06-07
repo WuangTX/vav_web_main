@@ -1,0 +1,37 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Xóa Sản Phẩm | VAV Furniture{% endblock %}
+
+{% block page_title %}Xóa Sản Phẩm{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:product_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body text-center">
+        <div class="mb-4">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 200px;">
+        </div>
+        <h4>Bạn có chắc chắn muốn xóa sản phẩm này?</h4>
+        <p class="mb-0">{{ product.name }}</p>
+        <p class="text-muted">{{ product.category.name }} - {{ product.price }} đ</p>
+        
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> Hành động này không thể hoàn tác. Sản phẩm sẽ bị xóa vĩnh viễn.
+        </div>
+        
+        <div class="mt-4">
+            <form method="post">
+                {% csrf_token %}
+                <a href="{% url 'dashboard:product_list' %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                <button type="submit" class="btn btn-danger">Xác Nhận Xóa</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

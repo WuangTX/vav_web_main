@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liên Hệ - VAV Furniture{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="page-header-content text-center">
+            <h1 class="display-4 fw-bold">Liên Hệ</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Trang Chủ</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Liên Hệ</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="contact-info-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="contact-info p-4 bg-light rounded shadow-sm h-100">
+                    <h3 class="mb-4">Thông Tin Liên Hệ</h3>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Địa Chỉ</h5>
+                            <p>123 Đường Nguyễn Trãi<br>Quận 1, TP. Hồ Chí Minh</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Điện Thoại</h5>
+                            <p>(84) 28 1234 5678<br>(84) 901 234 567</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Email</h5>
+                            <p>info@vavfurniture.com<br>support@vavfurniture.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Giờ Làm Việc</h5>
+                            <p>Thứ Hai - Thứ Bảy: 8:00 - 20:00<br>Chủ Nhật: 9:00 - 18:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links mt-4">
+                        <h5>Kết Nối Với Chúng Tôi</h5>
+                        <div class="social-icons mt-3">
+                            <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="me-2"><i class="fab fa-youtube"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="contact-form-wrapper p-4 bg-white rounded shadow-sm">                    <h3 class="mb-4">Gửi Tin Nhắn Cho Chúng Tôi</h3>
+                    <p class="mb-4">Vui lòng điền thông tin vào form dưới đây, chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.</p>
+                    
+                    {% if success %}
+                    <div class="alert alert-success mb-4" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> Cảm ơn bạn đã liên hệ với chúng tôi! Chúng tôi sẽ phản hồi sớm nhất có thể.
+                    </div>
+                    {% endif %}
+                    
+                    <form class="contact-form" method="post">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">Họ và Tên *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Số Điện Thoại *</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subject" class="form-label">Chủ Đề</label>
+                                    <select class="form-select" id="subject" name="subject">
+                                        <option selected value="Liên hệ chung">Chọn chủ đề</option>
+                                        <option value="Tư vấn thiết kế">Tư vấn thiết kế</option>
+                                        <option value="Báo giá sản phẩm">Báo giá sản phẩm</option>
+                                        <option value="Đặt lịch tham quan">Đặt lịch tham quan</option>
+                                        <option value="Bảo hành sản phẩm">Bảo hành sản phẩm</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="message" class="form-label">Nội Dung *</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="agreement" required>
+                                    <label class="form-check-label" for="agreement">
+                                        Tôi đồng ý với <a href="#">chính sách bảo mật</a> của VAV Furniture
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Gửi Tin Nhắn</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Map Section -->
+<section class="map-section py-5 bg-light">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Vị Trí Của Chúng Tôi</h6>
+            <h2>Bản Đồ Đường Đi</h2>
+            <p class="text-muted">Ghé thăm showroom của VAV Furniture để trải nghiệm sản phẩm trực tiếp</p>
+        </div>
+        
+        <div class="map-container rounded shadow">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4241674198073!2d106.68886571471815!3d10.778764992319687!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3c586421ef%3A0xb606461945bd9ad7!2zMTIzIMSQxrDhu51uZyBOZ3V54buFbiBUcsOjaSwgUGjGsOG7nW5nIFBo4bqhbSBOZ8WpIEzDo28sIFF14bqtbiAxLCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1652345678901!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- Showroom Section -->
+<section class="showroom-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Showroom & Xưởng Sản Xuất</h6>
+            <h2>Ghé Thăm Không Gian Trưng Bày</h2>
+            <p class="text-muted">Trải nghiệm trực tiếp các sản phẩm nội thất cao cấp của VAV Furniture</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Showroom Item 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="showroom-card position-relative rounded overflow-hidden">
+                    <img src="{% static 'images/showroom-1.jpg' %}" alt="Showroom Quận 1" class="img-fluid w-100">
+                    <div class="showroom-overlay">
+                        <div class="showroom-content p-4">
+                            <h4 class="text-white">Showroom Quận 1</h4>
+                            <p class="text-white-50">123 Đường Nguyễn Trãi, Quận 1, TP. HCM</p>
+                            <p class="text-white-50">Tel: (84) 28 1234 5678</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Showroom Item 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="showroom-card position-relative rounded overflow-hidden">
+                    <img src="{% static 'images/showroom-2.jpg' %}" alt="Showroom Quận 7" class="img-fluid w-100">
+                    <div class="showroom-overlay">
+                        <div class="showroom-content p-4">
+                            <h4 class="text-white">Showroom Quận 7</h4>
+                            <p class="text-white-50">456 Đường Nguyễn Hữu Thọ, Quận 7, TP. HCM</p>
+                            <p class="text-white-50">Tel: (84) 28 9876 5432</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Showroom Item 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="showroom-card position-relative rounded overflow-hidden">
+                    <img src="{% static 'images/showroom-3.jpg' %}" alt="Xưởng Sản Xuất" class="img-fluid w-100">
+                    <div class="showroom-overlay">
+                        <div class="showroom-content p-4">
+                            <h4 class="text-white">Xưởng Sản Xuất</h4>
+                            <p class="text-white-50">789 Đường Lê Văn Khương, Quận 12, TP. HCM</p>
+                            <p class="text-white-50">Tel: (84) 28 2468 1357</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section py-5 bg-light">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Câu Hỏi Thường Gặp</h6>
+            <h2>Giải Đáp Thắc Mắc</h2>
+            <p class="text-muted">Những câu hỏi thường gặp và câu trả lời từ VAV Furniture</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="accordion" id="faqAccordion">
+                    <!-- FAQ Item 1 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Quy trình đặt hàng và thời gian giao hàng như thế nào?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Quy trình đặt hàng tại VAV Furniture bao gồm các bước: tư vấn, khảo sát (nếu cần), báo giá, ký hợp đồng, sản xuất và giao hàng. Thời gian giao hàng tùy thuộc vào sản phẩm:</p>
+                                <ul>
+                                    <li>Sản phẩm có sẵn: 3-5 ngày làm việc</li>
+                                    <li>Sản phẩm đặt theo yêu cầu: 15-30 ngày làm việc</li>
+                                    <li>Dự án thiết kế toàn diện: 30-60 ngày làm việc</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 2 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Chính sách bảo hành của VAV Furniture như thế nào?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>VAV Furniture cung cấp chính sách bảo hành như sau:</p>
+                                <ul>
+                                    <li>Nội thất gỗ: Bảo hành 5 năm cho khung sườn, 2 năm cho phụ kiện</li>
+                                    <li>Sofa, ghế: Bảo hành 3 năm cho khung, 1 năm cho vải bọc và đệm</li>
+                                    <li>Bàn, ghế sắt: Bảo hành 3 năm</li>
+                                    <li>Phụ kiện nội thất: Bảo hành 1 năm</li>
+                                </ul>
+                                <p>Chúng tôi cũng cung cấp dịch vụ bảo trì định kỳ và sửa chữa sau thời gian bảo hành với chi phí hợp lý.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 3 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                VAV Furniture có thiết kế và thi công nội thất theo yêu cầu không?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Có, VAV Furniture chuyên thiết kế và thi công nội thất theo yêu cầu riêng của khách hàng. Chúng tôi cung cấp dịch vụ toàn diện từ tư vấn, thiết kế 3D, lựa chọn vật liệu đến sản xuất, thi công và lắp đặt.</p>
+                                <p>Với đội ngũ thiết kế giàu kinh nghiệm và xưởng sản xuất hiện đại, chúng tôi có thể đáp ứng mọi yêu cầu thiết kế, từ phong cách hiện đại, tân cổ điển đến minimalist hay Scandinavian... theo đúng sở thích và ngân sách của khách hàng.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 4 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Làm thế nào để đặt lịch tư vấn thiết kế nội thất?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Để đặt lịch tư vấn thiết kế nội thất, bạn có thể:</p>
+                                <ul>
+                                    <li>Gọi đến hotline: (84) 28 1234 5678</li>
+                                    <li>Gửi email đến: design@vavfurniture.com</li>
+                                    <li>Điền form liên hệ trên website</li>
+                                    <li>Ghé thăm trực tiếp showroom của chúng tôi</li>
+                                </ul>
+                                <p>Dịch vụ tư vấn thiết kế ban đầu là miễn phí. Sau khi tiếp nhận thông tin, chúng tôi sẽ liên hệ lại trong vòng 24 giờ để sắp xếp lịch hẹn phù hợp.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 5 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                VAV Furniture có cung cấp dịch vụ vận chuyển và lắp đặt không?
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Có, VAV Furniture cung cấp dịch vụ vận chuyển và lắp đặt chuyên nghiệp. Cụ thể:</p>
+                                <ul>
+                                    <li>Miễn phí vận chuyển và lắp đặt trong phạm vi TP. Hồ Chí Minh cho đơn hàng từ 10 triệu đồng</li>
+                                    <li>Tính phí vận chuyển theo khoảng cách cho các khu vực khác</li>
+                                    <li>Đội ngũ vận chuyển và lắp đặt được đào tạo chuyên nghiệp</li>
+                                    <li>Lịch vận chuyển linh hoạt, có thể đặt lịch cụ thể theo yêu cầu của khách hàng</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

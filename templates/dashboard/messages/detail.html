@@ -1,0 +1,54 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Chi Tiết Tin Nhắn | VAV Furniture{% endblock %}
+
+{% block page_title %}Chi Tiết Tin Nhắn{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:message_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ message.subject }}</h5>
+            <span class="badge {% if message.is_read %}bg-success{% else %}bg-primary{% endif %}">
+                {% if message.is_read %}Đã đọc{% else %}Chưa đọc{% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Người gửi:</strong> {{ message.name }}</p>
+                <p><strong>Email:</strong> <a href="mailto:{{ message.email }}">{{ message.email }}</a></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Số điện thoại:</strong> {{ message.phone }}</p>
+                <p><strong>Ngày gửi:</strong> {{ message.created_at|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h6 class="mb-3">Nội dung tin nhắn:</h6>
+            <div class="p-3 bg-light rounded">
+                {{ message.message|linebreaks }}
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-between">
+            <a href="mailto:{{ message.email }}?subject=Re: {{ message.subject }}" class="btn btn-primary">
+                <i class="fas fa-reply me-1"></i> Trả lời
+            </a>
+            <a href="{% url 'dashboard:message_delete' message.id %}" class="btn btn-outline-danger">
+                <i class="fas fa-trash-alt me-1"></i> Xóa tin nhắn
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Xóa Dự Án | VAV Furniture{% endblock %}
+
+{% block page_title %}Xóa Dự Án{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:project_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body text-center">
+        <div class="mb-4">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid" style="max-height: 200px;">
+        </div>
+        <h4>Bạn có chắc chắn muốn xóa dự án này?</h4>
+        <p class="mb-0"><strong>{{ project.title }}</strong></p>
+        <p class="text-muted">{{ project.get_project_type_display }} | {{ project.client }} | {{ project.location }}</p>
+        
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> Hành động này không thể hoàn tác. Dự án sẽ bị xóa vĩnh viễn.
+        </div>
+        
+        <div class="mt-4">
+            <form method="post">
+                {% csrf_token %}
+                <a href="{% url 'dashboard:project_list' %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                <button type="submit" class="btn btn-danger">Xác Nhận Xóa</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

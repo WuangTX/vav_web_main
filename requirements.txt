@@ -1,0 +1,30 @@
+# Django Core
+Django>=4.2.0,<5.0.0
+
+# Image Processing
+Pillow>=9.0.0  # For image handling
+
+# UI Enhancements
+django-crispy-forms>=2.0  # For better form rendering
+django-widget-tweaks>=1.4.12  # For customizing form widgets in templates
+
+# Deployment & Production
+whitenoise>=6.0.0  # For serving static files in production
+gunicorn>=20.1.0  # WSGI HTTP Server for production
+python-dotenv>=0.19.0  # For environment variables management
+
+# Database (uncomment if needed)
+psycopg2-binary>=2.9.0  # For PostgreSQL support
+
+# Security
+django-debug-toolbar>=4.0.0  # For development debugging
+django-cors-headers>=3.13.0  # For handling Cross-Origin Resource Sharing
+
+# Optimization
+django-compressor>=4.0  # For combining and minifying CSS/JS
+django-storages>=1.12.0  # For cloud storage solutions (AWS, GCP, etc.)
+
+# Development Tools
+black>=22.0.0  # Python code formatter
+isort>=5.10.0  # Import sorter
+flake8>=4.0.0  # Linting

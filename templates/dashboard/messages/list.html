@@ -1,0 +1,73 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Quản Lý Tin Nhắn | VAV Furniture{% endblock %}
+
+{% block page_title %}Quản Lý Tin Nhắn{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">Danh Sách Tin Nhắn</h5>
+            </div>
+            <div class="col-md-4">
+                <form method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tin nhắn..." value="{{ request.GET.search }}">
+                    <button type="submit" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Người Gửi</th>
+                        <th>Email</th>
+                        <th>Tiêu Đề</th>
+                        <th>Ngày Gửi</th>
+                        <th>Trạng Thái</th>
+                        <th width="120">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages_list %}
+                    <tr {% if not message.is_read %}class="table-primary"{% endif %}>
+                        <td>{{ message.name }}</td>
+                        <td>{{ message.email }}</td>
+                        <td>{{ message.subject|truncatechars:50 }}</td>
+                        <td>{{ message.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if message.is_read %}
+                            <span class="badge bg-success">Đã đọc</span>
+                            {% else %}
+                            <span class="badge bg-primary">Chưa đọc</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'dashboard:message_detail' message.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'dashboard:message_delete' message.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">Không có tin nhắn nào</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

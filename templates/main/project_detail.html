@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ project.title }} - VAV Furniture{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="page-header-content text-center">
+            <h1 class="display-4 fw-bold">{{ project.title }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Trang Chủ</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'projects' %}" class="text-white">Dự Án</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ project.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Project Detail Section -->
+<section class="project-detail-section py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Project Image -->
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <div class="project-detail-image">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            
+            <!-- Project Info -->
+            <div class="col-lg-4">
+                <div class="project-detail-info p-4 bg-light rounded shadow-sm">
+                    <h4 class="mb-4">Chi Tiết Dự Án</h4>
+                    
+                    <div class="project-info-item mb-3">
+                        <h6 class="text-muted">Loại Dự Án</h6>
+                        <p class="mb-0 fw-bold">{{ project.get_project_type_display }}</p>
+                    </div>
+                    
+                    <div class="project-info-item mb-3">
+                        <h6 class="text-muted">Khách Hàng</h6>
+                        <p class="mb-0 fw-bold">{{ project.client }}</p>
+                    </div>
+                    
+                    <div class="project-info-item mb-3">
+                        <h6 class="text-muted">Địa Điểm</h6>
+                        <p class="mb-0 fw-bold">{{ project.location }}</p>
+                    </div>
+                    
+                    <div class="project-info-item mb-3">
+                        <h6 class="text-muted">Hoàn Thành</h6>
+                        <p class="mb-0 fw-bold">{{ project.completed_date }}</p>
+                    </div>
+                    
+                    <div class="project-info-item">
+                        <a href="{% url 'contact' %}" class="btn btn-primary w-100 mt-3">Tư Vấn Dự Án Tương Tự</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Project Description -->
+        <div class="project-description mt-5">
+            <h3 class="mb-4">Giới Thiệu Dự Án</h3>
+            <p>{{ project.description }}</p>
+        </div>
+        
+        <!-- Project Gallery -->
+        <div class="project-gallery mt-5">
+            <h3 class="mb-4">Hình Ảnh Dự Án</h3>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <a href="{% static 'images/project-gallery-1.jpg' %}" class="gallery-item" data-fancybox="project-gallery">
+                        <img src="{% static 'images/project-gallery-1.jpg' %}" alt="Gallery Image 1" class="img-fluid rounded shadow">
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% static 'images/project-gallery-2.jpg' %}" class="gallery-item" data-fancybox="project-gallery">
+                        <img src="{% static 'images/project-gallery-2.jpg' %}" alt="Gallery Image 2" class="img-fluid rounded shadow">
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% static 'images/project-gallery-3.jpg' %}" class="gallery-item" data-fancybox="project-gallery">
+                        <img src="{% static 'images/project-gallery-3.jpg' %}" alt="Gallery Image 3" class="img-fluid rounded shadow">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Projects Section -->
+<section class="related-projects-section py-5 bg-light">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Khám Phá Thêm</h6>
+            <h2>Các Dự Án Tương Tự</h2>
+        </div>
+        
+        <div class="row g-4">
+            {% for related_project in related_projects %}
+            <!-- Related Project Item {{ forloop.counter }} -->
+            <div class="col-md-4">
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="{{ related_project.image.url }}" alt="{{ related_project.title }}" class="img-fluid">
+                        <div class="project-overlay">
+                            <div class="project-content">
+                                <h5 class="text-white">{{ related_project.title }}</h5>
+                                <p class="text-white-50">{{ related_project.get_project_type_display }} - {{ related_project.location }}</p>
+                                <a href="{% url 'project_detail' related_project.slug %}" class="btn btn-sm btn-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Không có dự án liên quan.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Đánh Giá Từ Khách Hàng</h6>
+            <h2>Khách Hàng Nói Gì Về Dự Án Này</h2>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="testimonial-card p-4 bg-white shadow-sm rounded text-center">
+                    <div class="testimonial-quote mb-3">
+                        <i class="fas fa-quote-left fa-3x text-primary opacity-25"></i>
+                    </div>
+                    <p class="testimonial-text mb-4 lead">"Tôi rất hài lòng với dịch vụ thiết kế và thi công nội thất của VAV Furniture cho dự án này. Đội ngũ thiết kế rất chuyên nghiệp, hiểu rõ nhu cầu của chúng tôi và đưa ra những giải pháp sáng tạo, hợp lý. Kết quả cuối cùng thậm chí còn vượt xa mong đợi của chúng tôi."</p>
+                    <div class="testimonial-author d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/client-1.jpg' %}" alt="{{ project.client }}" class="rounded-circle me-3" width="60">
+                        <div class="text-start">
+                            <h5 class="mb-1">{{ project.client }}</h5>
+                            <p class="text-muted mb-0">Chủ Dự Án</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <h2 class="mb-2">Bạn Muốn Thực Hiện Dự Án Tương Tự?</h2>
+                <p class="lead mb-0">Hãy liên hệ với chúng tôi để được tư vấn và báo giá!</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'contact' %}" class="btn btn-light btn-lg">Liên Hệ Ngay</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

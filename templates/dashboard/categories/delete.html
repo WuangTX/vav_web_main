@@ -1,0 +1,34 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Xóa Danh Mục | VAV Furniture{% endblock %}
+
+{% block page_title %}Xóa Danh Mục{% endblock %}
+
+{% block action_buttons %}
+<a href="{% url 'dashboard:category_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body text-center">
+        <h4>Bạn có chắc chắn muốn xóa danh mục này?</h4>
+        <p class="mb-0"><strong>{{ category.name }}</strong></p>
+        <p class="text-muted">{{ category.description|truncatechars:100 }}</p>
+        
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> Cảnh báo: Xóa danh mục này sẽ xóa tất cả sản phẩm ({{ category.products.count }}) thuộc danh mục này!
+        </div>
+        
+        <div class="mt-4">
+            <form method="post">
+                {% csrf_token %}
+                <a href="{% url 'dashboard:category_list' %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                <button type="submit" class="btn btn-danger">Xác Nhận Xóa</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
