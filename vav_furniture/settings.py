@@ -1,3 +1,4 @@
+
 """
 Django settings for vav_furniture project.
 
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-!zuhu-6vm(eww#*5&xe8ady(tgk+0p&z)&53gqu5d_u%rj6wk*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn', '4.230.20.113', 'localhost', '127.0.0.1']
 # ALLOWED_HOSTS = [] 
 
 
@@ -132,6 +133,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 
 # Media files (Uploaded images)
 MEDIA_URL = '/media/'
