@@ -1,0 +1,182 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Xác Nhận Xóa Ảnh - {{ project.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i>Xác Nhận Xóa Ảnh
+            </h1>
+            <p class="text-muted mb-0">Dự án: <strong>{{ project.title }}</strong></p>
+        </div>
+        <div>
+            <a href="{% url 'dashboard:gallery_manage' project.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay Lại Thư Viện
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Delete Confirmation Card -->
+            <div class="card border-warning">
+                <div class="card-header bg-warning bg-opacity-10 border-warning">
+                    <h5 class="card-title mb-0 text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Cảnh Báo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <!-- Image Preview -->
+                            <div class="image-preview">
+                                <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="img-fluid rounded shadow">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <!-- Confirmation Message -->
+                            <div class="delete-info">
+                                <h4 class="text-danger mb-3">
+                                    <i class="fas fa-trash me-2"></i>Bạn có chắc chắn muốn xóa ảnh này?
+                                </h4>
+                                
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Ảnh sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                                </div>
+
+                                <!-- Image Details -->
+                                <div class="image-details mb-4">
+                                    <h6 class="mb-3">Thông tin ảnh:</h6>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-tag text-primary me-2"></i>
+                                            <strong>Tiêu đề:</strong> {{ gallery_image.title|default:"Không có tiêu đề" }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-sort-numeric-up text-info me-2"></i>
+                                            <strong>Thứ tự:</strong> {{ gallery_image.order }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-calendar text-success me-2"></i>
+                                            <strong>Ngày tạo:</strong> {{ gallery_image.created_at|date:"d/m/Y H:i" }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-project-diagram text-warning me-2"></i>
+                                            <strong>Thuộc dự án:</strong> {{ project.title }}
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-end gap-3">
+                                    <a href="{% url 'dashboard:gallery_manage' project.id %}" class="btn btn-secondary">
+                                        <i class="fas fa-times me-2"></i>Hủy Bỏ
+                                    </a>
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash me-2"></i>Xóa Ảnh
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Warning -->
+            <div class="alert alert-warning mt-3">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
+                    <div>
+                        <strong>Gợi ý:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Nếu bạn chỉ muốn thay đổi thứ tự hiển thị, hãy sử dụng chức năng <strong>Chỉnh sửa</strong> thay vì xóa.</li>
+                            <li>Nếu ảnh không phù hợp, bạn có thể <strong>Chỉnh sửa</strong> để thay thế bằng ảnh mới.</li>
+                            <li>Hãy chắc chắn rằng ảnh này không được sử dụng ở nơi khác trước khi xóa.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.image-preview img {
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.delete-info h4 {
+    font-weight: 600;
+}
+
+.image-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.image-details h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.image-details li {
+    padding: 0.25rem 0;
+    color: #6c757d;
+}
+
+.image-details strong {
+    color: #495057;
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.card.border-warning {
+    border-width: 2px;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+}
+
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+
+@media (max-width: 768px) {
+    .image-preview {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .image-preview img {
+        max-height: 200px;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

@@ -83,9 +83,17 @@ def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
     related_projects = Project.objects.filter(project_type=project.project_type).exclude(id=project.id)[:3]
     
+    # Get gallery images for the project, ordered by order field
+    gallery_images = project.gallery_images.all().order_by('order', 'created_at')
+    
+    # Get timeline entries for the project, ordered by order and creation date
+    timeline_entries = project.timeline_entries.all().order_by('order', 'created_at')
+    
     context = {
         'project': project,
         'related_projects': related_projects,
+        'gallery_images': gallery_images,
+        'timeline_entries': timeline_entries,
     }
     return render(request, 'main/project_detail.html', context)
 

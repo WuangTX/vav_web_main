@@ -3,8 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from main.models import Product, ProductCategory, Project, ContactMessage
-from .forms import ProductForm, CategoryForm, ProjectForm
+from django.db.models import Count, Q
+from django import forms
+from datetime import date, timedelta
+from main.models import Product, ProductCategory, Project, ProjectTimeline, ProjectGallery, ContactMessage
+from .forms import ProductForm, CategoryForm, ProjectForm, ProjectTimelineForm, ProjectGalleryForm
 
 def dashboard_login(request):
     """View for custom admin login page"""
@@ -38,11 +41,40 @@ def dashboard_home(request):
     total_projects = Project.objects.count()
     new_messages = ContactMessage.objects.filter(is_read=False).count()
     
+    # Project timeline statistics
+    today = date.today()
+    active_projects = Project.objects.filter(
+        timeline_entries__is_completed=False
+    ).distinct().count()
+    
+    projects_with_progress = Project.objects.annotate(
+        progress=Count('timeline_entries__progress_percentage')
+    ).filter(progress__gt=0)
+    
+    # Upcoming deadlines (next 7 days)
+    upcoming_deadlines = ProjectTimeline.objects.filter(
+        end_date__gte=today,
+        end_date__lte=today + timedelta(days=7),
+        is_completed=False
+    ).select_related('project').order_by('end_date')[:5]
+    
+    # Projects by status
+    project_status_stats = {}
+    for status, display in ProjectTimeline.STATUS_CHOICES:
+        count = ProjectTimeline.objects.filter(
+            status=status,
+            is_completed=False
+        ).values('project').distinct().count()
+        project_status_stats[display] = count
+    
     context = {
         'total_products': total_products,
         'total_categories': total_categories,
         'total_projects': total_projects,
         'new_messages': new_messages,
+        'active_projects': active_projects,
+        'upcoming_deadlines': upcoming_deadlines,
+        'project_status_stats': project_status_stats,
         'recent_products': Product.objects.order_by('-created_at')[:5],
         'recent_projects': Project.objects.order_by('-created_at')[:5],
         'recent_messages': ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:5],
@@ -201,15 +233,15 @@ def project_delete(request, pk):
 @login_required
 def message_list(request):
     """View to list all contact messages"""
-    messages_list = ContactMessage.objects.all().order_by('-created_at')
-    return render(request, 'dashboard/messages/list.html', {'messages_list': messages_list})
+    messages_obj = ContactMessage.objects.all().order_by('-created_at')
+    return render(request, 'dashboard/messages/list.html', {'messages': messages_obj})
 
 @login_required
 def message_detail(request, pk):
     """View to show message details and mark as read"""
     message = get_object_or_404(ContactMessage, pk=pk)
     
-    # Mark message as read if it hasn't been read yet
+    # Mark as read when viewing
     if not message.is_read:
         message.is_read = True
         message.save()
@@ -218,7 +250,7 @@ def message_detail(request, pk):
 
 @login_required
 def message_delete(request, pk):
-    """View to delete a contact message"""
+    """View to delete a message"""
     message = get_object_or_404(ContactMessage, pk=pk)
     
     if request.method == 'POST':
@@ -227,3 +259,163 @@ def message_delete(request, pk):
         return redirect('dashboard:message_list')
     
     return render(request, 'dashboard/messages/delete.html', {'message': message})
+
+# Project Timeline management views
+@login_required
+def timeline_manage(request, project_id):
+    """View to manage project timeline"""
+    project = get_object_or_404(Project, id=project_id)
+    timeline_entries = project.timeline_entries.all().order_by('order', 'created_at')
+    
+    context = {
+        'project': project,
+        'timeline_entries': timeline_entries,
+    }
+    return render(request, 'dashboard/projects/timeline_manage.html', context)
+
+@login_required
+def timeline_add(request, project_id):
+    """View to add timeline entry"""
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        form = ProjectTimelineForm(request.POST)
+        if form.is_valid():
+            timeline = form.save(commit=False)
+            timeline.project = project
+            timeline.save()
+            messages.success(request, 'Mốc thời gian đã được thêm thành công.')
+            return redirect('dashboard:timeline_manage', project_id=project.id)
+    else:
+        form = ProjectTimelineForm(initial={'project': project})
+        # Make project field readonly
+        form.fields['project'].widget = forms.HiddenInput()
+    
+    context = {
+        'form': form,
+        'project': project,
+        'action': 'add'
+    }
+    return render(request, 'dashboard/projects/timeline_form.html', context)
+
+@login_required
+def timeline_edit(request, project_id, timeline_id):
+    """View to edit timeline entry"""
+    project = get_object_or_404(Project, id=project_id)
+    timeline = get_object_or_404(ProjectTimeline, id=timeline_id, project=project)
+    
+    if request.method == 'POST':
+        form = ProjectTimelineForm(request.POST, instance=timeline)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Mốc thời gian đã được cập nhật.')
+            return redirect('dashboard:timeline_manage', project_id=project.id)
+    else:
+        form = ProjectTimelineForm(instance=timeline)
+        # Make project field readonly
+        form.fields['project'].widget = forms.HiddenInput()
+    
+    context = {
+        'form': form,
+        'project': project,
+        'timeline': timeline,
+        'action': 'edit'
+    }
+    return render(request, 'dashboard/projects/timeline_form.html', context)
+
+@login_required
+def timeline_delete(request, project_id, timeline_id):
+    """View to delete timeline entry"""
+    project = get_object_or_404(Project, id=project_id)
+    timeline = get_object_or_404(ProjectTimeline, id=timeline_id, project=project)
+    
+    if request.method == 'POST':
+        timeline.delete()
+        messages.success(request, 'Mốc thời gian đã được xóa.')
+        return redirect('dashboard:timeline_manage', project_id=project.id)
+    
+    context = {
+        'project': project,
+        'timeline': timeline,
+    }
+    return render(request, 'dashboard/projects/timeline_confirm_delete.html', context)
+
+# Gallery Management Views
+@login_required
+def gallery_manage(request, project_id):
+    """View to manage project gallery"""
+    project = get_object_or_404(Project, id=project_id)
+    gallery_images = project.gallery_images.all().order_by('order', 'created_at')
+    
+    context = {
+        'project': project,
+        'gallery_images': gallery_images,
+    }
+    return render(request, 'dashboard/projects/gallery_manage.html', context)
+
+@login_required
+def gallery_add(request, project_id):
+    """View to add new gallery image"""
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        form = ProjectGalleryForm(request.POST, request.FILES)
+        if form.is_valid():
+            gallery_image = form.save(commit=False)
+            gallery_image.project = project
+            gallery_image.save()
+            messages.success(request, f'Ảnh đã được thêm vào thư viện dự án "{project.title}".')
+            return redirect('dashboard:gallery_manage', project_id=project.id)
+    else:
+        form = ProjectGalleryForm(initial={'project': project})
+        # Hide project field since it's pre-selected
+        form.fields['project'].widget = forms.HiddenInput()
+    
+    context = {
+        'form': form,
+        'project': project,
+        'action': 'add',
+    }
+    return render(request, 'dashboard/projects/gallery_form.html', context)
+
+@login_required
+def gallery_edit(request, project_id, gallery_id):
+    """View to edit gallery image"""
+    project = get_object_or_404(Project, id=project_id)
+    gallery_image = get_object_or_404(ProjectGallery, id=gallery_id, project=project)
+    
+    if request.method == 'POST':
+        form = ProjectGalleryForm(request.POST, request.FILES, instance=gallery_image)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ảnh trong thư viện đã được cập nhật.')
+            return redirect('dashboard:gallery_manage', project_id=project.id)
+    else:
+        form = ProjectGalleryForm(instance=gallery_image)
+        # Hide project field since it's pre-selected
+        form.fields['project'].widget = forms.HiddenInput()
+    
+    context = {
+        'form': form,
+        'project': project,
+        'gallery_image': gallery_image,
+        'action': 'edit',
+    }
+    return render(request, 'dashboard/projects/gallery_form.html', context)
+
+@login_required
+def gallery_delete(request, project_id, gallery_id):
+    """View to delete gallery image"""
+    project = get_object_or_404(Project, id=project_id)
+    gallery_image = get_object_or_404(ProjectGallery, id=gallery_id, project=project)
+    
+    if request.method == 'POST':
+        gallery_image.delete()
+        messages.success(request, 'Ảnh đã được xóa khỏi thư viện.')
+        return redirect('dashboard:gallery_manage', project_id=project.id)
+    
+    context = {
+        'project': project,
+        'gallery_image': gallery_image,
+    }
+    return render(request, 'dashboard/projects/gallery_confirm_delete.html', context)

@@ -1,0 +1,196 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}
+{% if action == 'add' %}Thêm Mốc Thời Gian{% else %}Chỉnh Sửa Mốc Thời Gian{% endif %} - {{ project.title }}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-{% if action == 'add' %}plus{% else %}edit{% endif %} me-2"></i>
+                    {% if action == 'add' %}Thêm Mốc Thời Gian Mới{% else %}Chỉnh Sửa Mốc Thời Gian{% endif %}
+                </h5>
+                <p class="mb-0 text-muted">Dự án: {{ project.title }}</p>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Hidden project field -->
+                    <input type="hidden" name="project" value="{{ project.id }}">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    Trạng Thái <span class="text-danger">*</span>
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.status.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.order.id_for_label }}" class="form-label">
+                                    Thứ Tự
+                                </label>
+                                {{ form.order }}
+                                {% if form.order.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.order.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Thứ tự hiển thị trong timeline</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            Tiêu Đề <span class="text-danger">*</span>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.title.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            Mô Tả
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label">
+                                    Ngày Bắt Đầu
+                                </label>
+                                {{ form.start_date }}
+                                {% if form.start_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.start_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                                    Ngày Kết Thúc
+                                </label>
+                                {{ form.end_date }}
+                                {% if form.end_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.end_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.progress_percentage.id_for_label }}" class="form-label">
+                                    Tiến Độ (%)
+                                </label>
+                                <div class="input-group">
+                                    {{ form.progress_percentage }}
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                {% if form.progress_percentage.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.progress_percentage.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Từ 0 đến 100</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check mt-4">
+                                    {{ form.is_completed }}
+                                    <label class="form-check-label" for="{{ form.is_completed.id_for_label }}">
+                                        Đã hoàn thành
+                                    </label>
+                                </div>
+                                {% if form.is_completed.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.is_completed.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'dashboard:timeline_manage' project.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay Lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if action == 'add' %}Thêm Mốc Thời Gian{% else %}Cập Nhật{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-update progress to 100% when marking as completed
+    const completedCheckbox = document.getElementById('{{ form.is_completed.id_for_label }}');
+    const progressInput = document.getElementById('{{ form.progress_percentage.id_for_label }}');
+    
+    if (completedCheckbox && progressInput) {
+        completedCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                progressInput.value = 100;
+            }
+        });
+    }
+    
+    // Validate dates
+    const startDateInput = document.getElementById('{{ form.start_date.id_for_label }}');
+    const endDateInput = document.getElementById('{{ form.end_date.id_for_label }}');
+    
+    if (startDateInput && endDateInput) {
+        function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            if (startDateInput.value && endDateInput.value && startDate > endDate) {
+                endDateInput.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
+            } else {
+                endDateInput.setCustomValidity('');
+            }
+        }
+        
+        startDateInput.addEventListener('change', validateDates);
+        endDateInput.addEventListener('change', validateDates);
+    }
+});
+</script>
+{% endblock %}

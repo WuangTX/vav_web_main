@@ -19,6 +19,27 @@ This file provides guidelines for the images that need to be created or sourced 
 4. category-dining-room.jpg - Dining room category image
 
 ### Project Images (min. 600x400px)
+1. project-1.jpg through project-6.jpg - For various interior design projects
+2. villa-project.jpg - Villa design showcase image
+3. apartment-project.jpg - Apartment design showcase image
+4. office-project.jpg - Office design showcase image
+
+### Project Gallery Images
+For each project, create 3-5 additional images showing different angles or details of the project.
+
+Requirements for project gallery images:
+1. **Size**: Minimum 800x600px, preferably 1200x800px
+2. **Aspect ratio**: Consistent aspect ratio for all images in a project (ideally 4:3 or 3:2)
+3. **Quality**: High-quality, professional images (compressed for web, max 500KB each)
+4. **Content**: Show different angles, details, or before/after views of the project
+5. **Format**: JPG or WebP preferred for better compression
+
+Example naming convention:
+- project-1-gallery-1.jpg
+- project-1-gallery-2.jpg
+- project-1-gallery-3.jpg
+
+Note: The system will automatically rename these files based on the project slug.
 1. project-1.jpg through project-9.jpg - For showcasing completed projects
 
 ### Team Member Images (square, min. 400x400px)

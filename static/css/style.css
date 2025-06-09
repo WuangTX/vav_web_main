@@ -420,6 +420,160 @@ footer h4::after {
     transform: translateY(-5px);
 }
 
+/* Project Timeline Styles */
+.project-timeline-section {
+    position: relative;
+}
+
+.progress-overview {
+    border: 1px solid #dee2e6;
+}
+
+.progress-stat h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.timeline-item:nth-child(odd) {
+    flex-direction: row-reverse;
+}
+
+.timeline-item:nth-child(odd) .timeline-content {
+    text-align: right;
+    padding-right: 2rem;
+    padding-left: 0;
+}
+
+.timeline-item:nth-child(even) .timeline-content {
+    text-align: left;
+    padding-left: 2rem;
+    padding-right: 0;
+}
+
+.timeline-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 2;
+    margin: 0 2rem;
+    flex-shrink: 0;
+}
+
+.timeline-content {
+    flex: 1;
+    max-width: 45%;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-content h5 {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.timeline-content p {
+    margin-bottom: 1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.timeline-meta {
+    margin-top: 1rem;
+}
+
+.timeline-meta small {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-item.completed .timeline-icon {
+    background-color: #28a745;
+}
+
+.timeline-item.completed .timeline-content {
+    border-left: 4px solid #28a745;
+}
+
+/* Progress bars in timeline */
+.timeline .progress {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+.timeline .progress-bar {
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Timeline badges */
+.timeline .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Responsive timeline */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 30px;
+    }
+    
+    .timeline-item {
+        flex-direction: row !important;
+    }
+    
+    .timeline-item .timeline-content {
+        text-align: left !important;
+        padding-left: 2rem !important;
+        padding-right: 1rem !important;
+        max-width: calc(100% - 90px);
+    }
+    
+    .timeline-icon {
+        margin: 0 1rem 0 0;
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .progress-overview .row .col-md-4 {
+        margin-bottom: 1rem;
+    }
+}
+
 /* Responsive Styles */
 @media (max-width: 991.98px) {
     .hero-section, .hero-slide {

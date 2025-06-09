@@ -104,10 +104,9 @@
                 </div>
                 {% endif %}
             </div>
-            
-            <div class="row mb-3">
+              <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="{{ form.image.id_for_label }}" class="form-label">Hình Ảnh</label>
+                    <label for="{{ form.image.id_for_label }}" class="form-label">Hình Ảnh Chính</label>
                     {% if project and project.image %}
                     <div class="mb-2">
                         <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-thumbnail" style="max-height: 200px;">
@@ -134,6 +133,54 @@
                     </div>
                 </div>
             </div>
+            
+            <hr>
+            
+            {% if project %}
+            <div class="mb-4">
+                <h5 class="mb-3">Thư Viện Ảnh</h5>
+
+                {% if project.gallery_images.all %}
+                <div class="row g-3 mt-2">
+                    {% for gallery_image in project.gallery_images.all %}
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card">
+                            <img src="{{ gallery_image.image.url }}" class="card-img-top" alt="{{ gallery_image.title|default:project.title }}">
+                            <div class="card-body p-2">
+                                <p class="card-text small mb-1">{{ gallery_image.title|default:"Ảnh không có tiêu đề" }}</p>
+                                <div class="btn-group btn-group-sm w-100">
+                                    <a href="{% url 'dashboard:gallery_edit' project.id gallery_image.id %}" class="btn btn-outline-primary">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                    <a href="{% url 'dashboard:gallery_delete' project.id gallery_image.id %}" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'dashboard:gallery_manage' project.id %}" class="btn btn-outline-primary">
+                        <i class="fas fa-images me-2"></i>Quản Lý Toàn Bộ Thư Viện
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-images fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-3">Chưa có ảnh nào trong thư viện.</p>
+                    <a href="{% url 'dashboard:gallery_add' project.id %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Thêm Ảnh Đầu Tiên
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i> Bạn có thể thêm ảnh vào thư viện ảnh sau khi đã tạo dự án.
+            </div>
+            {% endif %}
             
             <hr>
             
