@@ -176,6 +176,3 @@ Thumbs.db
 # Media files (optional - comment out if you want to include media files)
 # media/
 
-# Static files collected by Django
-staticfiles/
-static_root/
