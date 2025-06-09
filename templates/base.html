@@ -29,22 +29,23 @@
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
+                </button>                <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Trang Chủ</a>
+                            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Trang Chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'about' %}">Giới Thiệu</a>
+                            <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Giới Thiệu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'products' %}">Sản Phẩm</a>
+                            <a class="nav-link {% if request.resolver_match.url_name == 'products' %}active{% endif %}" href="{% url 'products' %}">Sản Phẩm</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'projects' %}">Dự Án</a>
-                        </li>                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contact' %}">Liên Hệ</a>                        </li>
+                            <a class="nav-link {% if request.resolver_match.url_name == 'projects' %}active{% endif %}" href="{% url 'projects' %}">Dự Án</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Liên Hệ</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dashboard:login' %}">
                                 <i class="fas fa-user-lock"></i> Quản Trị

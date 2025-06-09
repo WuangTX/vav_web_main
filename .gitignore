@@ -174,5 +174,6 @@ ehthumbs.db
 Thumbs.db
 
 # Media files (optional - comment out if you want to include media files)
-# media/
+# Media files
+media/
 

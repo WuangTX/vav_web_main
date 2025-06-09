@@ -60,11 +60,35 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     color: var(--dark-color) !important;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 80%;
 }
 
 .nav-link:hover {
     color: var(--primary-color) !important;
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    font-weight: 600;
 }
 
 /* Hero Section Styles */
