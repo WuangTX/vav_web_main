@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ product.name }} - VAV Furniture{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="page-header-content text-center">
+            <h1 class="display-4 fw-bold">{{ product.name }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Trang Chủ</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'products' %}" class="text-white">Sản Phẩm</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ product.name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Product Detail Section -->
+<section class="product-detail-section py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Product Image -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="product-detail-image">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            
+            <!-- Product Info -->
+            <div class="col-lg-6">
+                <div class="product-detail-info">
+                    <h2 class="mb-3">{{ product.name }}</h2>
+                    
+                    <div class="product-category mb-3">
+                        <span class="badge bg-secondary">{{ product.category.name }}</span>
+                    </div>
+                    
+                    <div class="product-price mb-4">
+                        <h3 class="fw-bold text-primary">{{ product.price|floatformat:0|intcomma }} ₫</h3>
+                    </div>
+                    
+                    <div class="product-description mb-4">
+                        <h5>Mô Tả Sản Phẩm</h5>
+                        <p>{{ product.description }}</p>
+                    </div>
+                    
+                    <div class="product-specs mb-4">
+                        <h5>Thông Số Kỹ Thuật</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Chất liệu cao cấp</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Thiết kế hiện đại</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Sản xuất tại Việt Nam</li>
+                            <li><i class="fas fa-check-circle text-primary me-2"></i> Bảo hành 24 tháng</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="product-actions">
+                        <a href="{% url 'contact' %}" class="btn btn-primary me-2">Liên Hệ Đặt Hàng</a>
+                        <a href="#" class="btn btn-outline-primary"><i class="fas fa-heart me-2"></i>Yêu Thích</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Tabs Section -->
+<section class="product-tabs-section py-5 bg-light">
+    <div class="container">
+        <ul class="nav nav-tabs mb-4" id="productTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Chi Tiết</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab" aria-controls="shipping" aria-selected="false">Vận Chuyển & Lắp Đặt</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="warranty-tab" data-bs-toggle="tab" data-bs-target="#warranty" type="button" role="tab" aria-controls="warranty" aria-selected="false">Bảo Hành</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="productTabContent">
+            <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                <div class="product-tab-content">
+                    <h4>Mô Tả Chi Tiết</h4>
+                    <p>{{ product.description }}</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget risus vel erat congue faucibus. Sed ac justo vel mi condimentum faucibus. Suspendisse potenti. Morbi nec arcu et justo volutpat faucibus vel id justo. Sed ac risus ac augue pharetra finibus.</p>
+                    <p>Nulla facilisi. Cras vel metus eget elit interdum efficitur. Nullam at magna vel nunc ultrices malesuada. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec vel magna vel nunc ultrices malesuada.</p>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+                <div class="product-tab-content">
+                    <h4>Thông Tin Vận Chuyển & Lắp Đặt</h4>
+                    <ul>
+                        <li>Giao hàng miễn phí trong nội thành TP. Hồ Chí Minh và Hà Nội.</li>
+                        <li>Phí vận chuyển sẽ được tính dựa trên khoảng cách đối với các tỉnh thành khác.</li>
+                        <li>Thời gian giao hàng: 3-5 ngày làm việc (tùy thuộc vào khu vực).</li>
+                        <li>Đội ngũ kỹ thuật của chúng tôi sẽ lắp đặt miễn phí tại nhà.</li>
+                        <li>Chúng tôi sẽ liên hệ trước khi giao hàng để xác nhận thời gian.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="warranty" role="tabpanel" aria-labelledby="warranty-tab">
+                <div class="product-tab-content">
+                    <h4>Chính Sách Bảo Hành</h4>
+                    <ul>
+                        <li>Bảo hành 24 tháng đối với các lỗi về cấu trúc và vật liệu.</li>
+                        <li>Bảo hành 12 tháng đối với các phụ kiện kèm theo.</li>
+                        <li>Hỗ trợ sửa chữa miễn phí trong thời gian bảo hành.</li>
+                        <li>Thay thế sản phẩm mới nếu không thể sửa chữa.</li>
+                        <li>Không bảo hành đối với các trường hợp hư hỏng do sử dụng không đúng cách hoặc tự ý sửa chữa.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products Section -->
+<section class="related-products-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Có Thể Bạn Cũng Thích</h6>
+            <h2>Sản Phẩm Liên Quan</h2>
+        </div>
+        
+        <div class="row g-4">
+            {% for related_product in related_products %}
+            <!-- Related Product Item {{ forloop.counter }} -->
+            <div class="col-md-6 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}" class="img-fluid">
+                        <div class="product-overlay">
+                            <a href="{% url 'product_detail' related_product.slug %}" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                        </div>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5>{{ related_product.name }}</h5>
+                        <p class="text-muted">{{ related_product.category.name }}</p>
+                        <div class="product-price">
+                            <span class="price">{{ related_product.price|floatformat:0|intcomma }} ₫</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Không có sản phẩm liên quan.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <h2 class="mb-2">Bạn Cần Tư Vấn Thêm?</h2>
+                <p class="lead mb-0">Hãy liên hệ với chúng tôi để được tư vấn chi tiết về sản phẩm!</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'contact' %}" class="btn btn-light btn-lg">Liên Hệ Ngay</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
