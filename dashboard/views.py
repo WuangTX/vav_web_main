@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Count, Q
 from django import forms
-from datetime import date, timedelta
 from main.models import Product, ProductCategory, Project, ProjectTimeline, ProjectGallery, ContactMessage
 from .forms import ProductForm, CategoryForm, ProjectForm, ProjectTimelineForm, ProjectGalleryForm
 
@@ -41,30 +40,18 @@ def dashboard_home(request):
     total_projects = Project.objects.count()
     new_messages = ContactMessage.objects.filter(is_read=False).count()
     
-    # Project timeline statistics
-    today = date.today()
+    # Project timeline statistics - simplified for workflow tracking
     active_projects = Project.objects.filter(
-        timeline_entries__is_completed=False
+        timeline_entries__isnull=False
     ).distinct().count()
     
-    projects_with_progress = Project.objects.annotate(
-        progress=Count('timeline_entries__progress_percentage')
-    ).filter(progress__gt=0)
+    # Recent timeline entries for projects
+    recent_timeline_entries = ProjectTimeline.objects.select_related('project').order_by('-created_at')[:5]
     
-    # Upcoming deadlines (next 7 days)
-    upcoming_deadlines = ProjectTimeline.objects.filter(
-        end_date__gte=today,
-        end_date__lte=today + timedelta(days=7),
-        is_completed=False
-    ).select_related('project').order_by('end_date')[:5]
-    
-    # Projects by status
+    # Projects by status - count all timeline entries by status
     project_status_stats = {}
     for status, display in ProjectTimeline.STATUS_CHOICES:
-        count = ProjectTimeline.objects.filter(
-            status=status,
-            is_completed=False
-        ).values('project').distinct().count()
+        count = ProjectTimeline.objects.filter(status=status).count()
         project_status_stats[display] = count
     
     context = {
@@ -73,7 +60,7 @@ def dashboard_home(request):
         'total_projects': total_projects,
         'new_messages': new_messages,
         'active_projects': active_projects,
-        'upcoming_deadlines': upcoming_deadlines,
+        'recent_timeline_entries': recent_timeline_entries,
         'project_status_stats': project_status_stats,
         'recent_products': Product.objects.order_by('-created_at')[:5],
         'recent_projects': Project.objects.order_by('-created_at')[:5],
@@ -234,7 +221,7 @@ def project_delete(request, pk):
 def message_list(request):
     """View to list all contact messages"""
     messages_obj = ContactMessage.objects.all().order_by('-created_at')
-    return render(request, 'dashboard/messages/list.html', {'messages': messages_obj})
+    return render(request, 'dashboard/messages/list.html', {'messages_list': messages_obj})
 
 @login_required
 def message_detail(request, pk):

@@ -163,51 +163,21 @@ class Project(models.Model):
     
     def __str__(self):
         return self.title
-        
-    @property
-    def overall_progress(self):
-        """Calculate overall project progress based on timeline entries"""
-        timeline_entries = self.timeline_entries.all()
-        if not timeline_entries:
-            return 0
-        total_progress = sum(entry.progress_percentage for entry in timeline_entries)
-        return total_progress // len(timeline_entries)
-        
-    @property 
-    def current_status(self):
-        """Get current project status"""
-        current_entry = self.timeline_entries.filter(is_completed=False).first()
-        if current_entry:
-            return current_entry.get_status_display()
-        return "Hoàn Thành"
-        
-    @property
-    def next_milestone(self):
-        """Get next milestone/deadline"""
-        next_entry = self.timeline_entries.filter(
-            is_completed=False,
-            end_date__isnull=False
-        ).order_by('end_date').first()
-        return next_entry
 
 class ProjectTimeline(models.Model):
-    """Model for project timeline/progress tracking"""
+    """Model for simple project workflow steps"""
     STATUS_CHOICES = (
-        ('planning', 'Lập Kế Hoạch'),
-        ('design', 'Thiết Kế'),
-        ('production', 'Sản Xuất'),
-        ('installation', 'Lắp Đặt'),
-        ('completed', 'Hoàn Thành'),
+        ('consultation', 'Tư Vấn & Thiết Kế'),
+        ('planning', 'Lập Kế Hoạch & Vật Liệu'),
+        ('production', 'Sản Xuất & Chế Tác'),
+        ('installation', 'Thi Công & Lắp Đặt'),
+        ('completion', 'Nghiệm Thu & Bàn Giao'),
     )
     
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='timeline_entries')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
-    progress_percentage = models.PositiveIntegerField(default=0, help_text="Tiến độ phần trăm (0-100)")
-    is_completed = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -217,25 +187,6 @@ class ProjectTimeline(models.Model):
         
     def __str__(self):
         return f"{self.project.title} - {self.get_status_display()}"
-        
-    @property
-    def duration_days(self):
-        """Calculate duration in days"""
-        if self.start_date and self.end_date:
-            return (self.end_date - self.start_date).days
-        return None
-        
-    @property
-    def days_remaining(self):
-        """Calculate remaining days"""
-        if self.end_date and not self.is_completed:
-            from datetime import date
-            today = date.today()
-            if self.end_date > today:
-                return (self.end_date - today).days
-            else:
-                return 0  # Overdue
-        return None
 
 class ContactMessage(models.Model):
     """Model for contact form messages"""

@@ -46,32 +46,22 @@ class ProjectForm(forms.ModelForm):
         }
 
 class ProjectTimelineForm(forms.ModelForm):
-    """Form for project timeline"""
+    """Form for simple project timeline"""
     class Meta:
         model = ProjectTimeline
-        fields = ['project', 'status', 'title', 'description', 'start_date', 
-                 'end_date', 'progress_percentage', 'is_completed', 'order']
+        fields = ['project', 'status', 'title', 'description', 'order']
         widgets = {
             'project': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'progress_percentage': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': 0,
-                'max': 100,
-                'step': 5
-            }),
-            'is_completed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'order': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
         }
-        
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['project'].queryset = Project.objects.all().order_by('title')
-          # If editing existing timeline, make project field readonly
+        # If editing existing timeline, make project field readonly
         if self.instance.pk:
             self.fields['project'].widget.attrs['readonly'] = True
 

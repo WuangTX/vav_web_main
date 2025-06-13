@@ -13,7 +13,7 @@ class ProjectTimelineInline(admin.TabularInline):
     """Inline admin for project timeline"""
     model = ProjectTimeline
     extra = 1
-    fields = ('status', 'title', 'start_date', 'end_date', 'progress_percentage', 'is_completed', 'order')
+    fields = ('status', 'title', 'description', 'order')
     ordering = ['order']
 
 @admin.register(ProductCategory)
@@ -30,23 +30,17 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'project_type', 'client', 'location', 'completed_date', 'featured', 'overall_progress')
+    list_display = ('title', 'project_type', 'client', 'location', 'completed_date', 'featured')
     list_filter = ('project_type', 'featured')
     search_fields = ('title', 'description', 'client', 'location')
     prepopulated_fields = {'slug': ('title',)}
     inlines = [ProjectGalleryInline, ProjectTimelineInline]
-    
-    def overall_progress(self, obj):
-        """Display overall progress in admin"""
-        return f"{obj.overall_progress}%"
-    overall_progress.short_description = "Tiến Độ"
 
 @admin.register(ProjectTimeline)
 class ProjectTimelineAdmin(admin.ModelAdmin):
-    list_display = ('project', 'status', 'title', 'start_date', 'end_date', 'progress_percentage', 'is_completed')
-    list_filter = ('status', 'is_completed', 'start_date')
+    list_display = ('project', 'status', 'title', 'order')
+    list_filter = ('status',)
     search_fields = ('project__title', 'title', 'description')
-    date_hierarchy = 'start_date'
     ordering = ['project', 'order']
 
 @admin.register(ContactMessage)

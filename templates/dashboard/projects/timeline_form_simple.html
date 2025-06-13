@@ -1,0 +1,97 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}
+{% if action == 'add' %}Thêm Quy Trình{% else %}Chỉnh Sửa Quy Trình{% endif %} - {{ project.title }}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-{% if action == 'add' %}plus{% else %}edit{% endif %} me-2"></i>
+                    {% if action == 'add' %}Thêm Quy Trình Mới{% else %}Chỉnh Sửa Quy Trình{% endif %}
+                </h5>
+                <p class="mb-0 text-muted">Dự án: {{ project.title }}</p>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Hidden project field -->
+                    <input type="hidden" name="project" value="{{ project.id }}">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    Giai Đoạn <span class="text-danger">*</span>
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.status.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Chọn giai đoạn thực hiện dự án</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.order.id_for_label }}" class="form-label">
+                                    Thứ Tự
+                                </label>
+                                {{ form.order }}
+                                {% if form.order.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.order.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Thứ tự hiển thị trong quy trình</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            Tiêu Đề <span class="text-danger">*</span>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.title.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Tiêu đề mô tả cho giai đoạn này</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            Mô Tả <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Mô tả chi tiết về công việc thực hiện trong giai đoạn này</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'dashboard:timeline_manage' project.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay Lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if action == 'add' %}Thêm Quy Trình{% else %}Cập Nhật{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
