@@ -38,9 +38,22 @@ urlpatterns = [
     path('projects/<int:project_id>/gallery/add/', views.gallery_add, name='gallery_add'),
     path('projects/<int:project_id>/gallery/<int:gallery_id>/edit/', views.gallery_edit, name='gallery_edit'),
     path('projects/<int:project_id>/gallery/<int:gallery_id>/delete/', views.gallery_delete, name='gallery_delete'),
-    
-    # Contact messages management
+      # Contact messages management
     path('messages/', views.message_list, name='message_list'),
     path('messages/<int:pk>/', views.message_detail, name='message_detail'),
     path('messages/delete/<int:pk>/', views.message_delete, name='message_delete'),
+    
+    # News management
+    path('news/', views.news_list, name='news_list'),
+    path('news/add/', views.news_add, name='news_add'),
+    path('news/edit/<int:pk>/', views.news_edit, name='news_edit'),
+    path('news/delete/<int:pk>/', views.news_delete, name='news_delete'),
+      # News Category management
+    path('news/categories/', views.news_category_list, name='news_category_list'),
+    path('news/categories/add/', views.news_category_add, name='news_category_add'),
+    path('news/categories/edit/<int:pk>/', views.news_category_edit, name='news_category_edit'),
+    path('news/categories/delete/<int:pk>/', views.news_category_delete, name='news_category_delete'),
+    
+    # CKEditor image upload
+    path('upload-image/', views.upload_image, name='upload_image'),
 ]

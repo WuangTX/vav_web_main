@@ -1,15 +1,18 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Product, ProductCategory, Project, ContactMessage
+from .models import Product, ProductCategory, Project, ContactMessage, News, NewsCategory
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 def home(request):
     """View for the home page"""
     featured_products = Product.objects.filter(featured=True)[:4]
     featured_projects = Project.objects.filter(featured=True)[:3]
+    featured_news = News.objects.filter(featured=True, status='published')[:3]
     
     context = {
         'featured_products': featured_products,
         'featured_projects': featured_projects,
+        'featured_news': featured_news,
     }
     return render(request, 'main/home.html', context)
 
@@ -121,3 +124,103 @@ def contact(request):
         return render(request, 'main/contact.html', context)
     
     return render(request, 'main/contact.html')
+
+
+def news_list(request):
+    """View for the news list page"""
+    news_list = News.objects.filter(status='published').select_related('category')
+    categories = NewsCategory.objects.all()
+    
+    # Filter by category
+    category_slug = request.GET.get('category')
+    if category_slug:
+        category = get_object_or_404(NewsCategory, slug=category_slug)
+        news_list = news_list.filter(category=category)
+    else:
+        category = None
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        news_list = news_list.filter(
+            Q(title__icontains=search_query) |
+            Q(summary__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(tags__icontains=search_query)
+        )
+    
+    # Pagination
+    paginator = Paginator(news_list, 9)  # 9 news articles per page
+    page_number = request.GET.get('page')
+    news = paginator.get_page(page_number)
+    
+    # Featured news for sidebar
+    featured_news = News.objects.filter(status='published', featured=True)[:5]
+    
+    context = {
+        'news': news,
+        'categories': categories,
+        'current_category': category,
+        'search_query': search_query,
+        'featured_news': featured_news,
+    }
+    return render(request, 'main/news_list.html', context)
+
+
+def news_detail(request, slug):
+    """View for the news detail page"""
+    news = get_object_or_404(News, slug=slug, status='published')
+    
+    # Increment view count
+    news.views += 1
+    news.save(update_fields=['views'])
+    
+    # Related news from same category
+    related_news = News.objects.filter(
+        category=news.category, 
+        status='published'
+    ).exclude(id=news.id)[:4]
+    
+    # Recent news for sidebar
+    recent_news = News.objects.filter(status='published').exclude(id=news.id)[:5]
+    
+    context = {
+        'news': news,
+        'related_news': related_news,
+        'recent_news': recent_news,
+    }
+    return render(request, 'main/news_detail.html', context)
+
+
+def news_by_category(request, category_slug):
+    """View to filter news by category"""
+    category = get_object_or_404(NewsCategory, slug=category_slug)
+    news_list = News.objects.filter(category=category, status='published')
+    categories = NewsCategory.objects.all()
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        news_list = news_list.filter(
+            Q(title__icontains=search_query) |
+            Q(summary__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(tags__icontains=search_query)
+        )
+    
+    # Pagination
+    paginator = Paginator(news_list, 9)
+    page_number = request.GET.get('page')
+    news = paginator.get_page(page_number)
+    
+    # Featured news for sidebar
+    featured_news = News.objects.filter(status='published', featured=True)[:5]
+    
+    context = {
+        'news': news,
+        'categories': categories,
+        'current_category': category,
+        'search_query': search_query,
+        'featured_news': featured_news,
+    }
+    return render(request, 'main/news_list.html', context)

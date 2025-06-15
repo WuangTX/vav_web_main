@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ProductCategory, Product, Project, ProjectGallery, ProjectTimeline, ContactMessage
+from .models import ProductCategory, Product, Project, ProjectGallery, ProjectTimeline, ContactMessage, NewsCategory, News
 
 
 class ProjectGalleryInline(admin.TabularInline):
@@ -52,3 +52,45 @@ class ContactMessageAdmin(admin.ModelAdmin):
     
     def has_add_permission(self, request):
         return False
+
+
+@admin.register(NewsCategory)
+class NewsCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'created_at')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'status', 'featured', 'author', 'views', 'published_at')
+    list_filter = ('status', 'category', 'featured', 'published_at', 'created_at')
+    search_fields = ('title', 'summary', 'content', 'author', 'tags')
+    prepopulated_fields = {'slug': ('title',)}
+    readonly_fields = ('views', 'created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Thông tin cơ bản', {
+            'fields': ('title', 'slug', 'category', 'status', 'author')
+        }),
+        ('Nội dung', {
+            'fields': ('summary', 'content', 'tags')
+        }),
+        ('Hình ảnh', {
+            'fields': ('image', 'image_position', 'image_caption')
+        }),
+        ('Liên kết ngoài', {
+            'fields': ('external_link', 'external_link_text'),
+            'classes': ('collapse',)
+        }),
+        ('Cài đặt', {
+            'fields': ('featured', 'published_at')
+        }),
+        ('Thống kê', {
+            'fields': ('views', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('category')

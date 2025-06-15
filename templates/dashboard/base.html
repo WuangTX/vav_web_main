@@ -46,10 +46,14 @@
                             <a class="nav-link {% if '/dashboard/categories' in request.path %}active{% endif %}" href="{% url 'dashboard:category_list' %}">
                                 <i class="fas fa-tags me-2"></i> Danh Mục
                             </a>
-                        </li>
-                        <li class="nav-item">
+                        </li>                        <li class="nav-item">
                             <a class="nav-link {% if '/dashboard/projects' in request.path %}active{% endif %}" href="{% url 'dashboard:project_list' %}">
                                 <i class="fas fa-project-diagram me-2"></i> Dự Án
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/dashboard/news' in request.path %}active{% endif %}" href="{% url 'dashboard:news_list' %}">
+                                <i class="fas fa-newspaper me-2"></i> Tin Tức
                             </a>
                         </li>
                         <li class="nav-item">

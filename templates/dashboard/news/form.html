@@ -1,0 +1,518 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if action == 'add' %}Thêm Tin Tức{% else %}Chỉnh Sửa Tin Tức{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ckeditor-custom.css' %}">
+<style>
+    .form-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form-section h5 {
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .image-preview {
+        max-width: 300px;
+        max-height: 200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .required-field {
+        color: #dc3545;
+    }
+      .form-help {
+        font-size: 0.875em;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    /* CKEditor styling */
+    .ck-editor__editable {
+        min-height: 400px;
+    }
+    
+    .ck-content {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    
+    .editor-toolbar {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px 4px 0 0;
+        padding: 10px;
+        margin-bottom: -1px;
+    }
+    
+    .editor-help {
+        background: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        padding: 8px 12px;
+        font-size: 0.875em;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    {% if action == 'add' %}
+                        <i class="fas fa-plus"></i> Thêm Tin Tức
+                    {% else %}
+                        <i class="fas fa-edit"></i> Chỉnh Sửa Tin Tức
+                    {% endif %}
+                </h2>
+                <a href="{% url 'dashboard:news_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay Lại
+                </a>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-info-circle"></i> Thông Tin Cơ Bản</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                                        Tiêu Đề <span class="required-field">*</span>
+                                    </label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="text-danger mt-1">{{ form.title.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                                        Danh Mục <span class="required-field">*</span>
+                                    </label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                        <div class="text-danger mt-1">{{ form.category.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="{{ form.slug.id_for_label }}" class="form-label">URL Slug</label>
+                                    {{ form.slug }}
+                                    <div class="form-help">Để trống sẽ tự động tạo từ tiêu đề</div>
+                                    {% if form.slug.errors %}
+                                        <div class="text-danger mt-1">{{ form.slug.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.author.id_for_label }}" class="form-label">Tác Giả</label>
+                                    {{ form.author }}
+                                    {% if form.author.errors %}
+                                        <div class="text-danger mt-1">{{ form.author.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.summary.id_for_label }}" class="form-label">
+                                    Tóm Tắt <span class="required-field">*</span>
+                                </label>
+                                {{ form.summary }}
+                                <div class="form-help">Mô tả ngắn gọn về bài viết (tối đa 500 ký tự)</div>
+                                {% if form.summary.errors %}
+                                    <div class="text-danger mt-1">{{ form.summary.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>                        <!-- Content -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-file-text"></i> Nội Dung</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.content.id_for_label }}" class="form-label">
+                                    Nội Dung Bài Viết <span class="required-field">*</span>
+                                </label>
+                                
+                                <!-- Rich Text Editor -->
+                                <div id="editor-container">
+                                    {{ form.content }}
+                                </div>
+                                
+                                <div class="editor-help">
+                                    <strong>Hướng dẫn sử dụng:</strong>
+                                    <ul class="mb-0 mt-1" style="padding-left: 20px;">
+                                        <li>Sử dụng thanh công cụ để định dạng văn bản (in đậm, nghiêng, gạch chân...)</li>
+                                        <li>Chèn ảnh bằng cách nhấn vào biểu tượng ảnh và tải lên từ máy tính</li>
+                                        <li>Thay đổi kích cỡ chữ và màu sắc theo ý muốn</li>
+                                        <li>Tạo danh sách có số thứ tự hoặc dấu đầu dòng</li>
+                                        <li>Chèn liên kết và bảng biểu</li>
+                                    </ul>
+                                </div>
+                                
+                                {% if form.content.errors %}
+                                    <div class="text-danger mt-1">{{ form.content.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Image Settings -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-image"></i> Cài Đặt Hình Ảnh</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.image.id_for_label }}" class="form-label">
+                                        Hình Ảnh Chính <span class="required-field">*</span>
+                                    </label>
+                                    {{ form.image }}
+                                    {% if form.image.errors %}
+                                        <div class="text-danger mt-1">{{ form.image.errors.0 }}</div>
+                                    {% endif %}
+                                    {% if news.image %}
+                                        <div class="mt-2">
+                                            <small class="text-muted">Hình ảnh hiện tại:</small><br>
+                                            <img src="{{ news.image.url }}" alt="Current image" class="image-preview">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.image_position.id_for_label }}" class="form-label">Vị Trí Hình Ảnh</label>
+                                    {{ form.image_position }}
+                                    <div class="form-help">{{ form.image_position.help_text }}</div>
+                                    {% if form.image_position.errors %}
+                                        <div class="text-danger mt-1">{{ form.image_position.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.image_caption.id_for_label }}" class="form-label">Chú Thích Hình Ảnh</label>
+                                {{ form.image_caption }}
+                                <div class="form-help">Chú thích sẽ hiển thị bên dưới hình ảnh</div>
+                                {% if form.image_caption.errors %}
+                                    <div class="text-danger mt-1">{{ form.image_caption.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- External Link -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-external-link-alt"></i> Liên Kết Ngoài</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="{{ form.external_link.id_for_label }}" class="form-label">URL Liên Kết</label>
+                                    {{ form.external_link }}
+                                    <div class="form-help">{{ form.external_link.help_text }}</div>
+                                    {% if form.external_link.errors %}
+                                        <div class="text-danger mt-1">{{ form.external_link.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.external_link_text.id_for_label }}" class="form-label">Văn Bản Liên Kết</label>
+                                    {{ form.external_link_text }}
+                                    {% if form.external_link_text.errors %}
+                                        <div class="text-danger mt-1">{{ form.external_link_text.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-tags"></i> Thẻ</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.tags.id_for_label }}" class="form-label">Thẻ</label>
+                                {{ form.tags }}
+                                <div class="form-help">{{ form.tags.help_text }}</div>
+                                {% if form.tags.errors %}
+                                    <div class="text-danger mt-1">{{ form.tags.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Settings -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-cog"></i> Cài Đặt</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">Trạng Thái</label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger mt-1">{{ form.status.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.featured }}
+                                    <label class="form-check-label" for="{{ form.featured.id_for_label }}">
+                                        Tin Nổi Bật
+                                    </label>
+                                </div>
+                                <div class="form-help">{{ form.featured.help_text }}</div>
+                                {% if form.featured.errors %}
+                                    <div class="text-danger mt-1">{{ form.featured.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.published_at.id_for_label }}" class="form-label">Thời Gian Xuất Bản</label>
+                                {{ form.published_at }}
+                                <div class="form-help">{{ form.published_at.help_text }}</div>
+                                {% if form.published_at.errors %}
+                                    <div class="text-danger mt-1">{{ form.published_at.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-check"></i> Thao Tác</h5>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save"></i> 
+                                    {% if action == 'add' %}Thêm Tin Tức{% else %}Cập Nhật{% endif %}
+                                </button>
+                                
+                                {% if action == 'edit' and news.status == 'published' %}
+                                    <a href="{% url 'news_detail' news.slug %}" class="btn btn-outline-info" target="_blank">
+                                        <i class="fas fa-eye"></i> Xem Bài Viết
+                                    </a>
+                                {% endif %}
+                                
+                                <a href="{% url 'dashboard:news_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- CKEditor 5 CDN -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
+
+<script>
+    let editor;
+    
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize CKEditor
+        ClassicEditor
+            .create(document.querySelector('#{{ form.content.id_for_label }}'), {
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'underline', 'strikethrough', '|',
+                        'fontSize', 'fontColor', 'fontBackgroundColor', '|',
+                        'alignment', '|',
+                        'numberedList', 'bulletedList', '|',
+                        'outdent', 'indent', '|',
+                        'link', 'imageUpload', 'blockQuote', 'insertTable', '|',
+                        'undo', 'redo'
+                    ]
+                },
+                image: {
+                    toolbar: [
+                        'imageTextAlternative', '|',
+                        'imageStyle:inline', 'imageStyle:block', 'imageStyle:side', '|',
+                        'toggleImageCaption', 'imageResize'
+                    ],
+                    resizeOptions: [
+                        { name: 'resizeImage:original', label: 'Kích thước gốc', value: null },
+                        { name: 'resizeImage:50', label: '50%', value: '50' },
+                        { name: 'resizeImage:75', label: '75%', value: '75' }
+                    ]
+                },
+                table: {
+                    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableCellProperties', 'tableProperties']
+                },
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'Đoạn văn', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: 'Tiêu đề 1', class: 'ck-heading_heading1' },
+                        { model: 'heading2', view: 'h2', title: 'Tiêu đề 2', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: 'Tiêu đề 3', class: 'ck-heading_heading3' },
+                        { model: 'heading4', view: 'h4', title: 'Tiêu đề 4', class: 'ck-heading_heading4' }
+                    ]
+                },
+                fontSize: {
+                    options: ['tiny', 'small', 'default', 'big', 'huge'],
+                    supportAllValues: true
+                },
+                fontColor: {
+                    colors: [
+                        { color: 'hsl(0, 0%, 0%)', label: 'Đen' },
+                        { color: 'hsl(0, 0%, 30%)', label: 'Xám đậm' },
+                        { color: 'hsl(0, 0%, 60%)', label: 'Xám' },
+                        { color: 'hsl(0, 75%, 60%)', label: 'Đỏ' },
+                        { color: 'hsl(120, 75%, 60%)', label: 'Xanh lá' },
+                        { color: 'hsl(240, 75%, 60%)', label: 'Xanh dương' }
+                    ]
+                }
+            })
+            .then(newEditor => {
+                editor = newEditor;
+                console.log('CKEditor initialized successfully');
+                
+                // Custom image upload adapter
+                editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                    return new ImageUploadAdapter(loader);
+                };
+                
+                // Auto-sync content to textarea on every change
+                editor.model.document.on('change:data', () => {
+                    const editorData = editor.getData();
+                    document.getElementById('{{ form.content.id_for_label }}').value = editorData;
+                });
+            })
+            .catch(error => {
+                console.error('CKEditor initialization error:', error);
+                // Fallback: show the original textarea
+                const textarea = document.getElementById('{{ form.content.id_for_label }}');
+                textarea.style.display = 'block';
+                textarea.rows = 15;
+            });
+    });
+
+    // Custom image upload adapter
+    class ImageUploadAdapter {
+        constructor(loader) {
+            this.loader = loader;
+        }
+
+        upload() {
+            return this.loader.file.then(file => new Promise((resolve, reject) => {
+                const data = new FormData();
+                data.append('upload', file);
+                data.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+                fetch('/dashboard/upload-image/', {
+                    method: 'POST',
+                    body: data
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.url) {
+                        resolve({ default: result.url });
+                    } else {
+                        reject(result.error || 'Upload thất bại');
+                    }
+                })
+                .catch(error => {
+                    reject('Lỗi kết nối: ' + error.message);
+                });
+            }));
+        }
+
+        abort() {}
+    }
+
+    // Auto-generate slug from title with Vietnamese support
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleField = document.getElementById('{{ form.title.id_for_label }}');
+        if (titleField) {
+            titleField.addEventListener('input', function() {
+                const title = this.value;
+                const slugField = document.getElementById('{{ form.slug.id_for_label }}');
+                
+                if (title && slugField && !slugField.value) {
+                    let slug = title.toLowerCase()
+                        .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+                        .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+                        .replace(/[ìíịỉĩ]/g, 'i')
+                        .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+                        .replace(/[ùúụủũưừứựửữ]/g, 'u')
+                        .replace(/[ỳýỵỷỹ]/g, 'y')
+                        .replace(/đ/g, 'd')
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                    slugField.value = slug;
+                }
+            });
+        }
+
+        // Character counter for summary
+        const summaryField = document.getElementById('{{ form.summary.id_for_label }}');
+        if (summaryField) {
+            const maxLength = 500;
+            
+            function updateCounter() {
+                const remaining = maxLength - summaryField.value.length;
+                let counterElement = summaryField.parentNode.querySelector('.char-counter');
+                
+                if (!counterElement) {
+                    counterElement = document.createElement('div');
+                    counterElement.className = 'char-counter form-help';
+                    summaryField.parentNode.appendChild(counterElement);
+                }
+                
+                counterElement.textContent = `${summaryField.value.length}/${maxLength} ký tự`;
+                counterElement.style.color = remaining < 50 ? '#dc3545' : '#6c757d';
+            }
+            
+            summaryField.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+
+        // Form submission handler
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (editor) {
+                    try {
+                        const editorData = editor.getData();
+                        const textarea = document.getElementById('{{ form.content.id_for_label }}');
+                        if (textarea) {
+                            textarea.value = editorData;
+                        }
+                        console.log('Content synced to textarea:', editorData.length, 'characters');
+                        
+                        // Validate required fields
+                        if (!editorData.trim()) {
+                            e.preventDefault();
+                            alert('Vui lòng nhập nội dung bài viết!');
+                            return false;
+                        }
+                    } catch (error) {
+                        console.error('Error syncing editor content:', error);
+                        e.preventDefault();
+                        alert('Có lỗi xảy ra khi lưu nội dung. Vui lòng thử lại!');
+                        return false;
+                    }                }
+            });
+        }
+    });
+</script>
+{% endblock %}

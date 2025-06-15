@@ -1,0 +1,725 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ news.title }} - VAV Furniture{% endblock %}
+
+{% block extra_css %}
+<style>
+    .news-header {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        color: white;
+        padding: 60px 0 40px;
+    }
+    
+    .news-category-tag {
+        display: inline-block;
+        background: #e74c3c;
+        color: white;
+        padding: 6px 15px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+    }
+    
+    .news-meta {
+        color: #bdc3c7;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .news-meta span {
+        margin-right: 20px;
+    }
+    
+    .news-meta i {
+        margin-right: 5px;
+    }
+    
+    .news-content {
+        background: white;
+        margin-top: -30px;
+        border-radius: 20px 20px 0 0;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .news-image-container {
+        position: relative;
+        margin-bottom: 30px;
+    }
+      .news-image {
+        width: 100%;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 100%;
+        object-fit: cover;
+    }
+    
+    .news-image.position-left {
+        float: left;
+        width: 45%;
+        margin: 0 30px 20px 0;
+    }
+    
+    .news-image.position-right {
+        float: right;
+        width: 45%;
+        margin: 0 0 20px 30px;
+    }
+    
+    .news-image.position-center {
+        display: block;
+        margin: 30px auto;
+        max-width: 70%;
+    }
+    
+    .news-image.position-full {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        margin-bottom: 30px;
+    }
+    
+    .image-caption {
+        font-style: italic;
+        color: #666;
+        font-size: 14px;
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .news-body {
+        padding: 40px;
+        line-height: 1.8;
+        font-size: 16px;
+        color: #444;
+    }
+    
+    .news-body p {
+        margin-bottom: 20px;
+        text-align: justify;
+    }
+      .news-body h3,
+    .news-body h4,
+    .news-body h5 {
+        color: #2c3e50;
+        margin: 30px 0 20px 0;
+        font-weight: 700;
+    }
+    
+    /* CKEditor content styling */
+    .news-content-body {
+        line-height: 1.8;
+    }
+    
+    .news-content-body h1,
+    .news-content-body h2,
+    .news-content-body h3,
+    .news-content-body h4 {
+        color: #2c3e50;
+        margin: 30px 0 20px 0;
+        font-weight: 700;
+    }
+    
+    .news-content-body h1 {
+        font-size: 2em;
+        border-bottom: 2px solid #e74c3c;
+        padding-bottom: 10px;
+    }
+    
+    .news-content-body h2 {
+        font-size: 1.5em;
+        color: #27ae60;
+    }
+    
+    .news-content-body h3 {
+        font-size: 1.25em;
+        color: #f39c12;
+    }
+    
+    .news-content-body p {
+        margin-bottom: 20px;
+        text-align: justify;
+    }
+    
+    .news-content-body strong {
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    
+    .news-content-body em {
+        font-style: italic;
+    }
+    
+    .news-content-body ul,
+    .news-content-body ol {
+        margin: 20px 0;
+        padding-left: 30px;
+    }
+    
+    .news-content-body li {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+    
+    .news-content-body blockquote {
+        background: #f8f9fa;
+        border-left: 4px solid #e74c3c;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 5px;
+        font-style: italic;
+    }
+    
+    .news-content-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 30px 0;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .news-content-body table th,
+    .news-content-body table td {
+        border: 1px solid #dee2e6;
+        padding: 12px;
+        text-align: left;
+    }
+    
+    .news-content-body table th {
+        background: #f8f9fa;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    
+    .news-content-body table tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    .news-content-body a {
+        color: #e74c3c;
+        text-decoration: none;
+        border-bottom: 1px dotted #e74c3c;
+    }
+    
+    .news-content-body a:hover {
+        color: #c0392b;
+        border-bottom: 1px solid #c0392b;
+    }
+    
+    /* CKEditor image styling */
+    .news-content-body .image {
+        margin: 30px 0;
+        text-align: center;
+    }
+    
+    .news-content-body .image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .news-content-body .image.image-style-side {
+        float: left;
+        margin: 0 30px 20px 0;
+        max-width: 50%;
+    }
+    
+    .news-content-body .image.image-style-align-right {
+        float: right;
+        margin: 0 0 20px 30px;
+        max-width: 50%;
+    }
+    
+    .news-content-body .image.image-style-align-center {
+        margin: 30px auto;
+        display: block;
+        text-align: center;
+    }
+    
+    .news-content-body .image figcaption {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 0 0 8px 8px;
+        font-size: 14px;
+        color: #6c757d;
+        text-align: center;
+        font-style: italic;
+        margin-top: 5px;
+    }
+    
+    /* Clear floats after images */
+    .news-content-body::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    
+    .external-link {
+        background: #f8f9fa;
+        border: 2px solid #e74c3c;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 30px 0;
+        text-align: center;
+    }
+    
+    .external-link a {
+        color: #e74c3c;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+    }
+    
+    .external-link a:hover {
+        text-decoration: underline;
+    }
+    
+    .news-tags {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 30px 0;
+    }
+    
+    .news-tags h6 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .tag {
+        display: inline-block;
+        background: #e74c3c;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        margin: 2px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+    
+    .tag:hover {
+        background: #c0392b;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .social-share {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 30px 0;
+        text-align: center;
+    }
+    
+    .social-share h6 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .social-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        margin: 5px;
+        border-radius: 25px;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        transition: opacity 0.3s ease;
+    }
+    
+    .social-btn:hover {
+        opacity: 0.8;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .social-btn.facebook { background: #3b5998; }
+    .social-btn.twitter { background: #1da1f2; }
+    .social-btn.linkedin { background: #0077b5; }
+    
+    .related-news {
+        background: #f8f9fa;
+        padding: 40px 0;
+    }
+      .related-news-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .related-news-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    
+    .related-news-image {
+        width: 200px;
+        height: 140px;
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+    }
+    
+    .related-news-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .related-news-card:hover .related-news-image img {
+        transform: scale(1.05);
+    }
+    
+    .related-news-content {
+        padding: 20px 25px;
+        flex: 1;
+    }
+    
+    .related-news-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+    
+    .related-news-title a {
+        color: #2c3e50;
+        text-decoration: none;
+    }
+    
+    .related-news-title a:hover {
+        color: #e74c3c;
+    }
+    
+    .related-news-date {
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .related-news-summary {
+        color: #666;
+        line-height: 1.6;
+        font-size: 14px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    @media (max-width: 768px) {
+        .related-news-card {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .related-news-image {
+            width: 100%;
+            height: 160px;
+        }
+        
+        .related-news-content {
+            padding: 15px 20px;
+        }
+    }
+    
+    .sidebar {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        position: sticky;
+        top: 100px;
+    }
+    
+    .sidebar h5 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: 700;
+        border-bottom: 2px solid #e74c3c;
+        padding-bottom: 10px;
+    }
+    
+    .sidebar-news-item {
+        display: flex;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .sidebar-news-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .sidebar-news-image {
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .sidebar-news-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .sidebar-news-content h6 {
+        font-size: 14px;
+        margin: 0 0 5px 0;
+        line-height: 1.4;
+        font-weight: 600;
+    }
+    
+    .sidebar-news-content h6 a {
+        color: #2c3e50;
+        text-decoration: none;
+    }
+    
+    .sidebar-news-content h6 a:hover {
+        color: #e74c3c;
+    }
+    
+    .sidebar-news-date {
+        font-size: 12px;
+        color: #888;
+    }
+      @media (max-width: 768px) {
+        .news-image.position-left,
+        .news-image.position-right {
+            float: none;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .news-body {
+            padding: 20px;
+        }
+        
+        .sidebar {
+            position: static;
+        }
+        
+        /* CKEditor images responsive */
+        .news-content-body .image.image-style-side,
+        .news-content-body .image.image-style-align-right {
+            float: none;
+            margin: 20px 0;
+            max-width: 100%;
+        }
+        
+        .news-content-body table {
+            font-size: 12px;
+        }
+        
+        .news-content-body table th,
+        .news-content-body table td {
+            padding: 8px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="news-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <span class="news-category-tag">{{ news.category.name }}</span>
+                <h1 class="display-4 mb-3">{{ news.title }}</h1>
+                <div class="news-meta">
+                    <span><i class="fas fa-user"></i>{{ news.author }}</span>
+                    <span><i class="fas fa-calendar"></i>{{ news.published_at|date:"d/m/Y H:i" }}</span>
+                    <span><i class="fas fa-eye"></i>{{ news.views }} lượt xem</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="news-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="news-body">
+                    <!-- Image placement based on position setting -->
+                    {% if news.image_position == 'top' %}
+                        <div class="news-image-container">
+                            <img src="{{ news.image.url }}" alt="{{ news.title }}" class="news-image">
+                            {% if news.image_caption %}
+                                <div class="image-caption">{{ news.image_caption }}</div>
+                            {% endif %}
+                        </div>
+                    {% elif news.image_position == 'full' %}
+                        <div class="news-image-container">
+                            <img src="{{ news.image.url }}" alt="{{ news.title }}" class="news-image position-full">
+                            {% if news.image_caption %}
+                                <div class="image-caption">{{ news.image_caption }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Summary -->
+                    {% if news.summary %}
+                        <div class="lead mb-4" style="font-size: 18px; color: #666; font-style: italic; border-left: 4px solid #e74c3c; padding-left: 20px;">
+                            {{ news.summary }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Image for left/right/center positions -->
+                    {% if news.image_position == 'left' %}
+                        <img src="{{ news.image.url }}" alt="{{ news.title }}" class="news-image position-left">
+                        {% if news.image_caption %}
+                            <div class="image-caption" style="text-align: left; margin-left: 0;">{{ news.image_caption }}</div>
+                        {% endif %}
+                    {% elif news.image_position == 'right' %}
+                        <img src="{{ news.image.url }}" alt="{{ news.title }}" class="news-image position-right">
+                        {% if news.image_caption %}
+                            <div class="image-caption" style="text-align: right; margin-right: 0;">{{ news.image_caption }}</div>
+                        {% endif %}
+                    {% endif %}
+                      <!-- Content -->
+                    <div class="news-content-body">
+                        {{ news.content|safe }}
+                    </div>
+                    
+                    <!-- Center image -->
+                    {% if news.image_position == 'center' %}
+                        <div class="news-image-container">
+                            <img src="{{ news.image.url }}" alt="{{ news.title }}" class="news-image position-center">
+                            {% if news.image_caption %}
+                                <div class="image-caption">{{ news.image_caption }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- External Link -->
+                    {% if news.external_link %}
+                        <div class="external-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            <a href="{{ news.external_link }}" target="_blank" rel="noopener">
+                                {{ news.external_link_text|default:"Xem thêm tại nguồn" }}
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Tags -->
+                    {% if news.tags %}
+                        <div class="news-tags">
+                            <h6>Thẻ:</h6>
+                            {% for tag in news.get_tags_list %}
+                                <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Social Share -->
+                    <div class="social-share">
+                        <h6>Chia sẻ bài viết:</h6>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                           target="_blank" class="social-btn facebook">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ news.title }}" 
+                           target="_blank" class="social-btn twitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" 
+                           target="_blank" class="social-btn linkedin">
+                            <i class="fab fa-linkedin-in"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Recent News -->
+                {% if recent_news %}
+                    <div class="sidebar">
+                        <h5>Tin Tức Gần Đây</h5>
+                        {% for article in recent_news %}
+                            <div class="sidebar-news-item">
+                                <div class="sidebar-news-image">
+                                    <img src="{{ article.image.url }}" alt="{{ article.title }}">
+                                </div>
+                                <div class="sidebar-news-content">
+                                    <h6><a href="{% url 'news_detail' article.slug %}">{{ article.title }}</a></h6>
+                                    <div class="sidebar-news-date">{{ article.published_at|date:"d/m/Y" }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related News -->
+{% if related_news %}
+    <section class="related-news">
+        <div class="container">
+            <h3 class="text-center mb-5" style="color: #2c3e50; font-weight: 700;">Tin Tức Liên Quan</h3>
+            <div class="row">
+                {% for article in related_news %}                    <div class="col-12 mb-3">
+                        <div class="related-news-card smooth-load">
+                            <div class="related-news-image card-image-hover">
+                                <img src="{{ article.image.url }}" alt="{{ article.title }}"
+                                     data-hover-src="{{ article.image.url }}"
+                                     data-detail1-src="{{ article.image.url }}"
+                                     data-detail2-src="{{ article.image.url }}">
+                                <div class="image-preview-overlay">
+                                    <div class="image-preview-content">
+                                        <i class="fas fa-eye mb-1" style="font-size: 16px;"></i>
+                                        <p class="mb-0" style="font-size: 12px;">Xem chi tiết</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="related-news-content">
+                                <div class="related-news-date">
+                                    <i class="fas fa-calendar-alt me-1"></i>{{ article.published_at|date:"d/m/Y" }}
+                                </div>
+                                <h6 class="related-news-title">
+                                    <a href="{% url 'news_detail' article.slug %}">{{ article.title }}</a>
+                                </h6>
+                                <p class="related-news-summary">{{ article.summary|truncatewords:20|default:"Khám phá thêm chi tiết về tin tức này..." }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+<!-- Back to News -->
+<section class="py-4" style="background: #f8f9fa;">
+    <div class="container text-center">
+        <a href="{% url 'news_list' %}" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách tin tức
+        </a>
+    </div>
+</section>
+{% endblock %}

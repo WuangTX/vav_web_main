@@ -1,0 +1,121 @@
+/* Custom CKEditor 5 Styling */
+.ck-editor {
+    margin-top: 10px;
+}
+
+.ck-editor__editable {
+    min-height: 400px;
+    max-height: 600px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.ck-toolbar {
+    border: 1px solid #dee2e6 !important;
+    border-bottom: none !important;
+    background: #f8f9fa !important;
+}
+
+.ck-editor__editable {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0 0 4px 4px !important;
+}
+
+.ck-focused {
+    border-color: #80bdff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Image styles within editor */
+.ck-content .image {
+    margin: 1em 0;
+}
+
+.ck-content .image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.ck-content .image figcaption {
+    background: #f8f9fa;
+    padding: 0.5em;
+    border-radius: 0 0 4px 4px;
+    font-size: 0.9em;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* Table styling */
+.ck-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+.ck-content table td,
+.ck-content table th {
+    border: 1px solid #dee2e6;
+    padding: 0.5em;
+}
+
+.ck-content table th {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Blockquote styling */
+.ck-content blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1em;
+    margin-left: 0;
+    font-style: italic;
+    background: #f8f9fa;
+    padding: 1em;
+    border-radius: 4px;
+}
+
+/* List styling */
+.ck-content ul,
+.ck-content ol {
+    padding-left: 2em;
+}
+
+.ck-content li {
+    margin-bottom: 0.5em;
+}
+
+/* Heading styles */
+.ck-content h1 {
+    font-size: 2em;
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.3em;
+}
+
+.ck-content h2 {
+    font-size: 1.5em;
+    color: #28a745;
+}
+
+.ck-content h3 {
+    font-size: 1.25em;
+    color: #ffc107;
+}
+
+.ck-content h4 {
+    font-size: 1.1em;
+    color: #6c757d;
+}
+
+/* Link styling */
+.ck-content a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.ck-content a:hover {
+    text-decoration: underline;
+}
