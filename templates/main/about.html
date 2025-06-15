@@ -21,14 +21,15 @@
 
 <!-- About Us Section -->
 <section class="about-us-section py-5">
-    <div class="container">
-        <div class="row align-items-center">
+    <div class="container">        <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="about-image position-relative">
-                    <img src="{% static 'images/about-main.jpg' %}" alt="VAV Furniture" class="img-fluid rounded shadow">
-                    <div class="experience-badge">
-                        <span class="number">15+</span>
-                        <span class="text">Năm Kinh Nghiệm</span>
+                <div class="about-video position-relative">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.youtube.com/embed/ssPSQ7oEs_4" 
+                                title="VAV Furniture - Giới thiệu" 
+                                allowfullscreen
+                                class="rounded shadow">
+                        </iframe>
                     </div>
                 </div>
             </div>
@@ -129,20 +130,19 @@
             <h6 class="text-primary">Đội Ngũ Chuyên Nghiệp</h6>
             <h2>Nhân Sự Chủ Chốt</h2>
             <p class="text-muted">Đội ngũ lãnh đạo và nhân viên chủ chốt của VAV Furniture</p>
-        </div>
-        <div class="row g-4">
+        </div>        <div class="row g-4 justify-content-center">
             <!-- Team Member 1 -->
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-6 col-lg-2">
                 <div class="team-member text-center">
-                    <div class="member-image mb-3">
-                        <img src="{% static 'images/team-1.jpg' %}" alt="Nguyễn Văn A" class="img-fluid rounded-circle">
+                    <div class="member-image mb-2">
+                        <img src="{% static 'images/phamvan.png' %}" alt="Phạm Văn" class="img-fluid rounded-circle">
                     </div>
                     <div class="member-info">
-                        <h5>Nguyễn Văn A</h5>
+                        <h5>Phạm Văn</h5>
                         <p class="text-primary">Giám Đốc Điều Hành</p>
-                        <p class="text-muted">Hơn 20 năm kinh nghiệm trong ngành nội thất, từng làm việc tại các tập đoàn nội thất lớn trong và ngoài nước.</p>
+                        <p class="text-muted">Hơn 15 năm kinh nghiệm trong ngành nội thất, hiện tại là CEO tại VAV Furniture - Thiết kế & Thi công Nội Thất Đà Nẵng</p>
                         <div class="social-links mt-3">
-                            <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://www.facebook.com/phamvan2311" class="me-2"><i class="fab fa-facebook-f"></i></a>
                             <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
                             <a href="#"><i class="fab fa-instagram"></i></a>
                         </div>
@@ -151,55 +151,17 @@
             </div>
             
             <!-- Team Member 2 -->
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-6 col-lg-2">
                 <div class="team-member text-center">
-                    <div class="member-image mb-3">
-                        <img src="{% static 'images/team-2.jpg' %}" alt="Trần Thị B" class="img-fluid rounded-circle">
+                    <div class="member-image mb-2">
+                        <img src="{% static 'images/loan.png' %}" alt="Trần Thị Loan" class="img-fluid rounded-circle">
                     </div>
                     <div class="member-info">
-                        <h5>Trần Thị B</h5>
-                        <p class="text-primary">Giám Đốc Sáng Tạo</p>
-                        <p class="text-muted">Tốt nghiệp chuyên ngành Thiết kế Nội thất tại Ý, có hơn 15 năm kinh nghiệm trong lĩnh vực thiết kế nội thất cao cấp.</p>
+                        <h5>Trần Thị Loan</h5>
+                        <p class="text-primary">Trưởng phòng kế toán</p>
+                        <p class="text-muted">Tốt nghiệp chuyên ngành kế toán, có hơn 15 năm kinh nghiệm trong lĩnh vực kế toán và tài chính.</p>
                         <div class="social-links mt-3">
-                            <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Team Member 3 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="team-member text-center">
-                    <div class="member-image mb-3">
-                        <img src="{% static 'images/team-3.jpg' %}" alt="Lê Văn C" class="img-fluid rounded-circle">
-                    </div>
-                    <div class="member-info">
-                        <h5>Lê Văn C</h5>
-                        <p class="text-primary">Giám Đốc Sản Xuất</p>
-                        <p class="text-muted">Chuyên gia về kỹ thuật sản xuất nội thất với hơn 18 năm kinh nghiệm, am hiểu nhiều loại vật liệu và công nghệ sản xuất hiện đại.</p>
-                        <div class="social-links mt-3">
-                            <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Team Member 4 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="team-member text-center">
-                    <div class="member-image mb-3">
-                        <img src="{% static 'images/team-4.jpg' %}" alt="Phạm Thị D" class="img-fluid rounded-circle">
-                    </div>
-                    <div class="member-info">
-                        <h5>Phạm Thị D</h5>
-                        <p class="text-primary">Giám Đốc Kinh Doanh</p>
-                        <p class="text-muted">Trên 12 năm kinh nghiệm trong lĩnh vực kinh doanh và phát triển thị trường, từng quản lý nhiều dự án nội thất lớn.</p>
-                        <div class="social-links mt-3">
-                            <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://www.facebook.com/loanxu.2907" class="me-2"><i class="fab fa-facebook-f"></i></a>
                             <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
                             <a href="#"><i class="fab fa-instagram"></i></a>
                         </div>

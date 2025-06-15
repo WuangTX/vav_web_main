@@ -28,14 +28,21 @@
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
-    .required-field {
+      .required-field {
         color: #dc3545;
     }
-      .form-help {
+    
+    .form-help {
         font-size: 0.875em;
         color: #6c757d;
         margin-top: 5px;
+    }
+    
+    .char-counter {
+        font-size: 0.875em;
+        color: #6c757d;
+        margin-top: 5px;
+        text-align: right;
     }
     
     /* CKEditor styling */
@@ -55,8 +62,7 @@
         padding: 10px;
         margin-bottom: -1px;
     }
-    
-    .editor-help {
+      .editor-help {
         background: #e9ecef;
         border: 1px solid #dee2e6;
         border-top: none;
@@ -64,6 +70,21 @@
         padding: 8px 12px;
         font-size: 0.875em;
         color: #6c757d;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-section {
+            padding: 15px;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+        }
+        
+        .ck-editor__editable {
+            min-height: 300px;
+        }
     }
 </style>
 {% endblock %}
@@ -140,10 +161,11 @@
                                 {{ form.summary }}
                                 <div class="form-help">Mô tả ngắn gọn về bài viết (tối đa 500 ký tự)</div>
                                 {% if form.summary.errors %}
-                                    <div class="text-danger mt-1">{{ form.summary.errors.0 }}</div>
-                                {% endif %}
+                                    <div class="text-danger mt-1">{{ form.summary.errors.0 }}</div>                                {% endif %}
                             </div>
-                        </div>                        <!-- Content -->
+                        </div>
+                        
+                        <!-- Content -->
                         <div class="form-section">
                             <h5><i class="fas fa-file-text"></i> Nội Dung</h5>
                             
@@ -156,12 +178,12 @@
                                 <div id="editor-container">
                                     {{ form.content }}
                                 </div>
-                                
-                                <div class="editor-help">
+                                  <div class="editor-help">
                                     <strong>Hướng dẫn sử dụng:</strong>
                                     <ul class="mb-0 mt-1" style="padding-left: 20px;">
                                         <li>Sử dụng thanh công cụ để định dạng văn bản (in đậm, nghiêng, gạch chân...)</li>
                                         <li>Chèn ảnh bằng cách nhấn vào biểu tượng ảnh và tải lên từ máy tính</li>
+                                        <li>Chèn video từ YouTube, Vimeo bằng cách nhấn vào biểu tượng video</li>
                                         <li>Thay đổi kích cỡ chữ và màu sắc theo ý muốn</li>
                                         <li>Tạo danh sách có số thứ tự hoặc dấu đầu dòng</li>
                                         <li>Chèn liên kết và bảng biểu</li>
@@ -325,8 +347,7 @@
     let editor;
     
     // Wait for DOM to be fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize CKEditor
+    document.addEventListener('DOMContentLoaded', function() {        // Initialize CKEditor
         ClassicEditor
             .create(document.querySelector('#{{ form.content.id_for_label }}'), {
                 toolbar: {
@@ -337,7 +358,7 @@
                         'alignment', '|',
                         'numberedList', 'bulletedList', '|',
                         'outdent', 'indent', '|',
-                        'link', 'imageUpload', 'blockQuote', 'insertTable', '|',
+                        'link', 'imageUpload', 'mediaEmbed', 'blockQuote', 'insertTable', '|',
                         'undo', 'redo'
                     ]
                 },
@@ -364,11 +385,11 @@
                         { model: 'heading3', view: 'h3', title: 'Tiêu đề 3', class: 'ck-heading_heading3' },
                         { model: 'heading4', view: 'h4', title: 'Tiêu đề 4', class: 'ck-heading_heading4' }
                     ]
-                },
-                fontSize: {
+                },                fontSize: {
                     options: ['tiny', 'small', 'default', 'big', 'huge'],
                     supportAllValues: true
                 },
+                
                 fontColor: {
                     colors: [
                         { color: 'hsl(0, 0%, 0%)', label: 'Đen' },
@@ -377,6 +398,71 @@
                         { color: 'hsl(0, 75%, 60%)', label: 'Đỏ' },
                         { color: 'hsl(120, 75%, 60%)', label: 'Xanh lá' },
                         { color: 'hsl(240, 75%, 60%)', label: 'Xanh dương' }
+                    ]
+                },
+                mediaEmbed: {
+                    previewsInData: true,
+                    providers: [
+                        {
+                            name: 'youtube',
+                            url: /^(?:m\.)?youtube\.com\/watch\?v=([\w-]+)/,
+                            html: match => {
+                                const id = match[1];
+                                return (
+                                    '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">' +
+                                        `<iframe src="https://www.youtube.com/embed/${id}" ` +
+                                            'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" ' +
+                                            'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+                                        '</iframe>' +
+                                    '</div>'
+                                );
+                            }
+                        },
+                        {
+                            name: 'youtube_short',
+                            url: /^(?:m\.)?youtu\.be\/([\w-]+)/,
+                            html: match => {
+                                const id = match[1];
+                                return (
+                                    '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">' +
+                                        `<iframe src="https://www.youtube.com/embed/${id}" ` +
+                                            'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" ' +
+                                            'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+                                        '</iframe>' +
+                                    '</div>'
+                                );
+                            }
+                        },
+                        {
+                            name: 'vimeo',
+                            url: /^vimeo\.com\/(\d+)/,
+                            html: match => {
+                                const id = match[1];
+                                return (
+                                    '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">' +
+                                        `<iframe src="https://player.vimeo.com/video/${id}" ` +
+                                            'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" ' +
+                                            'frameborder="0" allow="autoplay; fullscreen" allowfullscreen>' +
+                                        '</iframe>' +
+                                    '</div>'
+                                );
+                            }
+                        },
+                        {
+                            name: 'facebook',
+                            url: /^facebook\.com.*\/videos\/.*/,
+                            html: match => {
+                                const url = encodeURIComponent(match.input);
+                                return (
+                                    '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">' +
+                                        `<iframe src="https://www.facebook.com/plugins/video.php?href=${url}&show_text=false&width=560" ` +
+                                            'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" ' +
+                                            'frameborder="0" allowfullscreen>' +
+                                        '</iframe>' +
+                                    '</div>'
+                                );
+                            }
+                        }
                     ]
                 }
             })
@@ -508,9 +594,9 @@
                     } catch (error) {
                         console.error('Error syncing editor content:', error);
                         e.preventDefault();
-                        alert('Có lỗi xảy ra khi lưu nội dung. Vui lòng thử lại!');
-                        return false;
-                    }                }
+                        alert('Có lỗi xảy ra khi lưu nội dung. Vui lòng thử lại!');                        return false;
+                    }
+                }
             });
         }
     });
