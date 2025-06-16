@@ -56,8 +56,9 @@
             {% if products %}
                 {% for product in products %}
                 <!-- Product Item {{ forloop.counter }} -->
-                <div class="col-md-6 col-lg-4 product-item {{ product.category.slug }}">
-                    <div class="product-card">                        <div class="product-image">
+                <div class="col-md-6 col-lg-3 product-item {{ product.category.slug }}">
+                    <div class="product-card">                        
+                        <div class="product-image">
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
                             <div class="product-overlay">
                                 <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
@@ -77,23 +78,30 @@
                 <div class="col-12 text-center">
                     <p>Không có sản phẩm nào.</p>
                 </div>
-            {% endif %}
-        </div>
+            {% endif %}        </div>
         
         <!-- Pagination -->
-        <nav aria-label="Products Pagination" class="mt-5">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Sau</a>
-                </li>
-            </ul>
-        </nav>
+        {% if products.has_other_pages %}
+            <div class="pagination-custom">
+                {% if products.has_previous %}
+                    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Đầu</a>
+                    <a href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Trước</a>
+                {% endif %}
+
+                {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                        <span class="page-link active">{{ num }}</span>
+                    {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Sau</a>
+                    <a href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Cuối</a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </section>
 

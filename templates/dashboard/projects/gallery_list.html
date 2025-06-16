@@ -1,0 +1,267 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .gallery-item {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .gallery-image {
+        width: 100%;
+        height: 150px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .gallery-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover .gallery-image img {
+        transform: scale(1.1);
+    }
+    
+    .gallery-info {
+        padding: 15px;
+    }
+    
+    .gallery-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #2c3e50;
+    }
+    
+    .gallery-project {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    
+    .gallery-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .gallery-actions .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
+    .project-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(44, 62, 80, 0.9);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stats-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-images"></i> {{ title }}
+                </h2>
+                <div>
+                    <a href="{% url 'dashboard:project_gallery_multiple_add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Thêm nhiều ảnh
+                    </a>
+                    <a href="{% url 'dashboard:project_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Danh sách dự án
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stats-card">
+                    <div class="stats-icon text-primary">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="stats-number text-primary">{{ gallery_items.count }}</div>
+                    <div class="text-muted">Tổng số ảnh</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon text-success">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="stats-number text-success">{{ projects.count }}</div>
+                    <div class="text-muted">Dự án có ảnh</div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <form method="get" class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Lọc theo dự án</label>
+                        <select name="project" class="form-select">
+                            <option value="">Tất cả dự án</option>
+                            {% for project in projects %}
+                                <option value="{{ project.id }}" 
+                                    {% if selected_project_id == project.id %}selected{% endif %}>
+                                    {{ project.title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-filter"></i> Lọc
+                        </button>
+                    </div>
+                    {% if selected_project_id %}
+                    <div class="col-md-2">
+                        <a href="{% url 'dashboard:project_gallery_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Xóa lọc
+                        </a>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Gallery Grid -->
+            {% if gallery_items %}
+                <div class="gallery-grid">
+                    {% for item in gallery_items %}
+                        <div class="gallery-item">
+                            <div class="project-badge">
+                                {{ item.project.title|truncatechars:15 }}
+                            </div>
+                            <div class="gallery-image">
+                                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                            </div>
+                            <div class="gallery-info">
+                                <div class="gallery-title">
+                                    {{ item.title|default:"Ảnh thư viện" }}
+                                </div>
+                                <div class="gallery-project">
+                                    <i class="fas fa-project-diagram"></i> {{ item.project.title }}
+                                </div>
+                                <div class="gallery-project">
+                                    <i class="fas fa-sort-numeric-up"></i> Thứ tự: {{ item.order }}
+                                </div>
+                                <div class="gallery-actions">
+                                    <a href="{{ item.image.url }}" target="_blank" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form method="post" 
+                                          action="{% url 'dashboard:project_gallery_delete' item.id %}" 
+                                          style="display: inline-block;"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa ảnh này?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <h4>Chưa có ảnh nào trong thư viện</h4>
+                    <p class="text-muted">Bắt đầu bằng cách thêm ảnh cho các dự án của bạn</p>
+                    <a href="{% url 'dashboard:project_gallery_multiple_add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Thêm ảnh đầu tiên
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto submit form when project filter changes
+    const projectSelect = document.querySelector('select[name="project"]');
+    if (projectSelect) {
+        projectSelect.addEventListener('change', function() {
+            this.form.submit();
+        });
+    }
+});
+</script>
+{% endblock %}

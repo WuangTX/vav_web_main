@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 
 def home(request):
     """View for the home page"""
-    featured_products = Product.objects.filter(featured=True)[:4]
+    featured_products = Product.objects.filter(featured=True)[:8]
     featured_projects = Project.objects.filter(featured=True)[:3]
     featured_news = News.objects.filter(featured=True, status='published')[:3]
     
@@ -22,13 +22,18 @@ def about(request):
 
 def products(request):
     """View for the products page"""
-    products = Product.objects.all()
+    products_list = Product.objects.all()
     categories = ProductCategory.objects.all()
     
     # Search functionality
     search_query = request.GET.get('search', '')
     if search_query:
-        products = products.filter(name__icontains=search_query) | products.filter(description__icontains=search_query)
+        products_list = products_list.filter(name__icontains=search_query) | products_list.filter(description__icontains=search_query)
+    
+    # Pagination
+    paginator = Paginator(products_list, 12)  # 12 products per page
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
     
     context = {
         'products': products,
@@ -51,13 +56,24 @@ def product_detail(request, slug):
 def products_by_category(request, category_slug):
     """View to filter products by category"""
     category = get_object_or_404(ProductCategory, slug=category_slug)
-    products = Product.objects.filter(category=category)
+    products_list = Product.objects.filter(category=category)
     categories = ProductCategory.objects.all()
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products_list = products_list.filter(name__icontains=search_query) | products_list.filter(description__icontains=search_query)
+    
+    # Pagination
+    paginator = Paginator(products_list, 12)  # 12 products per page
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
     
     context = {
         'category': category,
         'products': products,
         'categories': categories,
+        'search_query': search_query,
     }
     return render(request, 'main/products.html', context)
 
@@ -148,9 +164,8 @@ def news_list(request):
             Q(content__icontains=search_query) |
             Q(tags__icontains=search_query)
         )
-    
-    # Pagination
-    paginator = Paginator(news_list, 9)  # 9 news articles per page
+      # Pagination
+    paginator = Paginator(news_list, 3)  # 3 news articles per page
     page_number = request.GET.get('page')
     news = paginator.get_page(page_number)
     
@@ -207,9 +222,8 @@ def news_by_category(request, category_slug):
             Q(content__icontains=search_query) |
             Q(tags__icontains=search_query)
         )
-    
-    # Pagination
-    paginator = Paginator(news_list, 9)
+      # Pagination
+    paginator = Paginator(news_list, 3)
     page_number = request.GET.get('page')
     news = paginator.get_page(page_number)
     

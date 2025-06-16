@@ -32,12 +32,17 @@ urlpatterns = [
     path('projects/<int:project_id>/timeline/add/', views.timeline_add, name='timeline_add'),
     path('projects/<int:project_id>/timeline/<int:timeline_id>/edit/', views.timeline_edit, name='timeline_edit'),
     path('projects/<int:project_id>/timeline/<int:timeline_id>/delete/', views.timeline_delete, name='timeline_delete'),
-    
-    # Project Gallery management
+      # Project Gallery management
     path('projects/<int:project_id>/gallery/', views.gallery_manage, name='gallery_manage'),
     path('projects/<int:project_id>/gallery/add/', views.gallery_add, name='gallery_add'),
     path('projects/<int:project_id>/gallery/<int:gallery_id>/edit/', views.gallery_edit, name='gallery_edit'),
     path('projects/<int:project_id>/gallery/<int:gallery_id>/delete/', views.gallery_delete, name='gallery_delete'),
+    
+    # Multiple images upload for project gallery
+    path('projects/gallery/multiple-add/', views.project_gallery_multiple_add, name='project_gallery_multiple_add'),
+    path('projects/<int:project_id>/gallery/multiple-add/', views.project_gallery_multiple_add, name='project_gallery_multiple_add_with_project'),
+    path('projects/gallery/', views.project_gallery_list, name='project_gallery_list'),
+    path('projects/gallery/<int:id>/delete/', views.project_gallery_delete, name='project_gallery_delete'),
       # Contact messages management
     path('messages/', views.message_list, name='message_list'),
     path('messages/<int:pk>/', views.message_detail, name='message_detail'),

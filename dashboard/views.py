@@ -12,7 +12,7 @@ from django.core.files.base import ContentFile
 import os
 import uuid
 from main.models import Product, ProductCategory, Project, ProjectTimeline, ProjectGallery, ContactMessage, News, NewsCategory
-from .forms import ProductForm, CategoryForm, ProjectForm, ProjectTimelineForm, ProjectGalleryForm, NewsForm, NewsCategoryForm, NewsForm, NewsCategoryForm
+from .forms import ProductForm, CategoryForm, ProjectForm, ProjectTimelineForm, ProjectGalleryForm, NewsForm, NewsCategoryForm, ProjectGalleryMultipleForm
 
 def dashboard_login(request):
     """View for custom admin login page"""
@@ -571,3 +571,83 @@ def upload_image(request):
     return JsonResponse({
         'error': 'Yêu cầu không hợp lệ'
     }, status=400)
+
+@login_required
+def project_gallery_multiple_add(request, project_id=None):
+    """View to add multiple images to project gallery"""
+    project = None
+    if project_id:
+        project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        from .forms import ProjectGalleryMultipleForm
+        form = ProjectGalleryMultipleForm(request.POST, request.FILES, project_id=project_id)
+        
+        if form.is_valid():
+            try:
+                gallery_items = form.save()
+                messages.success(request, f'Đã thêm {len(gallery_items)} ảnh vào thư viện dự án thành công!')
+                
+                # Redirect to project detail or gallery list
+                if project:
+                    return redirect('dashboard:project_detail', id=project.id)
+                else:
+                    return redirect('dashboard:project_gallery_list')
+                    
+            except Exception as e:
+                messages.error(request, f'Có lỗi xảy ra khi upload ảnh: {str(e)}')
+        else:
+            messages.error(request, 'Vui lòng kiểm tra lại thông tin!')
+    else:
+        from .forms import ProjectGalleryMultipleForm
+        form = ProjectGalleryMultipleForm(project_id=project_id)
+    
+    context = {
+        'form': form,
+        'project': project,
+        'title': f'Thêm nhiều ảnh - {project.title}' if project else 'Thêm nhiều ảnh vào thư viện dự án'
+    }
+    
+    return render(request, 'dashboard/projects/gallery_multiple_add.html', context)
+
+@login_required
+def project_gallery_list(request):
+    """View to list all project gallery images"""
+    # Get all gallery items with related project info
+    gallery_items = ProjectGallery.objects.select_related('project').order_by('project__title', 'order')
+    
+    # Filter by project if specified
+    project_id = request.GET.get('project')
+    if project_id:
+        gallery_items = gallery_items.filter(project_id=project_id)
+    
+    # Get all projects for filter dropdown
+    projects = Project.objects.all().order_by('title')
+    
+    context = {
+        'gallery_items': gallery_items,
+        'projects': projects,
+        'selected_project_id': int(project_id) if project_id else None,
+        'title': 'Quản lý thư viện ảnh dự án'
+    }
+    
+    return render(request, 'dashboard/projects/gallery_list.html', context)
+
+@login_required
+def project_gallery_delete(request, id):
+    """View to delete a project gallery image"""
+    gallery_item = get_object_or_404(ProjectGallery, id=id)
+    project_id = gallery_item.project.id
+    
+    if request.method == 'POST':
+        try:
+            # Delete the image file from storage
+            if gallery_item.image:
+                default_storage.delete(gallery_item.image.name)
+            
+            gallery_item.delete()
+            messages.success(request, 'Đã xóa ảnh khỏi thư viện thành công!')
+        except Exception as e:
+            messages.error(request, f'Có lỗi xảy ra khi xóa ảnh: {str(e)}')
+    
+    return redirect('dashboard:project_detail', id=project_id)

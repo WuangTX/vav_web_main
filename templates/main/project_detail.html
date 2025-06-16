@@ -100,55 +100,40 @@
         <div class="section-heading text-center mb-5">
             <h6 class="text-primary">Hình Ảnh Dự Án</h6>
             <h2>Thư Viện Ảnh</h2>
-        </div>          
+        </div>
+          {% if gallery_images %}
         <div class="row g-4">
-            {% if gallery_images %}
-                {% for gallery_image in gallery_images %}                <div class="col-md-6 col-lg-4 gallery-image-item {% if forloop.counter > 3 %}d-none{% endif %}">
-                    <div class="gallery-item" onclick="openLightbox({{ forloop.counter0 }})">
-                        <div class="gallery-image-container">
-                            <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="gallery-image">
-                            <div class="gallery-overlay">
-                                <i class="fas fa-search-plus fa-2x text-white"></i>
+            {% for gallery_image in gallery_images %}
+            <div class="col-md-4 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#galleryModal" data-slide="{{ forloop.counter0 }}">
+                    <div class="gallery-image-container">
+                        <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="img-fluid rounded">
+                        <div class="gallery-overlay">
+                            <div class="gallery-overlay-content">
+                                <i class="fas fa-expand fa-2x"></i>
+                                <p class="mt-2">Xem ảnh</p>
                             </div>
                         </div>
                         {% if gallery_image.title %}
-                        <div class="gallery-caption mt-2">
-                            <small class="text-muted">{{ gallery_image.title }}</small>
+                        <div class="gallery-caption-thumb">
+                            <p>{{ gallery_image.title }}</p>
                         </div>
                         {% endif %}
                     </div>
                 </div>
-                {% endfor %}
-                
-                {% if gallery_images|length > 3 %}
-                <div class="col-12 text-center mt-4">
-                    <button id="viewMoreBtn" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-images me-2"></i>Xem Thêm Ảnh Dự Án ({{ gallery_images|length|add:"-3" }} ảnh)
-                    </button>
-                    <button id="viewLessBtn" class="btn btn-outline-secondary btn-lg d-none">
-                        <i class="fas fa-eye-slash me-2"></i>Thu Gọn
-                    </button>
-                </div>
-                {% endif %}
-            {% else %}
-                <!-- Fallback to main project image if no gallery images -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="gallery-item">
-                        <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid rounded shadow">
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="gallery-item">
-                        <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid rounded shadow">
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="gallery-item">
-                        <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid rounded shadow">
-                    </div>
-                </div>
-            {% endif %}
+            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <!-- Fallback to main project image if no gallery images -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="gallery-item">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -358,10 +343,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="project-meta p-3">
-                        <div class="d-flex justify-content-between align-items-center">
+                    <div class="project-meta p-3">                        <div class="d-flex justify-content-between align-items-center">
                             <span class="badge bg-primary">{{ related_project.get_project_type_display }}</span>
-                            <small class="text-muted">{{ related_project.completed_date|date:"Y" }}</small>
+                            <small class="text-muted">{{ related_project.completed_date|date:"d/m/Y" }}</small>
                         </div>
                     </div>
                 </div>
@@ -388,9 +372,65 @@
                     <i class="fas fa-phone me-2"></i>Liên Hệ Ngay
                 </a>
             </div>
-        </div>
-    </div>
+        </div>    </div>
 </section>
+
+<!-- Gallery Modal with Swipe -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white" id="galleryModalLabel">{{ project.title }} - Thư viện ảnh</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 d-flex align-items-center justify-content-center">
+                {% if gallery_images %}
+                <div class="swipe-gallery-container">
+                    <div class="swipe-gallery" id="modalGallery">
+                        <div class="gallery-wrapper">
+                            {% for gallery_image in gallery_images %}
+                            <div class="gallery-slide {% if forloop.first %}active{% endif %}">
+                                <div class="gallery-image-container">
+                                    <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="gallery-image">
+                                    {% if gallery_image.title %}
+                                    <div class="gallery-caption">
+                                        <p>{{ gallery_image.title }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Navigation -->
+                        <div class="gallery-nav">
+                            <button class="gallery-nav-btn prev-btn" id="modalPrevBtn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="gallery-nav-btn next-btn" id="modalNextBtn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Counter -->
+                        <div class="gallery-counter">
+                            <span id="modalCurrentSlide">1</span> / <span id="modalTotalSlides">{{ gallery_images|length }}</span>
+                        </div>
+                        
+                        <!-- Dots indicator -->
+                        <div class="gallery-dots">
+                            {% for gallery_image in gallery_images %}
+                            <span class="dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.counter0 }}"></span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>        </div>
+    </div>
+</div>
+
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -664,56 +704,13 @@
     font-size: 1rem;
 }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .modern-timeline::before {
-        left: 30px;
-    }
-    
-    .timeline-item {
-        flex-direction: row !important;
-        margin-bottom: 2rem;
-    }
-    
-    .timeline-item:nth-child(odd) .timeline-content,
-    .timeline-item:nth-child(even) .timeline-content {
-        margin-left: 80px;
-        margin-right: 0;
-        text-align: left;
-        max-width: calc(100% - 100px);
-    }
-    
-    .timeline-marker {
-        left: 30px;
-    }
-    
-    .timeline-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.3rem;
-    }
-    
-    .timeline-card .card-header {
-        flex-direction: row !important;
-        padding: 1rem;
-    }
-    
-    .step-title {
-        font-size: 1.1rem;
-    }
-    
-    .step-number {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
-    }
-}
-
+/* Gallery Items Styles */
 .gallery-item {
+    position: relative;
+    cursor: pointer;
     overflow: hidden;
     border-radius: 8px;
     transition: transform 0.3s ease;
-    cursor: pointer;
 }
 
 .gallery-item:hover {
@@ -722,18 +719,8 @@
 
 .gallery-image-container {
     position: relative;
-    width: 100%;
-    height: 300px; /* Fixed height for uniform images */
     overflow: hidden;
     border-radius: 8px;
-    background: #f8f9fa;
-}
-
-.gallery-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
 }
 
 .gallery-overlay {
@@ -742,520 +729,498 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+    color: white;
+    text-align: center;
 }
 
 .gallery-item:hover .gallery-overlay {
     opacity: 1;
 }
 
-.gallery-item:hover .gallery-image {
-    transform: scale(1.1);
+.gallery-caption-thumb {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 15px;
+    font-size: 14px;
+}
+
+.gallery-caption-thumb p {
+    margin: 0;
+}
+
+/* Modal Gallery Styles */
+.swipe-gallery-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.swipe-gallery {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.gallery-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    touch-action: manipulation;
+}
+
+.gallery-slide {
+    flex: 0 0 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-slide.active {
+    display: flex;
+}
+
+.gallery-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.gallery-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.gallery-caption p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Navigation Buttons */
+.gallery-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.gallery-nav-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn {
+    left: 20px;
+}
+
+.next-btn {
+    right: 20px;
+}
+
+/* Counter */
+.gallery-counter {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 10;
+}
+
+/* Dots Indicator */
+.gallery-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.gallery-dots .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.gallery-dots .dot.active {
+    background: rgba(255, 255, 255, 1);
+}
+
+.gallery-dots .dot:hover {
+    background: rgba(255, 255, 255, 0.8);
 }
 
 /* Lightbox Modal Styles */
 .lightbox-modal {
     display: none;
     position: fixed;
-    z-index: 9999;
-    top: 0;
+    z-index: 10000;
     left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.9);
+    align-items: center;
+    justify-content: center;
     backdrop-filter: blur(5px);
 }
 
 .lightbox-content {
     position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    max-height: 800px;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 .lightbox-close {
     position: absolute;
-    top: 20px;
-    right: 35px;
+    top: 15px;
+    right: 25px;
     color: white;
-    font-size: 40px;
+    font-size: 35px;
     font-weight: bold;
     cursor: pointer;
-    z-index: 10000;
-    transition: color 0.3s ease;
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.5);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .lightbox-close:hover {
-    color: #007bff;
-}
-
-.lightbox-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    font-size: 24px;
-    padding: 20px 15px;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    z-index: 10000;
-}
-
-.lightbox-nav:hover {
-    background: rgba(255, 255, 255, 0.3);
-    color: #007bff;
-    transform: translateY(-50%) scale(1.1);
-}
-
-.lightbox-prev {
-    left: 30px;
-}
-
-.lightbox-next {
-    right: 30px;
-}
-
-#lightboxImage {
-    max-width: 90%;
-    max-height: 80%;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.lightbox-caption {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 15px 25px;
-    border-radius: 25px;
-    max-width: 80%;
-}
-
-.lightbox-caption p {
-    margin: 0 0 5px 0;
-    font-size: 18px;
-    font-weight: 500;
-}
-
-.lightbox-caption span {
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-.gallery-image-item {
-    transition: all 0.3s ease;
-}
-
-.gallery-image-item.d-none {
-    display: none !important;
-}
-
-#viewMoreBtn, #viewLessBtn {
-    transition: all 0.3s ease;
-    border-width: 2px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-}
-
-#viewMoreBtn:hover, #viewLessBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,123,255,0.2);
-}
-
-/* Responsive Lightbox */
-@media (max-width: 768px) {
-    .lightbox-close {
-        top: 15px;
-        right: 20px;
-        font-size: 30px;
-    }
-    
-    .lightbox-nav {
-        font-size: 20px;
-        padding: 15px 12px;
-    }
-    
-    .lightbox-prev {
-        left: 15px;
-    }
-    
-    .lightbox-next {
-        right: 15px;
-    }
-    
-    #lightboxImage {
-        max-width: 95%;
-        max-height: 75%;
-    }
-    
-    .lightbox-caption {
-        bottom: 20px;
-        padding: 10px 20px;
-        max-width: 90%;
-    }
-    
-    .lightbox-caption p {
-        font-size: 16px;
-    }
-    
-    .gallery-image-container {
-        height: 250px;
-    }
-}
-
-.project-info-grid .info-item {
-    margin-bottom: 1rem;
-}
-
-.project-info-grid .info-item strong {
-    display: block;
-    margin-bottom: 0.25rem;
+    transform: scale(1.1);
 }
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Gallery images data
-const galleryImages = [
-    {% for gallery_image in gallery_images %}
-    {
-        src: "{{ gallery_image.image.url }}",
-        title: "{{ gallery_image.title|default:project.title|escapejs }}",
-        alt: "{{ gallery_image.title|default:project.title|escapejs }}"
-    }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-];
-
-let currentImageIndex = 0;
-
-// Enhanced Timeline Animations
-function initTimelineAnimations() {
-    // Intersection Observer for timeline items
-    const timelineItems = document.querySelectorAll('.timeline-item-enhanced');
-    
-    const timelineObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('aos-animate');
-                
-                // Animate progress bars
-                const progressBar = entry.target.querySelector('.progress-bar-enhanced');
-                if (progressBar) {
-                    const progress = progressBar.getAttribute('data-progress');
-                    setTimeout(() => {
-                        progressBar.style.width = progress + '%';
-                    }, 300);
-                }
-                
-                // Animate circular progress
-                const circularProgress = entry.target.querySelector('.circular-progress');
-                if (circularProgress) {
-                    const progress = circularProgress.getAttribute('data-progress');
-                    setTimeout(() => {
-                        circularProgress.style.setProperty('--progress', progress + '%');
-                    }, 500);
-                }
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
-    
-    timelineItems.forEach(item => {
-        timelineObserver.observe(item);
-    });
-    
-    // Animate progress circle in dashboard
-    const progressCircle = document.querySelector('.circle-progress-bar');
-    if (progressCircle) {
-        const progressValue = progressCircle.closest('.circle-progress').getAttribute('data-progress');
-        const circumference = 100;
-        const offset = circumference - (progressValue / 100) * circumference;
+// Modal Gallery with Swipe functionality
+class ModalGallery {
+    constructor() {
+        this.modal = document.getElementById('galleryModal');
+        this.gallery = document.getElementById('modalGallery');
         
-        setTimeout(() => {
-            progressCircle.style.strokeDashoffset = offset;
-        }, 500);
+        if (!this.modal || !this.gallery) return;
+        
+        this.wrapper = this.gallery.querySelector('.gallery-wrapper');
+        this.slides = this.gallery.querySelectorAll('.gallery-slide');
+        this.dots = this.gallery.querySelectorAll('.dot');
+        this.prevBtn = document.getElementById('modalPrevBtn');
+        this.nextBtn = document.getElementById('modalNextBtn');
+        this.currentSlideElement = document.getElementById('modalCurrentSlide');
+        this.totalSlidesElement = document.getElementById('modalTotalSlides');
+        
+        this.currentIndex = 0;
+        this.totalSlides = this.slides.length;
+        
+        // Touch/swipe variables
+        this.startX = 0;
+        this.currentX = 0;
+        this.isDragging = false;
+        this.dragThreshold = 50; // minimum distance to trigger swipe
+        
+        this.init();
     }
-}
-
-// Smooth reveal animation for timeline line
-function animateTimelineLine() {
-    const timelineLine = document.querySelector('.timeline-line');
-    if (timelineLine) {
-        timelineLine.style.height = '0%';
-        timelineLine.style.transition = 'height 2s ease-in-out';
-        
-        setTimeout(() => {
-            timelineLine.style.height = '100%';
-        }, 300);
-    }
-}
-
-// Enhanced hover effects for timeline cards
-function initTimelineHoverEffects() {
-    const timelineCards = document.querySelectorAll('.timeline-card');
     
-    timelineCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-8px) scale(1.02)';
-            
-            const icon = this.closest('.timeline-item-enhanced').querySelector('.timeline-icon-enhanced');
-            if (icon) {
-                icon.style.transform = 'scale(1.15) rotate(5deg)';
-            }
-        });
+    init() {
+        if (this.totalSlides === 0) return;
         
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(-5px)';
-            
-            const icon = this.closest('.timeline-item-enhanced').querySelector('.timeline-icon-enhanced');
-            if (icon) {
-                icon.style.transform = 'scale(1.1) rotate(0deg)';
-            }
-        });
-    });
-}
-
-// Parallax effect for timeline
-function initTimelineParallax() {
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const timelineSection = document.querySelector('.project-timeline-section');
+        // Set initial state
+        this.updateSlidePosition();
+        this.updateCounter();
+        this.updateDots();
         
-        if (timelineSection) {
-            const rect = timelineSection.getBoundingClientRect();
-            const speed = 0.1;
-            
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
-                const timelineItems = document.querySelectorAll('.timeline-item-enhanced');
-                timelineItems.forEach((item, index) => {
-                    const offset = (scrolled - timelineSection.offsetTop) * speed * (index % 2 === 0 ? 1 : -1);
-                    item.style.transform = `translateY(${Math.max(-20, Math.min(20, offset))}px)`;
-                });
-            }
+        // Add event listeners
+        this.addEventListeners();
+        
+        // Show/hide navigation if only one slide
+        if (this.totalSlides <= 1) {
+            this.prevBtn.style.display = 'none';
+            this.nextBtn.style.display = 'none';
+            this.dots.forEach(dot => dot.style.display = 'none');
         }
-    });
-}
-
-// Open lightbox
-function openLightbox(index) {
-    currentImageIndex = index;
-    const modal = document.getElementById('lightboxModal');
-    const img = document.getElementById('lightboxImage');
-    const title = document.getElementById('lightboxTitle');
-    const counter = document.getElementById('lightboxCounter');
-    
-    if (galleryImages[index]) {
-        img.src = galleryImages[index].src;
-        img.alt = galleryImages[index].alt;
-        title.textContent = galleryImages[index].title;
-        counter.textContent = `${index + 1} / ${galleryImages.length}`;
-        
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        
-        // Add animation
-        setTimeout(() => {
-            modal.style.opacity = '1';
-        }, 10);
-    }
-}
-
-// Close lightbox
-function closeLightbox(event) {
-    if (event && event.target !== event.currentTarget) return;
-    
-    const modal = document.getElementById('lightboxModal');
-    modal.style.opacity = '0';
-    
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }, 300);
-}
-
-// Change image in lightbox
-function changeImage(direction) {
-    currentImageIndex += direction;
-    
-    // Loop around
-    if (currentImageIndex >= galleryImages.length) {
-        currentImageIndex = 0;
-    } else if (currentImageIndex < 0) {
-        currentImageIndex = galleryImages.length - 1;
     }
     
-    const img = document.getElementById('lightboxImage');
-    const title = document.getElementById('lightboxTitle');
-    const counter = document.getElementById('lightboxCounter');
+    addEventListeners() {
+        // Navigation buttons
+        this.prevBtn?.addEventListener('click', () => this.previousSlide());
+        this.nextBtn?.addEventListener('click', () => this.nextSlide());
+        
+        // Dots navigation
+        this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToSlide(index));
+        });
+        
+        // Touch events for swipe
+        this.wrapper.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        this.wrapper.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        this.wrapper.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+        
+        // Mouse events for desktop drag
+        this.wrapper.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.wrapper.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        this.wrapper.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+        this.wrapper.addEventListener('mouseleave', (e) => this.handleMouseUp(e));
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        
+        // Modal events
+        this.modal.addEventListener('shown.bs.modal', () => this.onModalShown());
+        this.modal.addEventListener('hidden.bs.modal', () => this.onModalHidden());
+    }
+      handleTouchStart(e) {
+        this.startX = e.touches[0].clientX;
+        this.currentX = this.startX;
+        this.isDragging = true;
+        this.wrapper.style.transition = 'none';
+        console.log('👆 Touch start:', this.startX);
+    }
     
-    // Add fade effect
-    img.style.opacity = '0';
+    handleTouchMove(e) {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        this.currentX = e.touches[0].clientX;
+        const deltaX = this.currentX - this.startX;
+        const currentTransform = -this.currentIndex * 100;
+        const newTransform = currentTransform + (deltaX / this.wrapper.offsetWidth) * 100;
+        
+        this.wrapper.style.transform = `translateX(${newTransform}%)`;
+        console.log('👆 Touch move - deltaX:', deltaX, 'newTransform:', newTransform);
+    }
     
-    setTimeout(() => {
-        img.src = galleryImages[currentImageIndex].src;
-        img.alt = galleryImages[currentImageIndex].alt;
-        title.textContent = galleryImages[currentImageIndex].title;
-        counter.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
-        img.style.opacity = '1';
-    }, 150);
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', function(event) {
-    const modal = document.getElementById('lightboxModal');
-    if (modal.style.display === 'block') {
-        switch(event.key) {
-            case 'Escape':
-                closeLightbox();
-                break;
+    handleTouchEnd(e) {
+        if (!this.isDragging) return;
+        
+        this.isDragging = false;
+        this.wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        
+        const deltaX = this.currentX - this.startX;
+        console.log('👆 Touch end - deltaX:', deltaX, 'threshold:', this.dragThreshold);
+        
+        if (Math.abs(deltaX) > this.dragThreshold) {
+            if (deltaX > 0) {
+                this.previousSlide();
+            } else {
+                this.nextSlide();
+            }
+        } else {
+            this.updateSlidePosition();
+        }
+    }
+    
+    handleMouseDown(e) {
+        e.preventDefault();
+        this.startX = e.clientX;
+        this.currentX = this.startX;
+        this.isDragging = true;
+        this.wrapper.style.transition = 'none';
+        this.wrapper.style.cursor = 'grabbing';
+    }
+    
+    handleMouseMove(e) {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        this.currentX = e.clientX;
+        const deltaX = this.currentX - this.startX;
+        const currentTransform = -this.currentIndex * 100;
+        const newTransform = currentTransform + (deltaX / this.wrapper.offsetWidth) * 100;
+        
+        this.wrapper.style.transform = `translateX(${newTransform}%)`;
+    }
+    
+    handleMouseUp(e) {
+        if (!this.isDragging) return;
+        
+        this.isDragging = false;
+        this.wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        this.wrapper.style.cursor = 'grab';
+        
+        const deltaX = this.currentX - this.startX;
+        
+        if (Math.abs(deltaX) > this.dragThreshold) {
+            if (deltaX > 0) {
+                this.previousSlide();
+            } else {
+                this.nextSlide();
+            }
+        } else {
+            this.updateSlidePosition();
+        }
+    }
+    
+    handleKeyDown(e) {
+        if (!this.modal.classList.contains('show')) return;
+        
+        switch(e.key) {
             case 'ArrowLeft':
-                changeImage(-1);
+                e.preventDefault();
+                this.previousSlide();
                 break;
             case 'ArrowRight':
-                changeImage(1);
+                e.preventDefault();
+                this.nextSlide();
+                break;
+            case 'Escape':
+                e.preventDefault();
+                bootstrap.Modal.getInstance(this.modal).hide();
                 break;
         }
     }
-});
+    
+    nextSlide() {
+        this.currentIndex = (this.currentIndex + 1) % this.totalSlides;
+        this.updateSlidePosition();
+        this.updateCounter();
+        this.updateDots();
+    }
+    
+    previousSlide() {
+        this.currentIndex = (this.currentIndex - 1 + this.totalSlides) % this.totalSlides;
+        this.updateSlidePosition();
+        this.updateCounter();
+        this.updateDots();
+    }
+    
+    goToSlide(index) {
+        this.currentIndex = index;
+        this.updateSlidePosition();
+        this.updateCounter();
+        this.updateDots();
+    }
+    
+    updateSlidePosition() {
+        const translateX = -this.currentIndex * 100;
+        this.wrapper.style.transform = `translateX(${translateX}%)`;
+    }
+    
+    updateCounter() {
+        if (this.currentSlideElement) {
+            this.currentSlideElement.textContent = this.currentIndex + 1;
+        }
+        if (this.totalSlidesElement) {
+            this.totalSlidesElement.textContent = this.totalSlides;
+        }
+    }
+    
+    updateDots() {
+        this.dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentIndex);
+        });
+    }
+    
+    onModalShown() {
+        // Enable keyboard navigation
+        document.body.style.overflow = 'hidden';
+    }
+    
+    onModalHidden() {
+        // Disable keyboard navigation
+        document.body.style.overflow = '';
+        // Reset to first slide
+        this.currentIndex = 0;
+        this.updateSlidePosition();
+        this.updateCounter();
+        this.updateDots();
+    }
+    
+    openModal(slideIndex = 0) {
+        this.currentIndex = slideIndex;
+        this.updateSlidePosition();
+        this.updateCounter();
+        this.updateDots();
+        
+        const modalInstance = new bootstrap.Modal(this.modal);        modalInstance.show();
+    }
+}
 
-// View More/Less functionality
+// Initialize modal gallery
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize AOS (Animate On Scroll)
-    if (typeof AOS !== 'undefined') {
-        AOS.init({
-            duration: 600,
-            easing: 'ease-in-out',
-            once: true,
-            offset: 100
-        });
-    }
+    const modalGallery = new ModalGallery();
+    window.modalGalleryInstance = modalGallery;
     
-    // Initialize timeline animations
-    initTimelineAnimations();
-    animateTimelineLine();
-    initTimelineHoverEffects();
-    
-    // Initialize parallax on desktop only
-    if (window.innerWidth > 768) {
-        initTimelineParallax();
-    }
-    
-    // Gallery functionality
-    const viewMoreBtn = document.getElementById('viewMoreBtn');
-    const viewLessBtn = document.getElementById('viewLessBtn');
-    const hiddenImages = document.querySelectorAll('.gallery-image-item.d-none');
-    
-    if (viewMoreBtn) {
-        viewMoreBtn.addEventListener('click', function() {
-            // Show all hidden images with animation
-            hiddenImages.forEach(function(image, index) {
-                setTimeout(function() {
-                    image.classList.remove('d-none');
-                    image.style.opacity = '0';
-                    image.style.transform = 'translateY(20px)';
-                    
-                    // Trigger animation
-                    setTimeout(function() {
-                        image.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                        image.style.opacity = '1';
-                        image.style.transform = 'translateY(0)';
-                    }, 10);
-                }, index * 100); // Stagger the animation
-            });
+    // Handle Bootstrap modal events
+    const galleryModal = document.getElementById('galleryModal');
+    if (galleryModal) {
+        // When modal is shown, initialize/reset gallery to specific slide
+        galleryModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const slideIndex = parseInt(button.getAttribute('data-slide')) || 0;
             
-            // Switch buttons
-            viewMoreBtn.classList.add('d-none');
-            viewLessBtn.classList.remove('d-none');
-            
-            // Smooth scroll to show new images
-            setTimeout(function() {
-                const firstHiddenImage = document.querySelector('.gallery-image-item:nth-child(4)');
-                if (firstHiddenImage) {
-                    firstHiddenImage.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
+            setTimeout(() => {
+                if (modalGallery && modalGallery.goToSlide) {
+                    modalGallery.goToSlide(slideIndex);
                 }
-            }, 300);
+            }, 150);
         });
-    }
-    
-    if (viewLessBtn) {
-        viewLessBtn.addEventListener('click', function() {
-            // Hide images beyond the first 3
-            const allImages = document.querySelectorAll('.gallery-image-item');
-            
-            allImages.forEach(function(image, index) {
-                if (index >= 3) {
-                    image.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                    image.style.opacity = '0';
-                    image.style.transform = 'translateY(-20px)';
-                    
-                    setTimeout(function() {
-                        image.classList.add('d-none');
-                        image.style.transform = 'translateY(0)';
-                    }, 300);
-                }
-            });
-            
-            // Switch buttons
-            viewLessBtn.classList.add('d-none');
-            viewMoreBtn.classList.remove('d-none');
-            
-            // Scroll back to gallery section
-            const gallerySection = document.querySelector('.project-gallery-section');
-            if (gallerySection) {
-                gallerySection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
+        
+        // Reset to first slide when modal is hidden
+        galleryModal.addEventListener('hidden.bs.modal', function() {
+            if (modalGallery && modalGallery.goToSlide) {
+                modalGallery.goToSlide(0);
             }
         });
     }
     
-    // Smooth scroll for timeline navigation
-    const timelineItems = document.querySelectorAll('.timeline-item-enhanced');
-    timelineItems.forEach((item, index) => {
-        item.addEventListener('click', function() {
-            this.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
-            });
-        });
-    });
-    
-    // Add loading animation completion
-    setTimeout(() => {
-        document.body.classList.add('timeline-loaded');
-    }, 1000);
-});
-
-// Resize handler
-window.addEventListener('resize', function() {
-    // Reinitialize parallax only on desktop
-    if (window.innerWidth > 768) {
-        initTimelineParallax();
-    }
+    console.log('🖼️ Modal Gallery with Swipe initialized');
 });
 </script>
 {% endblock %}
-{% endblock %}
+

@@ -1,4 +1,5 @@
 from django import forms
+from django.db import models
 from main.models import Product, ProductCategory, Project, ProjectTimeline, ProjectGallery, News, NewsCategory
 
 class CategoryForm(forms.ModelForm):
@@ -184,3 +185,76 @@ class NewsForm(forms.ModelForm):
         self.fields['tags'].help_text = "Các thẻ giúp phân loại bài viết, phân cách bằng dấu phẩy"
         self.fields['featured'].help_text = "Đánh dấu là tin nổi bật"
         self.fields['published_at'].help_text = "Để trống sẽ tự động lấy thời gian hiện tại khi xuất bản"
+
+class MultipleFileInput(forms.ClearableFileInput):
+    """Custom widget for multiple file upload"""
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    """Custom field for multiple file upload"""
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        kwargs.setdefault("help_text", "Chọn nhiều ảnh cùng lúc (Ctrl/Cmd + Click)")
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+class ProjectGalleryMultipleForm(forms.Form):
+    """Form for uploading multiple images to project gallery"""
+    project = forms.ModelChoiceField(
+        queryset=Project.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Dự án"
+    )
+    images = MultipleFileField(
+        label="Chọn nhiều ảnh",
+        widget=MultipleFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*',
+            'multiple': True
+        })
+    )
+    
+    def __init__(self, *args, **kwargs):
+        project_id = kwargs.pop('project_id', None)
+        super().__init__(*args, **kwargs)
+        
+        # If project_id is provided, pre-select it and make it readonly
+        if project_id:
+            self.fields['project'].initial = project_id
+            self.fields['project'].widget.attrs['readonly'] = True
+            
+        self.fields['project'].queryset = Project.objects.all().order_by('title')
+        
+    def save(self, commit=True):
+        """Save multiple images to project gallery"""
+        if not commit:
+            return None
+            
+        project = self.cleaned_data['project']
+        images = self.cleaned_data['images']
+        
+        # Get the current highest order for this project
+        last_order = ProjectGallery.objects.filter(project=project).aggregate(
+            max_order=models.Max('order')
+        )['max_order'] or 0
+        
+        gallery_items = []
+        for i, image in enumerate(images):
+            gallery_item = ProjectGallery(
+                project=project,
+                image=image,
+                title=f"Ảnh {last_order + i + 1}",
+                order=last_order + i + 1
+            )
+            if commit:
+                gallery_item.save()
+            gallery_items.append(gallery_item)
+            
+        return gallery_items

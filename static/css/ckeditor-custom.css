@@ -105,7 +105,7 @@
     top: -10px;
     left: 20px;
     opacity: 0.3;
-    font-family: serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* List styling */
@@ -120,7 +120,7 @@
 
 /* Heading styles - consistent with VAV theme */
 .ck-content h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 2.2em;
     color: var(--ck-primary-color);
     border-bottom: 3px solid var(--ck-primary-color);
@@ -130,7 +130,7 @@
 }
 
 .ck-content h2 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.8em;
     color: var(--ck-secondary-color);
     margin: 1.3em 0 0.8em 0;
@@ -138,7 +138,7 @@
 }
 
 .ck-content h3 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.4em;
     color: var(--ck-primary-color);
     margin: 1.2em 0 0.6em 0;
@@ -146,7 +146,7 @@
 }
 
 .ck-content h4 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.2em;
     color: var(--ck-gray-color);
     margin: 1em 0 0.5em 0;
