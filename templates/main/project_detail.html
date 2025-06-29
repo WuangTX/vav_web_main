@@ -98,34 +98,42 @@
 <section class="project-gallery-section py-5 bg-light">
     <div class="container">
         <div class="section-heading text-center mb-5">
-            <h6 class="text-primary">Hình Ảnh Dự Án</h6>
-            <h2>Thư Viện Ảnh</h2>
+            <h6 class="text-primary">Hình Ảnh Dự Án</h6>            <h2>Thư Viện Ảnh</h2>
         </div>
-          {% if gallery_images %}
+        
+        {% if gallery_images %}
         <div class="row g-4">
-            {% for gallery_image in gallery_images %}
-            <div class="col-md-4 col-sm-6">
-                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#galleryModal" data-slide="{{ forloop.counter0 }}">
+            {% for gallery_image in gallery_images|slice:":3" %}
+            <div class="col-md-4">
+                <div class="gallery-item" onclick="openGalleryModal({{ forloop.counter0 }})">
                     <div class="gallery-image-container">
-                        <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="img-fluid rounded">
+                        <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="img-fluid">
                         <div class="gallery-overlay">
                             <div class="gallery-overlay-content">
                                 <i class="fas fa-expand fa-2x"></i>
                                 <p class="mt-2">Xem ảnh</p>
                             </div>
                         </div>
-                        {% if gallery_image.title %}
-                        <div class="gallery-caption-thumb">
-                            <p>{{ gallery_image.title }}</p>
-                        </div>
-                        {% endif %}
                     </div>
+                    {% if gallery_image.title %}
+                    <div class="gallery-caption-thumb">
+                        <p>{{ gallery_image.title }}</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
+        
+        {% if gallery_images|length > 3 %}
+        <div class="text-center mt-4">
+            <button class="btn btn-primary btn-lg" onclick="openGalleryModal(0)">
+                <i class="fas fa-images me-2"></i>Xem Thư Viện Ảnh Dự Án ({{ gallery_images|length }} ảnh)
+            </button>
+        </div>
+        {% endif %}
+        
         {% else %}
-        <!-- Fallback to main project image if no gallery images -->
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="gallery-item">
@@ -302,23 +310,7 @@
     </div>
 </section>
 
-<!-- Lightbox Modal -->
-<div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox(event)">
-    <div class="lightbox-content">
-        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-        <button class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="lightbox-nav lightbox-next" onclick="changeImage(1)">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        <img id="lightboxImage" src="" alt="">
-        <div class="lightbox-caption">
-            <p id="lightboxTitle"></p>
-            <span id="lightboxCounter"></span>
-        </div>
-    </div>
-</div>
+
 
 <!-- Related Projects Section -->
 <section class="related-projects-section py-5 bg-light">
@@ -329,23 +321,30 @@
         </div>
         
         <div class="row g-4">
-            {% for related_project in related_projects %}
-            <!-- Related Project Item {{ forloop.counter }} -->
+            {% for related_project in related_projects %}            
             <div class="col-md-6 col-lg-4">
-                <div class="project-card">
+                <div class="project-card" data-project-slug="{{ related_project.slug }}">
                     <div class="project-image">
                         <img src="{{ related_project.image.url }}" alt="{{ related_project.title }}" class="img-fluid">
-                        <div class="project-overlay">
-                            <div class="project-info">
-                                <h5>{{ related_project.title }}</h5>
-                                <p><i class="fas fa-map-marker-alt me-1"></i>{{ related_project.location }}</p>
-                                <a href="{% url 'project_detail' related_project.slug %}" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                        <!-- Project Label -->
+                        <div class="project-label">DỰ ÁN</div>
+                        <!-- Project Content Overlay -->
+                        <div class="project-content">
+                            <div class="project-meta-top">
+                                <span class="project-author">BY VAV FURNITURE</span>
+                                {% if related_project.completed_date %}
+                                    <span class="project-date">{{ related_project.completed_date|date:"M d, Y"|upper }}</span>
+                                {% endif %}
                             </div>
-                        </div>
-                    </div>
-                    <div class="project-meta p-3">                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-primary">{{ related_project.get_project_type_display }}</span>
-                            <small class="text-muted">{{ related_project.completed_date|date:"d/m/Y" }}</small>
+                            <h3 class="project-title">{{ related_project.title }}</h3>
+                            <p class="project-description">
+                                {% if related_project.location %}
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ related_project.location }}
+                                {% endif %}
+                                {% if related_project.description %}
+                                    <br>{{ related_project.description|truncatewords:10 }}
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -372,61 +371,38 @@
                     <i class="fas fa-phone me-2"></i>Liên Hệ Ngay
                 </a>
             </div>
-        </div>    </div>
+        </div>
+    </div>
 </section>
 
-<!-- Gallery Modal with Swipe -->
-<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-dark">
-            <div class="modal-header border-0">
-                <h5 class="modal-title text-white" id="galleryModalLabel">{{ project.title }} - Thư viện ảnh</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0 d-flex align-items-center justify-content-center">
-                {% if gallery_images %}
-                <div class="swipe-gallery-container">
-                    <div class="swipe-gallery" id="modalGallery">
-                        <div class="gallery-wrapper">
-                            {% for gallery_image in gallery_images %}
-                            <div class="gallery-slide {% if forloop.first %}active{% endif %}">
-                                <div class="gallery-image-container">
-                                    <img src="{{ gallery_image.image.url }}" alt="{{ gallery_image.title|default:project.title }}" class="gallery-image">
-                                    {% if gallery_image.title %}
-                                    <div class="gallery-caption">
-                                        <p>{{ gallery_image.title }}</p>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        
-                        <!-- Navigation -->
-                        <div class="gallery-nav">
-                            <button class="gallery-nav-btn prev-btn" id="modalPrevBtn">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="gallery-nav-btn next-btn" id="modalNextBtn">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        
-                        <!-- Counter -->
-                        <div class="gallery-counter">
-                            <span id="modalCurrentSlide">1</span> / <span id="modalTotalSlides">{{ gallery_images|length }}</span>
-                        </div>
-                        
-                        <!-- Dots indicator -->
-                        <div class="gallery-dots">
-                            {% for gallery_image in gallery_images %}
-                            <span class="dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.counter0 }}"></span>
-                            {% endfor %}
-                        </div>
-                    </div>
+<!-- Simple Lightbox Modal -->
+<div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox(event)">
+    <div class="lightbox-container" onclick="event.stopPropagation()">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        
+        <!-- Navigation buttons -->
+        <button class="lightbox-nav lightbox-prev" onclick="previousImage(); event.stopPropagation();">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <button class="lightbox-nav lightbox-next" onclick="nextImage(); event.stopPropagation();">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+                <!-- Image display with swipe carousel -->
+        <div class="lightbox-image-container" onclick="event.stopPropagation()">
+            <div class="lightbox-carousel-wrapper" id="lightboxCarouselWrapper">                <div class="lightbox-carousel-track" id="lightboxCarouselTrack">
                 </div>
-                {% endif %}
-            </div>        </div>
+            </div>
+        </div>
+        
+        <!-- Caption and counter -->
+        <div class="lightbox-caption" onclick="event.stopPropagation()">
+            <p id="lightboxTitle"></p>
+            <span id="lightboxCounter"></span>
+        </div>
+        
+        <!-- Thumbnail navigation -->        <div class="lightbox-thumbnails" id="lightboxThumbnails" onclick="event.stopPropagation()">
+        </div>
     </div>
 </div>
 
@@ -434,6 +410,547 @@
 
 {% block extra_css %}
 <style>
+/* Gallery Items */
+.gallery-item {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    display: block;
+    text-decoration: none;
+    background: #f8f9fa;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+}
+
+.gallery-image-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.gallery-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.gallery-item:hover .gallery-image-container img {
+    transform: scale(1.05);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+    text-align: center;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay-content {
+    text-align: center;
+    color: white;
+}
+
+.gallery-overlay-content i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.gallery-overlay-content p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.gallery-caption-thumb {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 15px;
+    font-size: 14px;
+    z-index: 2;
+}
+
+.gallery-caption-thumb p {
+    margin: 0;
+}
+
+/* Responsive gallery */
+@media (max-width: 768px) {
+    .gallery-image-container {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-image-container {
+        height: 180px;
+    }
+}
+
+/* Ensure images load properly */
+.gallery-image-container img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+/* Enhanced Lightbox for better mobile interaction */
+.lightbox-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    z-index: 99999;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+    backdrop-filter: blur(2px);
+}
+
+.lightbox-modal.active {
+    display: block;
+}
+
+/* Prevent body scroll when lightbox is open */
+body.lightbox-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Block all interactions outside lightbox */
+body.lightbox-open * {
+    pointer-events: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    touch-action: none !important;
+}
+
+/* Only allow interactions within lightbox */
+body.lightbox-open .lightbox-modal,
+body.lightbox-open .lightbox-modal * {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+}
+
+.lightbox-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px 120px 20px;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    pointer-events: auto;
+}
+
+.lightbox-image-container {
+    position: relative;
+    max-width: 85vw;
+    max-height: 65vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    cursor: grab;
+    min-height: 200px;
+    min-width: 200px;
+    overflow: visible;
+    touch-action: manipulation;
+}
+
+.lightbox-image-container.swiping {
+    cursor: grabbing;
+}
+
+/* Carousel wrapper and track for smooth swipe */
+.lightbox-carousel-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-carousel-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+    align-items: center;
+}
+
+/* Faster transition for circular navigation */
+.lightbox-carousel-track.circular-transition {
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lightbox-carousel-track.dragging {
+    transition: none;
+    cursor: grabbing;
+}
+
+.lightbox-image-container.swiping {
+    cursor: grabbing;
+    user-select: none;
+}
+
+.lightbox-image-container.swiping * {
+    pointer-events: none;
+}
+
+.lightbox-carousel-item {
+    flex: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.lightbox-carousel-item img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    display: block;
+}
+
+/* Add touch-friendly area around carousel */
+.lightbox-image-container::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    z-index: -1;
+}
+
+/* Swipe indicator for mobile */
+.swipe-indicator {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 10002;
+}
+
+.swipe-indicator.show {
+    opacity: 1;
+}
+
+/* Show swipe indicator on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .swipe-indicator {
+        opacity: 1;
+    }
+}
+
+/* Responsive carousel adjustments */
+@media (max-width: 768px) {
+    .lightbox-container {
+        padding: 60px 15px 140px 15px;
+    }
+    
+    .lightbox-image-container {
+        max-width: 90vw;
+        max-height: 60vh;
+        padding: 10px;
+    }
+    
+    .lightbox-carousel-item {
+        padding: 10px;
+    }
+    
+    .lightbox-carousel-item img {
+        border-radius: 4px;
+        max-height: 50vh;
+    }
+    
+    .swipe-indicator {
+        bottom: 120px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .lightbox-caption {
+        bottom: 70px;
+        max-width: 85vw;
+        padding: 8px 16px;
+    }
+    
+    .lightbox-thumbnails {
+        bottom: 15px;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lightbox-container {
+        padding: 50px 10px 120px 10px;
+    }
+    
+    .lightbox-image-container {
+        max-width: 95vw;
+        max-height: 55vh;
+        padding: 5px;
+    }
+    
+    .lightbox-carousel-item {
+        padding: 5px;
+    }
+    
+    .lightbox-carousel-item img {
+        border-radius: 2px;
+        max-height: 45vh;
+    }
+    
+    .swipe-indicator {
+        bottom: 100px;
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+    
+    .lightbox-caption {
+        bottom: 50px;
+        font-size: 14px;
+        padding: 6px 12px;
+        max-width: 90vw;
+    }
+    
+    .lightbox-caption p {
+        font-size: 14px;
+    }
+    
+    .lightbox-caption span {
+        font-size: 12px;
+    }
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10001;
+    transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.5);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 10001;
+    transition: all 0.3s ease;
+}
+
+.lightbox-nav:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-prev {
+    left: 30px;
+}
+
+.lightbox-next {
+    right: 30px;
+}
+
+.lightbox-caption {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    z-index: 10001;
+    max-width: 80vw;
+}
+
+.lightbox-caption p {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.lightbox-caption span {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.lightbox-thumbnails {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    max-width: 90vw;
+    overflow-x: auto;
+    padding: 10px;
+    z-index: 10001;
+}
+
+.lightbox-thumb {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.lightbox-thumb:hover,
+.lightbox-thumb.active {
+    opacity: 1;
+    border-color: white;
+}
+
+/* Responsive lightbox */
+@media (max-width: 768px) {
+    .lightbox-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .lightbox-prev {
+        left: 15px;
+    }
+    
+    .lightbox-next {
+        right: 15px;
+    }
+      .lightbox-close {
+        top: 15px;
+        right: 20px;
+        font-size: 30px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .lightbox-thumbnails {
+        bottom: 60px;
+        gap: 5px;
+    }
+    
+    .lightbox-thumb {
+        width: 50px;
+        height: 35px;
+    }
+}
+
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10001;
+    transition: color 0.3s ease;
+    background: rgba(0, 0, 0, 0.5);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
 /* Enhanced Timeline Styles */
 .bg-gradient-light {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -477,7 +994,7 @@
 
 .timeline-item {
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: flex-start;
     opacity: 1; /* Changed from 0 to 1 to show by default */
@@ -565,9 +1082,8 @@
 }
 
 .timeline-content {
-    padding: 0rem;
     flex: 1;
-    max-width: 45%;
+    max-width: 100%;
 
 }
 
@@ -699,527 +1215,867 @@
 
 .step-description {
     margin: 0;
-    color: #666;
-    line-height: 1.6;
+    color: #666;    line-height: 1.6;
     font-size: 1rem;
 }
 
-/* Gallery Items Styles */
-.gallery-item {
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
+/* Modern Timeline Responsive Design */
+@media (max-width: 1199.98px) {
+    .timeline-content {
+        max-width: 42%;
+    }
+    
+    .timeline-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .timeline-content {
+        max-width: 40%;
+    }
+    
+    .timeline-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.3rem;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content {
+        margin-right: calc(50% + 40px);
+    }
+    
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-left: calc(50% + 40px);
+    }
+}
+
+/* Mobile Timeline Design - Modern Timeline */
+@media (max-width: 768px) {
+    .modern-timeline {
+        padding: 2rem 0;
+        padding-left: 1rem;
+        margin-left: 0;
+    }
+    
+    .modern-timeline::before {
+        left: 22px;
+        width: 2px;
+        background: #007bff;
+        transform: none;
+    }
+    
+    .timeline-item {
+        flex-direction: row !important;
+        margin-bottom: 2.5rem;
+        align-items: flex-start;
+        position: relative;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content,
+    .timeline-item:nth-child(even) .timeline-content {
+        text-align: left !important;
+        margin: 0 0 0 1.5rem !important;
+        max-width: calc(100% - 70px) !important;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: none;
+    }
+    
+    .timeline-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+        border-width: 3px;
+    }
+    
+    .timeline-card .card-header {
+        flex-direction: row !important;
+        padding: 1.2rem;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-card .card-header {
+        flex-direction: row !important;
+    }
+    
+    .step-title {
+        font-size: 1.1rem;
+    }
+    
+    .step-description {
+        font-size: 0.9rem;
+    }
+    
+    .timeline-card .card-body {
+        padding: 0 1.2rem 1.2rem;
+    }
+}
+
+/* Small Mobile - Modern Timeline */
+@media (max-width: 575.98px) {
+    .modern-timeline {
+        padding: 1.5rem 0;
+        padding-left: 0.8rem;
+    }
+    
+    .modern-timeline::before {
+        left: 20px;
+    }
+    
+    .timeline-item {
+        margin-bottom: 2rem;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content,
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-left: 1.3rem !important;
+        max-width: calc(100% - 65px) !important;
+    }
+    
+    .timeline-marker {
+        left: -2px;
+    }
+    
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        border-width: 2px;
+    }
+    
+    .timeline-card .card-header {
+        padding: 1rem;
+    }
+    
+    .step-title {
+        font-size: 1rem;
+    }
+    
+    .step-description {
+        font-size: 0.85rem;
+    }
+    
+    .timeline-card .card-body {
+        padding: 0 1rem 1rem;
+    }
+}
+
+/* Extra Small Mobile - Modern Timeline */
+@media (max-width: 480px) {
+    .modern-timeline {
+        padding-left: 0.6rem;
+    }
+    
+    .modern-timeline::before {
+        left: 18px;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content,
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-left: 1.1rem !important;
+        max-width: calc(100% - 55px) !important;
+    }
+    
+    .timeline-marker {
+        left: -4px;
+    }
+    
+    .timeline-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .timeline-card .card-header {
+        padding: 0.8rem;
+    }
+    
+    .step-number {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .step-title {
+        font-size: 0.95rem;
+    }
+    
+    .step-description {
+        font-size: 0.8rem;
+    }
+    
+    .timeline-card .card-body {
+        padding: 0 0.8rem 0.8rem;
+    }
+}
+
+/* Related Projects Section CSS */
+.related-projects-section .project-card {
     border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.related-projects-section .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.related-projects-section .project-image {
+    position: relative;
+    height: 400px;
+    overflow: visible;
+    margin: -8px;
+    border-radius: 8px;
+}
+
+.related-projects-section .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-.gallery-item:hover {
-    transform: translateY(-5px);
+.related-projects-section .project-card:hover .project-image img {
+    transform: scale(1.05);
 }
 
-.gallery-image-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.gallery-overlay {
+/* Project Label */
+.related-projects-section .project-label {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
     color: white;
-    text-align: center;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 3;
 }
 
-.gallery-item:hover .gallery-overlay {
-    opacity: 1;
-}
-
-.gallery-caption-thumb {
+/* Project Content Overlay */
+.related-projects-section .project-content {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    background: linear-gradient(transparent, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
     color: white;
-    padding: 15px;
-    font-size: 14px;
+    padding: 60px 30px 30px 30px;
+    z-index: 2;
 }
 
-.gallery-caption-thumb p {
-    margin: 0;
-}
-
-/* Modal Gallery Styles */
-.swipe-gallery-container {
-    position: relative;
-    width: 100%;
-    height: 80vh;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.swipe-gallery {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.gallery-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
+.related-projects-section .project-meta-top {
     display: flex;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    touch-action: manipulation;
-}
-
-.gallery-slide {
-    flex: 0 0 100%;
-    position: relative;
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
+    margin-bottom: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
 }
 
-.gallery-slide.active {
-    display: flex;
+.related-projects-section .project-author {
+    color: #fff;
 }
 
-.gallery-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 8px;
+.related-projects-section .project-date {
+    color: #ccc;
 }
 
-.gallery-caption {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.7);
+.related-projects-section .project-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0;
     color: white;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
 }
 
-.gallery-caption p {
-    margin: 0;
-    font-size: 16px;
+.related-projects-section .project-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 0;
 }
 
-/* Navigation Buttons */
-.gallery-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
+/* Responsive adjustments for related projects */
+@media (max-width: 768px) {
+    .related-projects-section .project-image {
+        height: 350px;
+    }
+    
+    .related-projects-section .project-content {
+        padding: 40px 20px 20px 20px;
+    }
+    
+    .related-projects-section .project-title {
+        font-size: 1.3rem;
+    }
+    
+    .related-projects-section .project-meta-top {
+        font-size: 10px;
+    }
 }
 
-.gallery-nav-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateY(-50%) scale(1.1);
+@media (max-width: 576px) {
+    .related-projects-section .project-image {
+        height: 300px;
+    }
+    
+    .related-projects-section .project-content {
+        padding: 30px 15px 15px 15px;
+    }
+    
+    .related-projects-section .project-title {
+        font-size: 1.1rem;
+    }
+    
+    .related-projects-section .project-description {
+        font-size: 0.85rem;
+    }
 }
 
-.prev-btn {
-    left: 20px;
-}
-
-.next-btn {
-    right: 20px;
-}
-
-/* Counter */
-.gallery-counter {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    z-index: 10;
-}
-
-/* Dots Indicator */
-.gallery-dots {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-}
-
-.gallery-dots .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.gallery-dots .dot.active {
-    background: rgba(255, 255, 255, 1);
-}
-
-.gallery-dots .dot:hover {
-    background: rgba(255, 255, 255, 0.8);
-}
-
-/* Lightbox Modal Styles */
-.lightbox-modal {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(5px);
-}
-
-.lightbox-content {
-    position: relative;
-    width: 90%;
-    height: 90%;
-    max-width: 1200px;
-    max-height: 800px;
-    background: #000;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.lightbox-close {
-    position: absolute;
-    top: 15px;
-    right: 25px;
-    color: white;
-    font-size: 35px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10001;
-    background: rgba(0, 0, 0, 0.5);
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.lightbox-close:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
-}
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Modal Gallery with Swipe functionality
-class ModalGallery {
-    constructor() {
-        this.modal = document.getElementById('galleryModal');
-        this.gallery = document.getElementById('modalGallery');
-        
-        if (!this.modal || !this.gallery) return;
-        
-        this.wrapper = this.gallery.querySelector('.gallery-wrapper');
-        this.slides = this.gallery.querySelectorAll('.gallery-slide');
-        this.dots = this.gallery.querySelectorAll('.dot');
-        this.prevBtn = document.getElementById('modalPrevBtn');
-        this.nextBtn = document.getElementById('modalNextBtn');
-        this.currentSlideElement = document.getElementById('modalCurrentSlide');
-        this.totalSlidesElement = document.getElementById('modalTotalSlides');
-        
-        this.currentIndex = 0;
-        this.totalSlides = this.slides.length;
-        
-        // Touch/swipe variables
-        this.startX = 0;
-        this.currentX = 0;
-        this.isDragging = false;
-        this.dragThreshold = 50; // minimum distance to trigger swipe
-        
-        this.init();
+// Gallery images data
+const galleryImages = [
+    {% for gallery_image in gallery_images %}
+    {
+        url: "{{ gallery_image.image.url }}",
+        title: "{{ gallery_image.title|default:project.title|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+let currentImageIndex = 0;
+
+function openGalleryModal(index = 0) {
+    if (galleryImages.length === 0) return;
+    
+    currentImageIndex = index;
+    const modal = document.getElementById('lightboxModal');
+    
+    // Lock body and prevent all outside interactions
+    document.body.classList.add('lightbox-open');
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
+    // Show modal
+    modal.style.display = 'block';
+    modal.classList.add('active');
+    
+    // Setup modal content
+    createCarousel();
+    showImage(currentImageIndex);
+    createThumbnails();
+    
+    // Initialize touch events after modal content is created
+    setTimeout(() => {
+        initializeTouchEvents();
+    }, 100);
+    
+    if (galleryImages.length > 1) {
+        showSwipeIndicator();
     }
     
-    init() {
-        if (this.totalSlides === 0) return;
-        
-        // Set initial state
-        this.updateSlidePosition();
-        this.updateCounter();
-        this.updateDots();
-        
-        // Add event listeners
-        this.addEventListeners();
-        
-        // Show/hide navigation if only one slide
-        if (this.totalSlides <= 1) {
-            this.prevBtn.style.display = 'none';
-            this.nextBtn.style.display = 'none';
-            this.dots.forEach(dot => dot.style.display = 'none');
-        }
-    }
+    // Keyboard events
+    document.addEventListener('keydown', handleKeyPress);
     
-    addEventListeners() {
-        // Navigation buttons
-        this.prevBtn?.addEventListener('click', () => this.previousSlide());
-        this.nextBtn?.addEventListener('click', () => this.nextSlide());
+    // Prevent scroll/touch on document
+    document.addEventListener('touchmove', preventDefaultTouch, { passive: false });
+    document.addEventListener('wheel', preventDefaultWheel, { passive: false });
+}
+
+function showSwipeIndicator() {
+    const indicator = document.getElementById('swipeIndicator');
+    if (indicator && window.innerWidth <= 768) {
+        indicator.classList.add('show');
         
-        // Dots navigation
-        this.dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => this.goToSlide(index));
-        });
-        
-        // Touch events for swipe
-        this.wrapper.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
-        this.wrapper.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
-        this.wrapper.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
-        
-        // Mouse events for desktop drag
-        this.wrapper.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-        this.wrapper.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        this.wrapper.addEventListener('mouseup', (e) => this.handleMouseUp(e));
-        this.wrapper.addEventListener('mouseleave', (e) => this.handleMouseUp(e));
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
-        
-        // Modal events
-        this.modal.addEventListener('shown.bs.modal', () => this.onModalShown());
-        this.modal.addEventListener('hidden.bs.modal', () => this.onModalHidden());
-    }
-      handleTouchStart(e) {
-        this.startX = e.touches[0].clientX;
-        this.currentX = this.startX;
-        this.isDragging = true;
-        this.wrapper.style.transition = 'none';
-        console.log('👆 Touch start:', this.startX);
-    }
-    
-    handleTouchMove(e) {
-        if (!this.isDragging) return;
-        
-        e.preventDefault();
-        this.currentX = e.touches[0].clientX;
-        const deltaX = this.currentX - this.startX;
-        const currentTransform = -this.currentIndex * 100;
-        const newTransform = currentTransform + (deltaX / this.wrapper.offsetWidth) * 100;
-        
-        this.wrapper.style.transform = `translateX(${newTransform}%)`;
-        console.log('👆 Touch move - deltaX:', deltaX, 'newTransform:', newTransform);
-    }
-    
-    handleTouchEnd(e) {
-        if (!this.isDragging) return;
-        
-        this.isDragging = false;
-        this.wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        
-        const deltaX = this.currentX - this.startX;
-        console.log('👆 Touch end - deltaX:', deltaX, 'threshold:', this.dragThreshold);
-        
-        if (Math.abs(deltaX) > this.dragThreshold) {
-            if (deltaX > 0) {
-                this.previousSlide();
-            } else {
-                this.nextSlide();
-            }
-        } else {
-            this.updateSlidePosition();
-        }
-    }
-    
-    handleMouseDown(e) {
-        e.preventDefault();
-        this.startX = e.clientX;
-        this.currentX = this.startX;
-        this.isDragging = true;
-        this.wrapper.style.transition = 'none';
-        this.wrapper.style.cursor = 'grabbing';
-    }
-    
-    handleMouseMove(e) {
-        if (!this.isDragging) return;
-        
-        e.preventDefault();
-        this.currentX = e.clientX;
-        const deltaX = this.currentX - this.startX;
-        const currentTransform = -this.currentIndex * 100;
-        const newTransform = currentTransform + (deltaX / this.wrapper.offsetWidth) * 100;
-        
-        this.wrapper.style.transform = `translateX(${newTransform}%)`;
-    }
-    
-    handleMouseUp(e) {
-        if (!this.isDragging) return;
-        
-        this.isDragging = false;
-        this.wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        this.wrapper.style.cursor = 'grab';
-        
-        const deltaX = this.currentX - this.startX;
-        
-        if (Math.abs(deltaX) > this.dragThreshold) {
-            if (deltaX > 0) {
-                this.previousSlide();
-            } else {
-                this.nextSlide();
-            }
-        } else {
-            this.updateSlidePosition();
-        }
-    }
-    
-    handleKeyDown(e) {
-        if (!this.modal.classList.contains('show')) return;
-        
-        switch(e.key) {
-            case 'ArrowLeft':
-                e.preventDefault();
-                this.previousSlide();
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                this.nextSlide();
-                break;
-            case 'Escape':
-                e.preventDefault();
-                bootstrap.Modal.getInstance(this.modal).hide();
-                break;
-        }
-    }
-    
-    nextSlide() {
-        this.currentIndex = (this.currentIndex + 1) % this.totalSlides;
-        this.updateSlidePosition();
-        this.updateCounter();
-        this.updateDots();
-    }
-    
-    previousSlide() {
-        this.currentIndex = (this.currentIndex - 1 + this.totalSlides) % this.totalSlides;
-        this.updateSlidePosition();
-        this.updateCounter();
-        this.updateDots();
-    }
-    
-    goToSlide(index) {
-        this.currentIndex = index;
-        this.updateSlidePosition();
-        this.updateCounter();
-        this.updateDots();
-    }
-    
-    updateSlidePosition() {
-        const translateX = -this.currentIndex * 100;
-        this.wrapper.style.transform = `translateX(${translateX}%)`;
-    }
-    
-    updateCounter() {
-        if (this.currentSlideElement) {
-            this.currentSlideElement.textContent = this.currentIndex + 1;
-        }
-        if (this.totalSlidesElement) {
-            this.totalSlidesElement.textContent = this.totalSlides;
-        }
-    }
-    
-    updateDots() {
-        this.dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === this.currentIndex);
-        });
-    }
-    
-    onModalShown() {
-        // Enable keyboard navigation
-        document.body.style.overflow = 'hidden';
-    }
-    
-    onModalHidden() {
-        // Disable keyboard navigation
-        document.body.style.overflow = '';
-        // Reset to first slide
-        this.currentIndex = 0;
-        this.updateSlidePosition();
-        this.updateCounter();
-        this.updateDots();
-    }
-    
-    openModal(slideIndex = 0) {
-        this.currentIndex = slideIndex;
-        this.updateSlidePosition();
-        this.updateCounter();
-        this.updateDots();
-        
-        const modalInstance = new bootstrap.Modal(this.modal);        modalInstance.show();
+        setTimeout(() => {
+            indicator.classList.remove('show');
+        }, 3000);
     }
 }
 
-// Initialize modal gallery
-document.addEventListener('DOMContentLoaded', function() {
-    const modalGallery = new ModalGallery();
-    window.modalGalleryInstance = modalGallery;
-    
-    // Handle Bootstrap modal events
-    const galleryModal = document.getElementById('galleryModal');
-    if (galleryModal) {
-        // When modal is shown, initialize/reset gallery to specific slide
-        galleryModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const slideIndex = parseInt(button.getAttribute('data-slide')) || 0;
-            
-            setTimeout(() => {
-                if (modalGallery && modalGallery.goToSlide) {
-                    modalGallery.goToSlide(slideIndex);
-                }
-            }, 150);
-        });
-        
-        // Reset to first slide when modal is hidden
-        galleryModal.addEventListener('hidden.bs.modal', function() {
-            if (modalGallery && modalGallery.goToSlide) {
-                modalGallery.goToSlide(0);
-            }
-        });
+function closeLightbox(event) {
+    // Only close if clicking directly on modal background or close button
+    if (event && event.target !== event.currentTarget && !event.target.classList.contains('lightbox-close')) {
+        return;
     }
     
-    console.log('🖼️ Modal Gallery with Swipe initialized');
+    const modal = document.getElementById('lightboxModal');
+    
+    // Hide modal
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+    
+    // Restore body state
+    document.body.classList.remove('lightbox-open');
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    
+    // Clean up events
+    resetTouchEvents();
+    document.removeEventListener('keydown', handleKeyPress);
+    document.removeEventListener('touchmove', preventDefaultTouch);
+    document.removeEventListener('wheel', preventDefaultWheel);
+}
+
+function createCarousel() {
+    const carouselTrack = document.getElementById('lightboxCarouselTrack');
+    if (!carouselTrack) return;
+    
+    carouselTrack.innerHTML = '';
+    
+    galleryImages.forEach((image, index) => {
+        const carouselItem = document.createElement('div');
+        carouselItem.className = 'lightbox-carousel-item';
+        carouselItem.innerHTML = `<img src="${image.url}" alt="${image.title}" loading="lazy">`;
+        carouselTrack.appendChild(carouselItem);
+    });
+}
+
+function showImage(index) {
+    if (index < 0 || index >= galleryImages.length) return;
+    
+    currentImageIndex = index;
+    const carouselTrack = document.getElementById('lightboxCarouselTrack');
+    const title = document.getElementById('lightboxTitle');
+    const counter = document.getElementById('lightboxCounter');
+    
+    if (carouselTrack) {
+        const containerWidth = carouselTrack.parentElement.offsetWidth;
+        const targetTransform = -index * containerWidth;
+        carouselTrack.style.transform = `translateX(${targetTransform}px)`;
+    }
+    
+    if (title) {
+        title.textContent = galleryImages[index].title;
+    }
+      if (counter) {
+        let counterText = `${index + 1} / ${galleryImages.length}`;
+        
+        // Add circular hint for first and last images
+        if (galleryImages.length > 1) {
+            if (index === 0) {
+                counterText += ` ← ${galleryImages.length}`;
+            } else if (index === galleryImages.length - 1) {
+                counterText += ` → 1`;
+            }
+        }
+        
+        counter.textContent = counterText;
+    }
+    
+    updateActiveThumbnail();
+}
+
+function previousImage() {
+    const newIndex = currentImageIndex > 0 ? currentImageIndex - 1 : galleryImages.length - 1;
+    
+    // Add special animation for circular transition
+    if (currentImageIndex === 0 && newIndex === galleryImages.length - 1) {
+        const carouselTrack = document.getElementById('lightboxCarouselTrack');
+        if (carouselTrack) {
+            carouselTrack.classList.add('circular-transition');
+            setTimeout(() => {
+                carouselTrack.classList.remove('circular-transition');
+            }, 500);
+        }
+    }
+    
+    showImage(newIndex);
+}
+
+function nextImage() {
+    const newIndex = currentImageIndex < galleryImages.length - 1 ? currentImageIndex + 1 : 0;
+    
+    // Add special animation for circular transition
+    if (currentImageIndex === galleryImages.length - 1 && newIndex === 0) {
+        const carouselTrack = document.getElementById('lightboxCarouselTrack');
+        if (carouselTrack) {
+            carouselTrack.classList.add('circular-transition');
+            setTimeout(() => {
+                carouselTrack.classList.remove('circular-transition');
+            }, 500);
+        }
+    }
+    
+    showImage(newIndex);
+}
+
+function createThumbnails() {
+    const container = document.getElementById('lightboxThumbnails');
+    container.innerHTML = '';
+    
+    if (galleryImages.length <= 1) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    galleryImages.forEach((image, index) => {
+        const thumb = document.createElement('img');
+        thumb.src = image.url;
+        thumb.alt = image.title;
+        thumb.className = 'lightbox-thumb';
+        thumb.onclick = () => showImage(index);
+        container.appendChild(thumb);
+    });
+}
+
+function updateActiveThumbnail() {
+    const thumbs = document.querySelectorAll('.lightbox-thumb');
+    thumbs.forEach((thumb, index) => {
+        thumb.classList.toggle('active', index === currentImageIndex);
+    });
+}
+
+function handleKeyPress(event) {
+    switch(event.key) {
+        case 'Escape':
+            closeLightbox();
+            break;
+        case 'ArrowLeft':
+            previousImage();
+            break;
+        case 'ArrowRight':
+            nextImage();
+            break;
+    }
+}
+
+// Prevent default touch/scroll behaviors outside lightbox
+function preventDefaultTouch(e) {
+    // Allow touch only within lightbox modal
+    if (!e.target.closest('.lightbox-modal')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+}
+
+function preventDefaultWheel(e) {
+    // Allow wheel only within lightbox modal
+    if (!e.target.closest('.lightbox-modal')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+}
+
+// Touch/swipe support
+let touchStartX = 0;
+let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
+let isDragging = false;
+let touchEventsInitialized = false;
+let startTransform = 0;
+let currentTransform = 0;
+
+function initializeTouchEvents() {
+    if (touchEventsInitialized) return;
+    
+    const carouselWrapper = document.getElementById('lightboxCarouselWrapper');
+    const imageContainer = document.querySelector('.lightbox-image-container');
+    
+    if (carouselWrapper && imageContainer) {
+        // Remove existing listeners first
+        carouselWrapper.removeEventListener('touchstart', handleTouchStart);
+        carouselWrapper.removeEventListener('touchmove', handleTouchMove);
+        carouselWrapper.removeEventListener('touchend', handleTouchEnd);
+        
+        // Add new listeners with proper event handling
+        carouselWrapper.addEventListener('touchstart', handleTouchStart, { passive: false });
+        carouselWrapper.addEventListener('touchmove', handleTouchMove, { passive: false });
+        carouselWrapper.addEventListener('touchend', handleTouchEnd, { passive: false });
+        
+        // Also add mouse events for desktop testing
+        imageContainer.addEventListener('mousedown', handleMouseDown, { passive: false });
+        imageContainer.addEventListener('mousemove', handleMouseMove, { passive: false });
+        imageContainer.addEventListener('mouseup', handleMouseUp, { passive: false });
+        imageContainer.addEventListener('mouseleave', handleMouseUp, { passive: false });
+        
+        touchEventsInitialized = true;
+    }
+}
+
+function resetTouchEvents() {
+    touchEventsInitialized = false;
+    isDragging = false;
+    
+    const carouselWrapper = document.getElementById('lightboxCarouselWrapper');
+    const imageContainer = document.querySelector('.lightbox-image-container');
+    
+    if (carouselWrapper) {
+        carouselWrapper.removeEventListener('touchstart', handleTouchStart);
+        carouselWrapper.removeEventListener('touchmove', handleTouchMove);
+        carouselWrapper.removeEventListener('touchend', handleTouchEnd);
+    }
+    
+    if (imageContainer) {
+        imageContainer.removeEventListener('mousedown', handleMouseDown);
+        imageContainer.removeEventListener('mousemove', handleMouseMove);
+        imageContainer.removeEventListener('mouseup', handleMouseUp);
+        imageContainer.removeEventListener('mouseleave', handleMouseUp);
+    }
+}
+
+function handleTouchStart(e) {
+    // Only handle touch within carousel area
+    if (!e.target.closest('.lightbox-image-container')) {
+        return;
+    }
+    
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isDragging = true;
+    
+    const carouselTrack = document.getElementById('lightboxCarouselTrack');
+    if (carouselTrack) {
+        const transform = carouselTrack.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        startTransform = match ? parseFloat(match[1]) : 0;
+        currentTransform = startTransform;
+        
+        // Remove transition for smooth dragging
+        carouselTrack.classList.add('dragging');
+    }
+    
+    // Add visual feedback
+    const imageContainer = document.querySelector('.lightbox-image-container');
+    if (imageContainer) {
+        imageContainer.classList.add('swiping');
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function handleTouchMove(e) {
+    if (!isDragging) return;
+    
+    touchEndX = e.touches[0].clientX;
+    touchEndY = e.touches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    // Only allow horizontal swiping if movement is primarily horizontal
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const carouselTrack = document.getElementById('lightboxCarouselTrack');
+        if (carouselTrack) {
+            currentTransform = startTransform + deltaX;
+            
+            // Lighter resistance at boundaries to hint at circular navigation
+            const containerWidth = carouselTrack.parentElement.offsetWidth;
+            const maxTransform = 0;
+            const minTransform = -(galleryImages.length - 1) * containerWidth;
+            
+            // Only apply light resistance, don't create a hard boundary
+            if (currentTransform > maxTransform) {
+                // At first image, allow some movement to hint previous image
+                currentTransform = maxTransform + (currentTransform - maxTransform) * 0.5;
+            } else if (currentTransform < minTransform) {
+                // At last image, allow some movement to hint next image
+                currentTransform = minTransform + (currentTransform - minTransform) * 0.5;
+            }
+            
+            carouselTrack.style.transform = `translateX(${currentTransform}px)`;
+        }
+    }
+}
+
+function handleTouchEnd(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    
+    // Remove visual feedback
+    const imageContainer = document.querySelector('.lightbox-image-container');
+    if (imageContainer) {
+        imageContainer.classList.remove('swiping');
+    }
+    
+    const carouselTrack = document.getElementById('lightboxCarouselTrack');
+    if (carouselTrack) {
+        // Restore transition
+        carouselTrack.classList.remove('dragging');
+    }
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const swipeThreshold = 50;
+    const maxVerticalMovement = 150;
+    
+    // Check if this was a valid swipe gesture
+    if (Math.abs(deltaX) > swipeThreshold && Math.abs(deltaY) < maxVerticalMovement) {
+        if (deltaX < 0) {
+            // Swiped left - next image
+            nextImage();
+        } else {
+            // Swiped right - previous image
+            previousImage();
+        }
+    } else {
+        // Snap back to current image
+        showImage(currentImageIndex);
+    }
+    
+    // Reset coordinates
+    touchStartX = 0;
+    touchStartY = 0;
+    touchEndX = 0;
+    touchEndY = 0;
+      e.preventDefault();
+    e.stopPropagation();
+}
+
+// Mouse events for desktop testing
+function handleMouseDown(e) {
+    // Only handle mouse within carousel area
+    if (!e.target.closest('.lightbox-image-container')) {
+        return;
+    }
+    
+    touchStartX = e.clientX;
+    touchStartY = e.clientY;
+    isDragging = true;
+    
+    const carouselTrack = document.getElementById('lightboxCarouselTrack');
+    if (carouselTrack) {
+        const transform = carouselTrack.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        startTransform = match ? parseFloat(match[1]) : 0;
+        currentTransform = startTransform;
+        
+        carouselTrack.classList.add('dragging');
+    }
+    
+    const imageContainer = document.querySelector('.lightbox-image-container');
+    if (imageContainer) {
+        imageContainer.classList.add('swiping');
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function handleMouseMove(e) {
+    if (!isDragging) return;
+    
+    touchEndX = e.clientX;
+    touchEndY = e.clientY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 5) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const carouselTrack = document.getElementById('lightboxCarouselTrack');
+        if (carouselTrack) {
+            currentTransform = startTransform + deltaX;
+            
+            // Lighter resistance at boundaries to hint at circular navigation
+            const containerWidth = carouselTrack.parentElement.offsetWidth;
+            const maxTransform = 0;
+            const minTransform = -(galleryImages.length - 1) * containerWidth;
+            
+            // Only apply light resistance, don't create a hard boundary
+            if (currentTransform > maxTransform) {
+                // At first image, allow some movement to hint previous image
+                currentTransform = maxTransform + (currentTransform - maxTransform) * 0.5;
+            } else if (currentTransform < minTransform) {
+                // At last image, allow some movement to hint next image
+                currentTransform = minTransform + (currentTransform - minTransform) * 0.5;
+            }
+            
+            carouselTrack.style.transform = `translateX(${currentTransform}px)`;
+        }
+    }
+}
+
+function handleMouseUp(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    
+    const imageContainer = document.querySelector('.lightbox-image-container');
+    if (imageContainer) {
+        imageContainer.classList.remove('swiping');
+    }
+    
+    const carouselTrack = document.getElementById('lightboxCarouselTrack');
+    if (carouselTrack) {
+        carouselTrack.classList.remove('dragging');
+    }
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const swipeThreshold = 50;
+    const maxVerticalMovement = 150;
+    
+    if (Math.abs(deltaX) > swipeThreshold && Math.abs(deltaY) < maxVerticalMovement) {
+        if (deltaX < 0) {
+            nextImage();
+        } else {
+            previousImage();
+        }
+    } else {
+        showImage(currentImageIndex);
+    }
+    
+    touchStartX = 0;
+    touchStartY = 0;
+    touchEndX = 0;
+    touchEndY = 0;
+    
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize touch events when DOM is ready
+    setTimeout(() => {
+        initializeTouchEvents();
+    }, 100);
+});
+
+// Remove legacy handleSwipe function as it's no longer needed
+// The new touch events handle all swipe functionality
+
+// Related project card click handlers
+const relatedProjectCards = document.querySelectorAll('.related-projects-section .project-card');
+relatedProjectCards.forEach((card) => {
+    card.addEventListener('click', function() {
+        const slug = this.getAttribute('data-project-slug');
+        if (slug) {
+            window.location.href = `/projects/${slug}/`;
+        }
+    });
 });
 </script>
 {% endblock %}
