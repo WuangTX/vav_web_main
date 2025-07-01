@@ -121,7 +121,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Khi cuộn xuống */
 .navbar.scrolled {
-    background-color: rgba(0, 0, 0, 0.9); /* Đen trong suốt */
+    background-color: rgba(0, 0, 0, 0.7); /* Đen trong suốt */
     backdrop-filter: blur(15px); /* Tăng hiệu ứng mờ khi cuộn */
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }

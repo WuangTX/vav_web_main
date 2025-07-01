@@ -380,8 +380,6 @@
                             <p class="main-project-description">{{ main_project.description|truncatewords:20 }}</p>
                             <div class="main-project-actions">
                                 <a href="{% url 'project_detail' main_project.slug %}" class="btn-main-view">
-                                    <span>XEM THÊM</span>
-                                    <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -405,8 +403,6 @@
                                 {% endif %}
                                 <div class="small-project-actions">
                                     <a href="{% url 'project_detail' project.slug %}" class="btn-small-view">
-                                        <span>XEM THÊM</span>
-                                        <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -431,8 +427,6 @@
                             <p class="main-project-description">Không gian sống cao cấp với thiết kế hiện đại, kết hợp hoàn hảo giữa công năng và thẩm mỹ. Dự án mang đến trải nghiệm sống đẳng cấp cho gia đình.</p>
                             <div class="main-project-actions">
                                 <a href="#" class="btn-main-view">
-                                    <span>XEM THÊM</span>
-                                    <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -453,8 +447,6 @@
                                 </p>
                                 <div class="small-project-actions">
                                     <a href="#" class="btn-small-view">
-                                        <span>XEM THÊM</span>
-                                        <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -473,8 +465,6 @@
                                 </p>
                                 <div class="small-project-actions">
                                     <a href="#" class="btn-small-view">
-                                        <span>XEM THÊM</span>
-                                        <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -1041,51 +1031,6 @@
     margin-top: auto;
 }
 
-.btn-main-view,
-.btn-small-view {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-}
-
-.btn-small-view {
-    padding: 8px 16px;
-    font-size: 11px;
-    border-radius: 20px;
-    gap: 6px;
-    box-shadow: 0 3px 12px rgba(255, 107, 107, 0.25);
-}
-
-.btn-main-view:hover,
-.btn-small-view:hover {
-    background: linear-gradient(135deg, #ee5a24, #ff6b6b);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.btn-main-view i,
-.btn-small-view i {
-    transition: transform 0.3s ease;
-}
-
-.btn-main-view:hover i,
-.btn-small-view:hover i {
-    transform: translateX(3px);
-}
 
 /* Responsive Design */
 @media (max-width: 1199px) {
