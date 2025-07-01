@@ -23,33 +23,100 @@
 <!-- Products Section -->
 <section class="products-section py-5">
     <div class="container">
-        <!-- Search and Filter Row -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3 mb-md-0">
-                <form action="{% url 'products' %}" method="get" class="search-form">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." name="search" value="{{ request.GET.search|default:'' }}">
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+        <!-- Search and Filter Bar -->
+        <div class="filter-bar mb-4">
+            <div class="row align-items-center">
+                <!-- Search -->
+                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                    <form action="{% url 'products' %}" method="get" class="search-form">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." name="search" value="{{ request.GET.search|default:'' }}">
+                            {% if request.GET.category %}
+                                <input type="hidden" name="category" value="{{ request.GET.category }}">
+                            {% endif %}
+                            {% if request.GET.price_min %}
+                                <input type="hidden" name="price_min" value="{{ request.GET.price_min }}">
+                            {% endif %}
+                            {% if request.GET.price_max %}
+                                <input type="hidden" name="price_max" value="{{ request.GET.price_max }}">
+                            {% endif %}
+                            {% if request.GET.sort %}
+                                <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+                            {% endif %}
+                            <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
+                    <div class="price-filter-container">
+                        <label class="filter-label">Khoảng giá:</label>
+                        <div class="price-slider-wrapper">
+                            <div class="price-slider">
+                                <div class="slider-track"></div>
+                                <input type="range" id="priceMin" min="{{ min_price_range }}" max="{{ max_price_range }}" value="{{ price_min|default:min_price_range }}" step="100000" class="slider-input">
+                                <input type="range" id="priceMax" min="{{ min_price_range }}" max="{{ max_price_range }}" value="{{ price_max|default:max_price_range }}" step="100000" class="slider-input">
+                            </div>
+                            <div class="price-values">
+                                <span id="priceMinDisplay">{{ price_min|default:min_price_range|floatformat:0|intcomma }}₫</span>
+                                <span class="price-separator">-</span>
+                                <span id="priceMaxDisplay">{{ price_max|default:max_price_range|floatformat:0|intcomma }}₫</span>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            </div>
-            <div class="col-md-6">
-                <div class="d-flex justify-content-md-end">
-                    <select class="form-select" style="max-width: 200px;">
-                        <option value="default">Sắp xếp mặc định</option>
-                        <option value="price-asc">Giá: Thấp đến cao</option>
-                        <option value="price-desc">Giá: Cao đến thấp</option>
-                        <option value="newest">Mới nhất</option>
-                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                    <form action="{% url 'products' %}" method="get" class="sort-form">
+                        <label class="filter-label">Sắp xếp:</label>
+                        {% if request.GET.search %}
+                            <input type="hidden" name="search" value="{{ request.GET.search }}">
+                        {% endif %}
+                        {% if request.GET.category %}
+                            <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        {% endif %}
+                        {% if request.GET.price_min %}
+                            <input type="hidden" name="price_min" value="{{ request.GET.price_min }}">
+                        {% endif %}
+                        {% if request.GET.price_max %}
+                            <input type="hidden" name="price_max" value="{{ request.GET.price_max }}">
+                        {% endif %}
+                        <select class="form-select" name="sort" onchange="this.form.submit()">
+                            <option value="">Mặc định</option>
+                            <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Giá: Thấp → Cao</option>
+                            <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Giá: Cao → Thấp</option>
+                            <option value="name_asc" {% if request.GET.sort == 'name_asc' %}selected{% endif %}>Tên: A → Z</option>
+                            <option value="name_desc" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>Tên: Z → A</option>
+                            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Mới nhất</option>
+                        </select>
+                    </form>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="col-lg-2 col-md-6">
+                    <div class="filter-actions">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="applyPriceFilter()">
+                            <i class="fas fa-filter"></i> Lọc
+                        </button>
+                        {% if request.GET.price_min or request.GET.price_max or request.GET.search or request.GET.category or request.GET.sort %}
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAllFilters()">
+                            <i class="fas fa-times"></i> Xóa
+                        </button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Products Filter -->
         <div class="product-filters text-center mb-5">
-            <button class="filter-button active" data-filter="all">Tất Cả</button>
+            <button class="filter-button {% if not request.GET.category %}active{% endif %}" 
+                    onclick="filterByCategory('all')">Tất Cả</button>
             {% for category in categories %}
-            <button class="filter-button" data-filter="{{ category.slug }}">{{ category.name }}</button>
+            <button class="filter-button {% if request.GET.category == category.slug %}active{% endif %}" 
+                    onclick="filterByCategory('{{ category.slug }}')">{{ category.name }}</button>
             {% endfor %}
         </div>
           <div class="row g-4">
@@ -84,21 +151,21 @@
         {% if products.has_other_pages %}
             <div class="pagination-custom">
                 {% if products.has_previous %}
-                    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Đầu</a>
-                    <a href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Trước</a>
+                    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="page-link">Đầu</a>
+                    <a href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="page-link">Trước</a>
                 {% endif %}
 
                 {% for num in products.paginator.page_range %}
                     {% if products.number == num %}
                         <span class="page-link active">{{ num }}</span>
                     {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">{{ num }}</a>
+                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="page-link">{{ num }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if products.has_next %}
-                    <a href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Sau</a>
-                    <a href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="page-link">Cuối</a>
+                    <a href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="page-link">Sau</a>
+                    <a href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="page-link">Cuối</a>
                 {% endif %}
             </div>
         {% endif %}
@@ -124,4 +191,402 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Filter Bar Styling */
+.filter-bar {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid #dee2e6;
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Search Input Styling */
+.search-form .form-control {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.search-form .btn {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+}
+
+/* Price Filter Container */
+.price-filter-container {
+    position: relative;
+}
+
+.price-slider-wrapper {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e9ecef;
+}
+
+/* Custom Slider Styling */
+.price-slider {
+    position: relative;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    margin: 1rem 0;
+}
+
+.slider-track {
+    position: absolute;
+    height: 6px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border-radius: 3px;
+    z-index: 1;
+}
+
+.slider-input {
+    position: absolute;
+    top: -9px;
+    width: 100%;
+    height: 6px;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23007bff'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+}
+
+.slider-input::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dc3545'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E");
+}
+
+.slider-input::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23007bff'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+}
+
+.slider-input::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dc3545'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E");
+}
+
+/* Price Values Display */
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: #007bff;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.price-separator {
+    color: #6c757d;
+    font-weight: 400;
+}
+
+/* Sort Select */
+.sort-form .form-select {
+    border-radius: 8px;
+    border-color: #ced4da;
+    box-shadow: none;
+    font-size: 0.9rem;
+}
+
+.sort-form .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.15);
+}
+
+/* Filter Actions */
+.filter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.filter-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    min-width: 80px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Category Filter Buttons */
+.product-filters {
+    margin-bottom: 2rem;
+}
+
+.filter-button {
+    background: white;
+    border: 2px solid #e9ecef;
+    color: #495057;
+    padding: 0.6rem 1.2rem;
+    margin: 0.3rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.filter-button:hover {
+    background: #007bff;
+    border-color: #007bff;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.3);
+}
+
+.filter-button.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .filter-bar {
+        padding: 1rem;
+    }
+    
+    .filter-actions {
+        flex-direction: row;
+        margin-top: 1rem;
+    }
+    
+    .filter-actions .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-bar {
+        padding: 0.75rem;
+    }
+    
+    .price-slider-wrapper {
+        padding: 0.75rem;
+    }
+    
+    .filter-button {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        margin: 0.2rem;
+    }
+    
+    .price-values {
+        font-size: 0.8rem;
+    }
+}
+
+/* Animation for filter results */
+.product-item {
+    transition: all 0.3s ease;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const priceMin = document.getElementById('priceMin');
+    const priceMax = document.getElementById('priceMax');
+    const priceMinDisplay = document.getElementById('priceMinDisplay');
+    const priceMaxDisplay = document.getElementById('priceMaxDisplay');
+    const sliderTrack = document.querySelector('.slider-track');
+    
+    // Format number with thousand separators
+    function formatPrice(price) {
+        return Math.round(price).toLocaleString('vi-VN') + '₫';
+    }
+    
+    // Update price display and slider track
+    function updatePriceDisplay() {
+        let minVal = parseInt(priceMin.value);
+        let maxVal = parseInt(priceMax.value);
+        
+        // Ensure min is always less than max
+        if (minVal > maxVal) {
+            [minVal, maxVal] = [maxVal, minVal];
+            priceMin.value = minVal;
+            priceMax.value = maxVal;
+        }
+        
+        // Update display values
+        priceMinDisplay.textContent = formatPrice(minVal);
+        priceMaxDisplay.textContent = formatPrice(maxVal);
+        
+        // Update visual track
+        updateSliderTrack(minVal, maxVal);
+    }
+    
+    // Update the visual track between sliders
+    function updateSliderTrack(minVal, maxVal) {
+        const min = parseInt(priceMin.min);
+        const max = parseInt(priceMin.max);
+        
+        const leftPercent = ((minVal - min) / (max - min)) * 100;
+        const rightPercent = ((maxVal - min) / (max - min)) * 100;
+        
+        sliderTrack.style.left = leftPercent + '%';
+        sliderTrack.style.width = (rightPercent - leftPercent) + '%';
+    }
+    
+    // Event listeners for real-time updates
+    priceMin.addEventListener('input', updatePriceDisplay);
+    priceMax.addEventListener('input', updatePriceDisplay);
+    
+    // Initialize
+    updatePriceDisplay();
+});
+
+// Apply price filter function (called by "Lọc" button)
+function applyPriceFilter() {
+    const priceMin = document.getElementById('priceMin');
+    const priceMax = document.getElementById('priceMax');
+    const minPrice = priceMin.value;
+    const maxPrice = priceMax.value;
+    
+    // Build URL with current parameters
+    const url = new URL(window.location.href);
+    url.searchParams.set('price_min', minPrice);
+    url.searchParams.set('price_max', maxPrice);
+    
+    // Reset page to 1 when applying filter
+    url.searchParams.delete('page');
+    
+    // Show loading effect
+    const filterBtn = event.target;
+    const originalHTML = filterBtn.innerHTML;
+    filterBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lọc...';
+    filterBtn.disabled = true;
+    
+    // Redirect to filtered results
+    window.location.href = url.toString();
+}
+
+// Filter by category function
+function filterByCategory(categorySlug) {
+    const url = new URL(window.location.href);
+    
+    if (categorySlug === 'all') {
+        url.searchParams.delete('category');
+    } else {
+        url.searchParams.set('category', categorySlug);
+    }
+    
+    // Reset page to 1 when changing category
+    url.searchParams.delete('page');
+    
+    // Add loading effect to category buttons
+    const buttons = document.querySelectorAll('.filter-button');
+    buttons.forEach(btn => {
+        btn.style.opacity = '0.6';
+        btn.style.pointerEvents = 'none';
+    });
+    
+    window.location.href = url.toString();
+}
+
+// Clear all filters function
+function clearAllFilters() {
+    // Show confirmation
+    if (confirm('Bạn có chắc muốn xóa tất cả bộ lọc không?')) {
+        const url = new URL(window.location.origin + window.location.pathname);
+        
+        // Show loading effect
+        const clearBtn = event.target;
+        const originalHTML = clearBtn.innerHTML;
+        clearBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+        clearBtn.disabled = true;
+        
+        window.location.href = url.toString();
+    }
+}
+
+// Add smooth animations when page loads
+window.addEventListener('load', function() {
+    // Fade in product items
+    const productItems = document.querySelectorAll('.product-item');
+    productItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            item.style.transition = 'all 0.6s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Animate filter bar
+    const filterBar = document.querySelector('.filter-bar');
+    if (filterBar) {
+        filterBar.style.transform = 'translateY(-20px)';
+        filterBar.style.opacity = '0';
+        
+        setTimeout(() => {
+            filterBar.style.transition = 'all 0.5s ease';
+            filterBar.style.transform = 'translateY(0)';
+            filterBar.style.opacity = '1';
+        }, 200);
+    }
+});
+</script>
 {% endblock %}

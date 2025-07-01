@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Product, ProductCategory, Project, ContactMessage, News, NewsCategory
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from django.core.paginator import Paginator
 
 def home(request):
@@ -25,10 +25,56 @@ def products(request):
     products_list = Product.objects.all()
     categories = ProductCategory.objects.all()
     
+    # Get price range for slider
+    price_range = Product.objects.aggregate(min_price=Min('price'), max_price=Max('price'))
+    min_price = price_range['min_price'] or 0
+    max_price = price_range['max_price'] or 1000000
+    
     # Search functionality
     search_query = request.GET.get('search', '')
     if search_query:
         products_list = products_list.filter(name__icontains=search_query) | products_list.filter(description__icontains=search_query)
+    
+    # Category filter
+    category_slug = request.GET.get('category', '')
+    category = None
+    if category_slug:
+        category = get_object_or_404(ProductCategory, slug=category_slug)
+        products_list = products_list.filter(category=category)
+    
+    # Price range filter
+    price_min = request.GET.get('price_min', '')
+    price_max = request.GET.get('price_max', '')
+    
+    if price_min:
+        try:
+            price_min = float(price_min)
+            products_list = products_list.filter(price__gte=price_min)
+        except ValueError:
+            price_min = ''
+    
+    if price_max:
+        try:
+            price_max = float(price_max)
+            products_list = products_list.filter(price__lte=price_max)
+        except ValueError:
+            price_max = ''
+    
+    # Sorting functionality
+    sort_option = request.GET.get('sort', '')
+    if sort_option == 'price_asc':
+        products_list = products_list.order_by('price')
+    elif sort_option == 'price_desc':
+        products_list = products_list.order_by('-price')
+    elif sort_option == 'name_asc':
+        products_list = products_list.order_by('name')
+    elif sort_option == 'name_desc':
+        products_list = products_list.order_by('-name')
+    elif sort_option == 'newest':
+        products_list = products_list.order_by('-created_at')
+    else:
+        # Default sorting
+        products_list = products_list.order_by('name')
     
     # Pagination
     paginator = Paginator(products_list, 12)  # 12 products per page
@@ -39,6 +85,12 @@ def products(request):
         'products': products,
         'categories': categories,
         'search_query': search_query,
+        'category': category,
+        'sort_option': sort_option,
+        'price_min': price_min,
+        'price_max': price_max,
+        'min_price_range': min_price,
+        'max_price_range': max_price,
     }
     return render(request, 'main/products.html', context)
 
@@ -59,10 +111,49 @@ def products_by_category(request, category_slug):
     products_list = Product.objects.filter(category=category)
     categories = ProductCategory.objects.all()
     
+    # Get price range for slider
+    price_range = Product.objects.aggregate(min_price=Min('price'), max_price=Max('price'))
+    min_price = price_range['min_price'] or 0
+    max_price = price_range['max_price'] or 1000000
+    
     # Search functionality
     search_query = request.GET.get('search', '')
     if search_query:
         products_list = products_list.filter(name__icontains=search_query) | products_list.filter(description__icontains=search_query)
+    
+    # Price range filter
+    price_min = request.GET.get('price_min', '')
+    price_max = request.GET.get('price_max', '')
+    
+    if price_min:
+        try:
+            price_min = float(price_min)
+            products_list = products_list.filter(price__gte=price_min)
+        except ValueError:
+            price_min = ''
+    
+    if price_max:
+        try:
+            price_max = float(price_max)
+            products_list = products_list.filter(price__lte=price_max)
+        except ValueError:
+            price_max = ''
+    
+    # Sorting functionality
+    sort_option = request.GET.get('sort', '')
+    if sort_option == 'price_asc':
+        products_list = products_list.order_by('price')
+    elif sort_option == 'price_desc':
+        products_list = products_list.order_by('-price')
+    elif sort_option == 'name_asc':
+        products_list = products_list.order_by('name')
+    elif sort_option == 'name_desc':
+        products_list = products_list.order_by('-name')
+    elif sort_option == 'newest':
+        products_list = products_list.order_by('-created_at')
+    else:
+        # Default sorting
+        products_list = products_list.order_by('name')
     
     # Pagination
     paginator = Paginator(products_list, 12)  # 12 products per page
@@ -74,6 +165,11 @@ def products_by_category(request, category_slug):
         'products': products,
         'categories': categories,
         'search_query': search_query,
+        'sort_option': sort_option,
+        'price_min': price_min,
+        'price_max': price_max,
+        'min_price_range': min_price,
+        'max_price_range': max_price,
     }
     return render(request, 'main/products.html', context)
 

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!zuhu-6vm(eww#*5&xe8ady(tgk+0p&z)&53gqu5d_u%rj6wk*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn', '4.230.20.113', 'localhost', '127.0.0.1', '192.168.2.214']
+ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn', '4.230.20.113', 'localhost', '127.0.0.1', '192.168.2.209']
 # ALLOWED_HOSTS = [] 
 
 
