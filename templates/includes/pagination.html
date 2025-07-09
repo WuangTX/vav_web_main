@@ -1,0 +1,48 @@
+{% load humanize %}
+
+<!-- Pagination Template -->
+{% if page_obj.has_other_pages %}
+    <nav aria-label="Pagination Navigation" class="mt-5">
+        <div class="pagination-custom">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link" title="Trang đầu">
+                    <i class="fas fa-angle-double-left"></i> <span>Đầu</span>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link" title="Trang trước">
+                    <i class="fas fa-angle-left"></i> <span>Trước</span>
+                </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="page-link active" title="Trang hiện tại">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link" title="Trang {{ num }}">{{ num }}</a>
+                {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link" title="Trang {{ num }}">{{ num }}</a>
+                {% elif num == page_obj.number|add:'-4' or num == page_obj.number|add:'4' %}
+                    <span class="page-link disabled">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link" title="Trang sau">
+                    <span>Sau</span> <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link" title="Trang cuối">
+                    <span>Cuối</span> <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination Info -->
+        <div class="pagination-info text-center mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                Hiển thị {{ page_obj.start_index }}-{{ page_obj.end_index }} trong tổng số {{ page_obj.paginator.count }} {{ item_type|default:"kết quả" }}
+                <span class="mx-2">|</span>
+                Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </small>
+        </div>
+    </nav>
+{% endif %}

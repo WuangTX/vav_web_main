@@ -11,8 +11,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 import uuid
-from main.models import Product, ProductCategory, Project, ProjectTimeline, ProjectGallery, ContactMessage, News, NewsCategory
-from .forms import ProductForm, CategoryForm, ProjectForm, ProjectTimelineForm, ProjectGalleryForm, NewsForm, NewsCategoryForm, ProjectGalleryMultipleForm
+from main.models import Product, ProductCategory, ProductDetailContent, Project, ProjectTimeline, ProjectGallery, ContactMessage, News, NewsCategory
+from .forms import ProductForm, CategoryForm, ProductDetailContentForm, ProjectForm, ProjectTimelineForm, ProjectGalleryForm, NewsForm, NewsCategoryForm, ProjectGalleryMultipleForm
 
 def dashboard_login(request):
     """View for custom admin login page"""
@@ -111,6 +111,7 @@ def product_add(request):
 def product_edit(request, pk):
     """View to edit a product"""
     product = get_object_or_404(Product, pk=pk)
+    detail_contents = product.detail_contents.all()
     
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -121,7 +122,12 @@ def product_edit(request, pk):
     else:
         form = ProductForm(instance=product)
     
-    return render(request, 'dashboard/products/form.html', {'form': form, 'title': 'Chỉnh Sửa Sản Phẩm', 'product': product})
+    return render(request, 'dashboard/products/form.html', {
+        'form': form, 
+        'title': 'Chỉnh Sửa Sản Phẩm', 
+        'product': product,
+        'detail_contents': detail_contents
+    })
 
 @login_required
 def product_delete(request, pk):
@@ -651,3 +657,64 @@ def project_gallery_delete(request, id):
             messages.error(request, f'Có lỗi xảy ra khi xóa ảnh: {str(e)}')
     
     return redirect('dashboard:project_detail', id=project_id)
+
+# Product Detail Content management views
+@login_required
+def product_detail_content_add(request, product_pk):
+    """View to add detail content to a product"""
+    product = get_object_or_404(Product, pk=product_pk)
+    
+    if request.method == 'POST':
+        form = ProductDetailContentForm(request.POST, request.FILES)
+        if form.is_valid():
+            detail_content = form.save(commit=False)
+            detail_content.product = product
+            detail_content.save()
+            messages.success(request, 'Nội dung chi tiết đã được thêm thành công.')
+            return redirect('dashboard:product_edit', pk=product_pk)
+    else:
+        form = ProductDetailContentForm()
+    
+    return render(request, 'dashboard/products/detail_content_form.html', {
+        'form': form, 
+        'product': product,
+        'title': 'Thêm Nội Dung Chi Tiết'
+    })
+
+@login_required
+def product_detail_content_edit(request, pk):
+    """View to edit product detail content"""
+    detail_content = get_object_or_404(ProductDetailContent, pk=pk)
+    product = detail_content.product
+    
+    if request.method == 'POST':
+        form = ProductDetailContentForm(request.POST, request.FILES, instance=detail_content)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Nội dung chi tiết đã được cập nhật thành công.')
+            return redirect('dashboard:product_edit', pk=product.pk)
+    else:
+        form = ProductDetailContentForm(instance=detail_content)
+    
+    return render(request, 'dashboard/products/detail_content_form.html', {
+        'form': form, 
+        'product': product,
+        'detail_content': detail_content,
+        'title': 'Chỉnh Sửa Nội Dung Chi Tiết'
+    })
+
+@login_required
+def product_detail_content_delete(request, pk):
+    """View to delete product detail content"""
+    detail_content = get_object_or_404(ProductDetailContent, pk=pk)
+    product = detail_content.product
+    
+    if request.method == 'POST':
+        detail_content.delete()
+        messages.success(request, 'Nội dung chi tiết đã được xóa thành công.')
+        return redirect('dashboard:product_edit', pk=product.pk)
+    
+    return render(request, 'dashboard/products/detail_content_delete.html', {
+        'detail_content': detail_content,
+        'product': product
+    })

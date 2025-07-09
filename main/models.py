@@ -34,6 +34,35 @@ def product_image_upload_to(instance, filename):
     return os.path.join('products/', new_filename)
 
 
+def product_detail_image_upload_to(instance, filename):
+    """Generate upload path for product detail images"""
+    # Get file extension
+    ext = filename.split('.')[-1].lower()
+    
+    # Validate file extension
+    allowed_extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+    if ext not in allowed_extensions:
+        ext = 'jpg'  # Default to jpg if extension is not allowed
+    
+    # Create slug from product name
+    slug = slugify(instance.product.name)
+    
+    # Remove any non-alphanumeric characters except hyphens
+    slug = re.sub(r'[^a-zA-Z0-9\-]', '', slug)
+    
+    # Ensure slug is not empty
+    if not slug:
+        slug = 'product'
+    
+    # Add timestamp to avoid conflicts
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    # Create new filename: slug_detail_timestamp.extension
+    new_filename = f"{slug}_detail_{timestamp}.{ext}"
+    
+    return os.path.join('products/details/', new_filename)
+
+
 def project_image_upload_to(instance, filename):
     """Generate upload path for project images using slug"""
     # Get file extension
@@ -158,6 +187,33 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class ProductDetailContent(models.Model):
+    """Model for product detailed content with rich text and images"""
+    CONTENT_TYPES = (
+        ('text', 'Văn Bản'),
+        ('image', 'Hình Ảnh'),
+        ('text_image', 'Văn Bản & Hình Ảnh'),
+    )
+    
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="detail_contents")
+    content_type = models.CharField(max_length=20, choices=CONTENT_TYPES, default='text')
+    title = models.CharField(max_length=200, blank=True)
+    content = models.TextField(blank=True)
+    image = models.ImageField(upload_to=product_detail_image_upload_to, blank=True, null=True)
+    image_caption = models.CharField(max_length=200, blank=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = "Product Detail Content"
+        verbose_name_plural = "Product Detail Contents"
+    
+    def __str__(self):
+        return f"{self.product.name} - {self.title or 'Content'}"
 
 class Project(models.Model):
     """Model for furniture projects/portfolio"""

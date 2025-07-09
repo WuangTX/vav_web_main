@@ -17,6 +17,11 @@ urlpatterns = [
     path('products/edit/<int:pk>/', views.product_edit, name='product_edit'),
     path('products/delete/<int:pk>/', views.product_delete, name='product_delete'),
     
+    # Product Detail Content management
+    path('products/<int:product_pk>/detail-content/add/', views.product_detail_content_add, name='product_detail_content_add'),
+    path('detail-content/<int:pk>/edit/', views.product_detail_content_edit, name='product_detail_content_edit'),
+    path('detail-content/<int:pk>/delete/', views.product_detail_content_delete, name='product_detail_content_delete'),
+    
     # Product Category management
     path('categories/', views.category_list, name='category_list'),
     path('categories/add/', views.category_add, name='category_add'),

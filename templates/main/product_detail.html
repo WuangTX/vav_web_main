@@ -4,6 +4,59 @@
 
 {% block title %}{{ product.name }} - VAV Furniture{% endblock %}
 
+{% block extra_css %}
+<style>
+    .content-title {
+        color: #007bff;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .content-text p {
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 1rem;
+    }
+    
+    .content-image img {
+        max-width: 100%;
+        height: auto;
+        transition: transform 0.3s ease;
+    }
+    
+    .content-image img:hover {
+        transform: scale(1.05);
+    }
+    
+    .image-caption {
+        font-size: 0.9rem;
+        font-style: italic;
+    }
+    
+    .content-text-image {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+        .content-text-image {
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        
+        .content-text-image .content-text {
+            flex: 1;
+            margin-right: 2rem;
+        }
+        
+        .content-text-image .content-image {
+            flex: 0 0 40%;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Page Header -->
 <section class="page-header">
@@ -88,9 +141,49 @@
             <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
                 <div class="product-tab-content">
                     <h4>Mô Tả Chi Tiết</h4>
-                    <p>{{ product.description }}</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget risus vel erat congue faucibus. Sed ac justo vel mi condimentum faucibus. Suspendisse potenti. Morbi nec arcu et justo volutpat faucibus vel id justo. Sed ac risus ac augue pharetra finibus.</p>
-                    <p>Nulla facilisi. Cras vel metus eget elit interdum efficitur. Nullam at magna vel nunc ultrices malesuada. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec vel magna vel nunc ultrices malesuada.</p>
+                    
+                    {% if detail_contents %}
+                        {% for content in detail_contents %}
+                            <div class="detail-content-item mb-4">
+                                {% if content.title %}
+                                    <h5 class="content-title">{{ content.title }}</h5>
+                                {% endif %}
+                                
+                                {% if content.content_type == 'text' %}
+                                    <div class="content-text">
+                                        <p>{{ content.content|linebreaks }}</p>
+                                    </div>
+                                {% elif content.content_type == 'image' %}
+                                    <div class="content-image text-center">
+                                        <img src="{{ content.image.url }}" alt="{{ content.image_caption|default:content.title }}" class="img-fluid rounded shadow-sm">
+                                        {% if content.image_caption %}
+                                            <p class="image-caption text-muted mt-2"><em>{{ content.image_caption }}</em></p>
+                                        {% endif %}
+                                    </div>
+                                {% elif content.content_type == 'text_image' %}
+                                    <div class="content-text-image">
+                                        {% if content.content %}
+                                            <div class="content-text mb-3">
+                                                <p>{{ content.content|linebreaks }}</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if content.image %}
+                                            <div class="content-image text-center">
+                                                <img src="{{ content.image.url }}" alt="{{ content.image_caption|default:content.title }}" class="img-fluid rounded shadow-sm">
+                                                {% if content.image_caption %}
+                                                    <p class="image-caption text-muted mt-2"><em>{{ content.image_caption }}</em></p>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Fallback to original description if no detail contents -->
+                        <p>{{ product.description }}</p>
+                        <p>Để biết thêm thông tin chi tiết về sản phẩm này, vui lòng liên hệ với chúng tôi để được tư vấn tận tình.</p>
+                    {% endif %}
                 </div>
             </div>
             <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">

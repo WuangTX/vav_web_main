@@ -65,6 +65,11 @@
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Liên Hệ</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'chatbot' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chatbot:chat_page' %}">
+                                <i class="fas fa-robot"></i> Trợ lý ảo
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -173,5 +178,8 @@
     </script>
 
     {% block extra_js %}{% endblock %}
+    
+    <!-- Chatbot Widget -->
+    {% include 'includes/chatbot_widget.html' %}
 </body>
 </html>

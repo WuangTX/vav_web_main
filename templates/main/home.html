@@ -127,6 +127,197 @@
     </div>
 </section>
 
+
+<!-- Projects Gallery Section -->
+<section class="projects-section bg-light">
+    <div class="container">
+        <div class="section-heading text-center py-5 mb-0">
+            <h6 class="text-primary">Dự Án Tiêu Biểu</h6>
+            <h2>Các Dự Án Nội Thất Nổi Bật</h2>
+            <p class="text-muted">Những không gian sống đẳng cấp được thiết kế và thi công bởi VAV Furniture</p>
+        </div>
+    </div>
+    
+    <!-- Featured Projects Grid - Full Width -->
+    <div class="featured-projects-grid-fullwidth">
+            {% if featured_projects %}
+                <!-- Main Featured Project (Large) -->
+                {% with featured_projects|first as main_project %}
+                <div class="main-project-card" data-project-slug="{{ main_project.slug }}">
+                    <div class="image-bg" style="background-image: url('{{ main_project.image.url }}');"></div>
+                    <div class="overlay project-overlay-gradient">
+                        <div class="project-content-main">
+                            <h2 class="main-project-title">{{ main_project.title }}</h2>
+                            {% if main_project.location %}
+                                <p class="main-project-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ main_project.location }}
+                                </p>
+                            {% endif %}
+                            <p class="main-project-description">{{ main_project.description|truncatewords:20 }}</p>
+                            <div class="main-project-actions">
+                                <a href="{% url 'project_detail' main_project.slug %}" class="btn-main-view">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                
+                <!-- Secondary Projects (Smaller) -->
+                <div class="secondary-projects">
+                    {% for project in featured_projects|slice:"1:3" %}
+                    <div class="secondary-project-card" data-project-slug="{{ project.slug }}">
+                        <div class="image-bg-small" style="background-image: url('{{ project.image.url }}');"></div>
+                        <div class="overlay project-overlay-small">
+                            <div class="project-content-small">
+                                <h3 class="small-project-title">{{ project.title }}</h3>
+                                {% if project.location %}
+                                    <p class="small-project-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ project.location }}
+                                    </p>
+                                {% endif %}
+                                <div class="small-project-actions">
+                                    <a href="{% url 'project_detail' project.slug %}" class="btn-small-view">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+            {% else %}
+                <!-- Fallback Featured Projects -->
+                <!-- Main Featured Project -->
+                <div class="main-project-card">
+                    <div class="image-bg" style="background-image: url('{% static 'images/project-1.jpg' %}');"></div>
+                    <div class="overlay project-overlay-gradient">
+                        <div class="project-content-main">
+                            <div class="project-badge-premium">DỰ ÁN NỔI BẬT</div>
+                            <h2 class="main-project-title">Biệt Thự Vinhomes Luxury</h2>
+                            <p class="main-project-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                TP. Hồ Chí Minh
+                            </p>
+                            <p class="main-project-description">Không gian sống cao cấp với thiết kế hiện đại, kết hợp hoàn hảo giữa công năng và thẩm mỹ. Dự án mang đến trải nghiệm sống đẳng cấp cho gia đình.</p>
+                            <div class="main-project-actions">
+                                <a href="#" class="btn-main-view">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Secondary Projects -->
+                <div class="secondary-projects">
+                    <div class="secondary-project-card">
+                        <div class="image-bg-small" style="background-image: url('{% static 'images/project-2.jpg' %}');"></div>
+                        <div class="overlay project-overlay-small">
+                            <div class="project-content-small">
+                                <div class="project-badge-small">DỰ ÁN</div>
+                                <h3 class="small-project-title">Căn Hộ Masteri</h3>
+                                <p class="small-project-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Hà Nội
+                                </p>
+                                <div class="small-project-actions">
+                                    <a href="#" class="btn-small-view">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="secondary-project-card">
+                        <div class="image-bg-small" style="background-image: url('{% static 'images/project-3.jpg' %}');"></div>
+                        <div class="overlay project-overlay-small">
+                            <div class="project-content-small">
+                                <div class="project-badge-small">DỰ ÁN</div>
+                                <h3 class="small-project-title">Văn Phòng ABC Corp</h3>
+                                <p class="small-project-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Đà Nẵng
+                                </p>
+                                <div class="small-project-actions">
+                                    <a href="#" class="btn-small-view">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    
+    <div class="container">
+        <div class="text-center py-5">
+            <a href="{% url 'projects' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-th-large me-2"></i>
+                Xem Tất Cả Dự Án
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Dịch Vụ Của Chúng Tôi</h6>
+            <h2>Giải Pháp Nội Thất Toàn Diện</h2>
+            <p class="text-muted">VAV Furniture cung cấp đầy đủ các dịch vụ từ tư vấn, thiết kế đến thi công và bảo hành</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Service 1 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-pencil-ruler fa-3x text-primary"></i>
+                    </div>
+                    <h5>Tư Vấn & Thiết Kế</h5>
+                    <p class="text-muted">Tư vấn và thiết kế không gian nội thất phù hợp với nhu cầu và phong cách của khách hàng.</p>
+                </div>
+            </div>
+            
+            <!-- Service 2 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-couch fa-3x text-primary"></i>
+                    </div>
+                    <h5>Sản Xuất Nội Thất</h5>
+                    <p class="text-muted">Sản xuất nội thất cao cấp từ các chất liệu tốt nhất với công nghệ hiện đại.</p>
+                </div>
+            </div>
+            
+            <!-- Service 3 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-truck fa-3x text-primary"></i>
+                    </div>
+                    <h5>Thi Công & Lắp Đặt</h5>
+                    <p class="text-muted">Dịch vụ thi công và lắp đặt nội thất chuyên nghiệp, nhanh chóng và tỉ mỉ.</p>
+                </div>
+            </div>
+            
+            <!-- Service 4 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="service-card text-center p-4">
+                    <div class="service-icon mb-4">
+                        <i class="fas fa-tools fa-3x text-primary"></i>
+                    </div>
+                    <h5>Bảo Hành & Bảo Trì</h5>
+                    <p class="text-muted">Dịch vụ bảo hành, bảo trì và sửa chữa nội thất lâu dài và chu đáo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Featured Products Section -->
 <section class="products-section py-5 bg-light">
     <div class="container">
@@ -294,195 +485,6 @@
     </div>
 </section>
 
-<!-- Services Section -->
-<section class="services-section py-5">
-    <div class="container">
-        <div class="section-heading text-center mb-5">
-            <h6 class="text-primary">Dịch Vụ Của Chúng Tôi</h6>
-            <h2>Giải Pháp Nội Thất Toàn Diện</h2>
-            <p class="text-muted">VAV Furniture cung cấp đầy đủ các dịch vụ từ tư vấn, thiết kế đến thi công và bảo hành</p>
-        </div>
-        
-        <div class="row g-4">
-            <!-- Service 1 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="service-card text-center p-4">
-                    <div class="service-icon mb-4">
-                        <i class="fas fa-pencil-ruler fa-3x text-primary"></i>
-                    </div>
-                    <h5>Tư Vấn & Thiết Kế</h5>
-                    <p class="text-muted">Tư vấn và thiết kế không gian nội thất phù hợp với nhu cầu và phong cách của khách hàng.</p>
-                </div>
-            </div>
-            
-            <!-- Service 2 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="service-card text-center p-4">
-                    <div class="service-icon mb-4">
-                        <i class="fas fa-couch fa-3x text-primary"></i>
-                    </div>
-                    <h5>Sản Xuất Nội Thất</h5>
-                    <p class="text-muted">Sản xuất nội thất cao cấp từ các chất liệu tốt nhất với công nghệ hiện đại.</p>
-                </div>
-            </div>
-            
-            <!-- Service 3 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="service-card text-center p-4">
-                    <div class="service-icon mb-4">
-                        <i class="fas fa-truck fa-3x text-primary"></i>
-                    </div>
-                    <h5>Thi Công & Lắp Đặt</h5>
-                    <p class="text-muted">Dịch vụ thi công và lắp đặt nội thất chuyên nghiệp, nhanh chóng và tỉ mỉ.</p>
-                </div>
-            </div>
-            
-            <!-- Service 4 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="service-card text-center p-4">
-                    <div class="service-icon mb-4">
-                        <i class="fas fa-tools fa-3x text-primary"></i>
-                    </div>
-                    <h5>Bảo Hành & Bảo Trì</h5>
-                    <p class="text-muted">Dịch vụ bảo hành, bảo trì và sửa chữa nội thất lâu dài và chu đáo.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Projects Gallery Section -->
-<section class="projects-section bg-light">
-    <div class="container">
-        <div class="section-heading text-center py-5 mb-0">
-            <h6 class="text-primary">Dự Án Tiêu Biểu</h6>
-            <h2>Các Dự Án Nội Thất Nổi Bật</h2>
-            <p class="text-muted">Những không gian sống đẳng cấp được thiết kế và thi công bởi VAV Furniture</p>
-        </div>
-    </div>
-    
-    <!-- Featured Projects Grid - Full Width -->
-    <div class="featured-projects-grid-fullwidth">
-            {% if featured_projects %}
-                <!-- Main Featured Project (Large) -->
-                {% with featured_projects|first as main_project %}
-                <div class="main-project-card" data-project-slug="{{ main_project.slug }}">
-                    <div class="image-bg" style="background-image: url('{{ main_project.image.url }}');"></div>
-                    <div class="overlay project-overlay-gradient">
-                        <div class="project-content-main">
-                            <h2 class="main-project-title">{{ main_project.title }}</h2>
-                            {% if main_project.location %}
-                                <p class="main-project-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{ main_project.location }}
-                                </p>
-                            {% endif %}
-                            <p class="main-project-description">{{ main_project.description|truncatewords:20 }}</p>
-                            <div class="main-project-actions">
-                                <a href="{% url 'project_detail' main_project.slug %}" class="btn-main-view">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endwith %}
-                
-                <!-- Secondary Projects (Smaller) -->
-                <div class="secondary-projects">
-                    {% for project in featured_projects|slice:"1:3" %}
-                    <div class="secondary-project-card" data-project-slug="{{ project.slug }}">
-                        <div class="image-bg-small" style="background-image: url('{{ project.image.url }}');"></div>
-                        <div class="overlay project-overlay-small">
-                            <div class="project-content-small">
-                                <h3 class="small-project-title">{{ project.title }}</h3>
-                                {% if project.location %}
-                                    <p class="small-project-location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ project.location }}
-                                    </p>
-                                {% endif %}
-                                <div class="small-project-actions">
-                                    <a href="{% url 'project_detail' project.slug %}" class="btn-small-view">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                
-            {% else %}
-                <!-- Fallback Featured Projects -->
-                <!-- Main Featured Project -->
-                <div class="main-project-card">
-                    <div class="image-bg" style="background-image: url('{% static 'images/project-1.jpg' %}');"></div>
-                    <div class="overlay project-overlay-gradient">
-                        <div class="project-content-main">
-                            <div class="project-badge-premium">DỰ ÁN NỔI BẬT</div>
-                            <h2 class="main-project-title">Biệt Thự Vinhomes Luxury</h2>
-                            <p class="main-project-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                TP. Hồ Chí Minh
-                            </p>
-                            <p class="main-project-description">Không gian sống cao cấp với thiết kế hiện đại, kết hợp hoàn hảo giữa công năng và thẩm mỹ. Dự án mang đến trải nghiệm sống đẳng cấp cho gia đình.</p>
-                            <div class="main-project-actions">
-                                <a href="#" class="btn-main-view">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Secondary Projects -->
-                <div class="secondary-projects">
-                    <div class="secondary-project-card">
-                        <div class="image-bg-small" style="background-image: url('{% static 'images/project-2.jpg' %}');"></div>
-                        <div class="overlay project-overlay-small">
-                            <div class="project-content-small">
-                                <div class="project-badge-small">DỰ ÁN</div>
-                                <h3 class="small-project-title">Căn Hộ Masteri</h3>
-                                <p class="small-project-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Hà Nội
-                                </p>
-                                <div class="small-project-actions">
-                                    <a href="#" class="btn-small-view">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="secondary-project-card">
-                        <div class="image-bg-small" style="background-image: url('{% static 'images/project-3.jpg' %}');"></div>
-                        <div class="overlay project-overlay-small">
-                            <div class="project-content-small">
-                                <div class="project-badge-small">DỰ ÁN</div>
-                                <h3 class="small-project-title">Văn Phòng ABC Corp</h3>
-                                <p class="small-project-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Đà Nẵng
-                                </p>
-                                <div class="small-project-actions">
-                                    <a href="#" class="btn-small-view">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-    
-    <div class="container">
-        <div class="text-center py-5">
-            <a href="{% url 'projects' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-th-large me-2"></i>
-                Xem Tất Cả Dự Án
-            </a>
-        </div>
-    </div>
-</section>
 
 <!-- News Section -->
 {% if featured_news %}

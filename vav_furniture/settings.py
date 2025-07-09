@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-!zuhu-6vm(eww#*5&xe8ady(tgk+0p&z)&53gqu5d_u%rj6wk*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Custom error pages
 ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn', '4.230.20.113', 'localhost', '127.0.0.1', '192.168.2.209']
 # ALLOWED_HOSTS = [] 
 
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'main',
     'dashboard',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +83,7 @@ WSGI_APPLICATION = 'vav_furniture.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vav_furniture',
+        'NAME': 'vav_test',
         'USER': 'postgres',
         'PASSWORD': '123456',
         'HOST': 'localhost',
@@ -143,3 +145,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

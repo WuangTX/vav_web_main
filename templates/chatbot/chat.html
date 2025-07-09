@@ -1,0 +1,937 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trợ lý ảo VAV Furniture{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        max-width: 800px;
+        margin-top: 4.5rem !important;
+        margin: 0 auto;
+        height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .chat-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+    }
+    
+    .chat-header p {
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 20px;
+        background: #f8f9fa;
+        scroll-behavior: smooth;
+        /* Ngăn chặn scroll propagation */
+        overscroll-behavior: contain;
+        /* Đảm bảo container có kích thước cố định */
+        height: 100%;
+        position: relative;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .message.user {
+        justify-content: flex-end;
+    }
+    
+    .message-content {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        word-wrap: break-word;
+    }
+    
+    .message.bot .message-content {
+        background: white;
+        border: 1px solid #e1e8ed;
+        margin-left: 10px;
+    }
+    
+    .message.user .message-content {
+        background: #667eea;
+        color: white;
+        margin-right: 10px;
+    }
+    
+    .avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 14px;
+    }
+    
+    .avatar.bot {
+        background: #28a745;
+    }
+    
+    .avatar.user {
+        background: #667eea;
+    }
+    
+    .recommendations {
+        margin-top: 10px;
+        margin-left: 45px; /* Căn sát phía chat bot (avatar 35px + margin 10px) */
+        margin-right: auto;
+        max-width: 65%;
+        align-self: flex-start;
+    }
+    
+    .recommendation-item {
+        background: white;
+        border: 1px solid #e1e8ed;
+        border-radius: 12px;
+        padding: 15px;
+        margin: 10px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .recommendation-item:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        border-color: #667eea;
+    }
+    
+    .recommendation-item:hover .recommendation-image {
+        transform: scale(1.02);
+    }
+    
+    .recommendation-image {
+        width: 100%;
+        height: 200px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        object-fit: cover;
+        border: 1px solid #e1e8ed;
+        transition: transform 0.3s ease;
+    }
+    
+    .recommendation-image-placeholder {
+        width: 100%;
+        height: 200px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: #666;
+        border: 1px solid #e1e8ed;
+    }
+    
+    .recommendation-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .recommendation-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 16px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .recommendation-meta {
+        font-size: 13px;
+        color: #667eea;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .recommendation-description {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .chat-input-container {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #e1e8ed;
+    }
+    
+    .chat-input-group {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        outline: none;
+        font-size: 14px;
+    }
+    
+    .chat-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    .send-btn {
+        padding: 12px 20px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
+    
+    .send-btn:hover:not(:disabled) {
+        background: #5a6fd8;
+    }
+    
+    .send-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+    
+    .typing-indicator {
+        display: none;
+        align-items: center;
+        padding: 10px;
+        color: #666;
+        font-style: italic;
+    }
+    
+    .typing-dots {
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    .typing-dots span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #667eea;
+        margin: 0 1px;
+        animation: typing 1.5s infinite;
+    }
+    
+    .typing-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+        0%, 60%, 100% {
+            transform: translateY(0);
+        }
+        30% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .quick-actions {
+        margin-bottom: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .quick-action-btn {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-action-btn:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .feedback-buttons {
+        margin-top: 8px;
+        display: flex;
+        gap: 5px;
+    }
+    
+    .feedback-btn {
+        padding: 5px 8px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+    
+    .feedback-btn.thumbs-up {
+        background: #28a745;
+        color: white;
+    }
+    
+    .feedback-btn.thumbs-down {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .feedback-btn:hover {
+        opacity: 0.8;
+    }
+
+    /* Typewriter effect */
+    .typewriter-text {
+        border-right: 2px solid #667eea;
+        animation: blink-caret 1s step-end infinite;
+    }
+
+    @keyframes blink-caret {
+        from, to { border-color: transparent; }
+        50% { border-color: #667eea; }
+    }
+
+    .smooth-scroll {
+        scroll-behavior: smooth;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3>🤖 Trợ lý ảo VAV Furniture</h3>
+                    <p>Tôi có thể giúp bạn tìm kiếm sản phẩm, dự án và tư vấn nội thất</p>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="quick-actions">
+                        <div class="quick-action-btn" onclick="sendQuickMessage('Tôi muốn tìm hiểu về sản phẩm sofa')">
+                            🛋️ Tìm sofa
+                        </div>
+                        <div class="quick-action-btn" onclick="sendQuickMessage('Cho tôi xem các dự án biệt thự')">
+                            🏠 Dự án biệt thự
+                        </div>
+                        <div class="quick-action-btn" onclick="sendQuickMessage('Quy trình thiết kế của VAV như thế nào?')">
+                            📋 Quy trình thiết kế
+                        </div>
+                        <div class="quick-action-btn" onclick="sendQuickMessage('Thông tin liên hệ')">
+                            📞 Liên hệ
+                        </div>
+                        <div class="quick-action-btn" onclick="sendQuickMessage('Tin tức mới nhất về nội thất')">
+                            📰 Tin tức
+                        </div>
+                    </div>
+                    
+                    <div class="message bot">
+                        <div class="avatar bot">VAV</div>
+                        <div class="message-content">
+                            Xin chào! Tôi là trợ lý ảo của VAV Furniture. Tôi có thể giúp bạn:
+                            <br>• Tìm kiếm sản phẩm nội thất
+                            <br>• Xem các dự án đã thực hiện
+                            <br>• Tìm hiểu về quy trình thiết kế
+                            <br>• Đọc tin tức về nội thất
+                            <br>• Tư vấn thiết kế và lựa chọn sản phẩm
+                            <br>• Cung cấp thông tin liên hệ
+                            <br><br>📞 Hotline: <strong>0935908007</strong> | 📧 Email: <strong>vavfurniture.danang@gmail.com</strong>
+                            <br><br>Bạn có câu hỏi gì cho tôi không?
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="avatar bot">VAV</div>
+                    <span>Đang trả lời</span>
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <div class="chat-input-group">
+                        <input type="text" 
+                               id="chatInput" 
+                               class="chat-input" 
+                               placeholder="Nhập câu hỏi của bạn..."
+                               onkeypress="handleKeyPress(event)">
+                        <button id="sendBtn" class="send-btn" onclick="event.preventDefault(); event.stopPropagation(); sendMessage();">
+                            Gửi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let sessionId = null;
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Ngăn chặn default behavior của Enter
+        event.stopPropagation(); // Ngăn chặn event bubbling
+        sendMessage();
+    }
+}
+
+function sendQuickMessage(message) {
+    document.getElementById('chatInput').value = message;
+    sendMessage();
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Hiển thị tin nhắn người dùng
+    addMessage('user', message);
+    
+    // Xóa input và disable
+    input.value = '';
+    const sendBtn = document.getElementById('sendBtn');
+    sendBtn.disabled = true;
+    
+    // Hiển thị typing indicator
+    showTypingIndicator();
+    
+    // Gửi request
+    fetch('{% url "chatbot:chat_api" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            message: message,
+            session_id: sessionId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideTypingIndicator();
+        
+        if (data.response) {
+            sessionId = data.session_id;
+            
+            // Hiển thị phản hồi
+            addMessage('bot', data.response, data.message_id);
+            
+            // Determine priority order based on topic
+            const recommendations = [];
+            
+            if (data.products && data.products.length > 0) {
+                recommendations.push({ type: 'products', items: data.products, priority: getTopicPriority(message, 'products') });
+            }
+            
+            if (data.projects && data.projects.length > 0) {
+                recommendations.push({ type: 'projects', items: data.projects, priority: getTopicPriority(message, 'projects') });
+            }
+            
+            if (data.news && data.news.length > 0) {
+                recommendations.push({ type: 'news', items: data.news, priority: getTopicPriority(message, 'news') });
+            }
+            
+            // Sort by priority (higher first)
+            recommendations.sort((a, b) => b.priority - a.priority);
+            
+            // Add recommendations in priority order
+            recommendations.forEach(rec => {
+                addRecommendations(rec.type, rec.items);
+            });
+        } else {
+            addMessage('bot', 'Xin lỗi, tôi không thể trả lời câu hỏi này. Vui lòng thử lại.');
+        }
+        
+        sendBtn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        hideTypingIndicator();
+        addMessage('bot', 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.');
+        sendBtn.disabled = false;
+    });
+}
+
+function getTopicPriority(message, type) {
+    const messageLower = message.toLowerCase();
+    
+    // Keywords for each topic
+    const topicKeywords = {
+        'news': ['tin', 'tức', 'news', 'bài', 'viết', 'thông', 'tin', 'mới', 'nhất'],
+        'projects': ['dự', 'án', 'project', 'thiết', 'kế', 'design', 'quy', 'trình', 'biệt', 'thự', 'villa', 'căn', 'hộ', 'văn', 'phòng', 'không', 'gian', 'thi', 'công'],
+        'products': ['sản', 'phẩm', 'product', 'sofa', 'bàn', 'ghế', 'giường', 'tủ', 'furniture', 'nội', 'thất', 'đồ', 'mua', 'bán', 'giá']
+    };
+    
+    // Count matching keywords
+    let score = 0;
+    const keywords = topicKeywords[type] || [];
+    
+    keywords.forEach(keyword => {
+        if (messageLower.includes(keyword)) {
+            score += 10;
+            
+            // Bonus for exact word match
+            const regex = new RegExp(`\\b${keyword}\\b`, 'i');
+            if (regex.test(messageLower)) {
+                score += 5;
+            }
+        }
+    });
+    
+    // Special high priority keywords
+    const highPriorityKeywords = {
+        'news': ['tin tức', 'bài viết', 'tin mới'],
+        'projects': ['quy trình thiết kế', 'dự án', 'thiết kế', 'thi công'],
+        'products': ['sản phẩm', 'mua sắm', 'furniture']
+    };
+    
+    const highKeywords = highPriorityKeywords[type] || [];
+    highKeywords.forEach(keyword => {
+        if (messageLower.includes(keyword)) {
+            score += 20;
+        }
+    });
+    
+    return score;
+}
+
+function addMessage(type, content, messageId = null) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    
+    const avatar = type === 'bot' ? 'VAV' : 'Bạn';
+    
+    if (type === 'bot') {
+        // Tạo message với nội dung trống trước
+        messageDiv.innerHTML = `
+            <div class="avatar ${type}">${avatar}</div>
+            <div class="message-content">
+                <span class="typewriter-content"></span>
+                ${messageId ? `
+                    <div class="feedback-buttons" style="display: none;">
+                        <button class="feedback-btn thumbs-up" onclick="sendFeedback(${messageId}, 5)">👍</button>
+                        <button class="feedback-btn thumbs-down" onclick="sendFeedback(${messageId}, 1)">👎</button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        
+        // Cuộn mượt trong container chat, KHÔNG ảnh hưởng đến trang
+        requestAnimationFrame(() => {
+            const targetScrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+            messagesContainer.scrollTop = Math.max(0, targetScrollTop);
+        });
+        
+        // Bắt đầu hiệu ứng typewriter
+        typeWriterEffect(messageDiv.querySelector('.typewriter-content'), content, messageId);
+    } else {
+        // User message hiển thị ngay
+        messageDiv.innerHTML = `
+            <div class="avatar ${type}">${avatar}</div>
+            <div class="message-content">
+                ${content}
+            </div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        
+        // Cuộn mượt trong container chat, KHÔNG ảnh hưởng đến trang
+        requestAnimationFrame(() => {
+            const targetScrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+            messagesContainer.scrollTop = Math.max(0, targetScrollTop);
+        });
+    }
+}
+
+function typeWriterEffect(element, text, messageId = null) {
+    let i = 0;
+    const speed = 5; // Tốc độ gõ (ms)
+    
+    // Thêm class typewriter
+    element.classList.add('typewriter-text');
+    
+    // Kiểm tra nếu text chứa HTML
+    const hasHTML = /<[^>]*>/.test(text);
+    
+    if (hasHTML) {
+        // Xử lý HTML với typewriter effect
+        typeWriterWithHTML(element, text, speed, messageId);
+    } else {
+        // Xử lý text thuần như cũ
+        typeWriterPlainText(element, text, speed, messageId);
+    }
+}
+
+function typeWriterPlainText(element, text, speed, messageId) {
+    let i = 0;
+    
+    function typeChar() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            
+            scrollIfNeeded();
+            setTimeout(typeChar, speed);
+        } else {
+            finishTyping(element, messageId);
+        }
+    }
+    
+    typeChar();
+}
+
+function typeWriterWithHTML(element, htmlText, speed, messageId) {
+    // Tạo DOM tạm thời để parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlText;
+    
+    // Lấy toàn bộ text content (không có tags) để hiển thị từng ký tự
+    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+    
+    let i = 0;
+    let currentHTML = '';
+    
+    function typeChar() {
+        if (i < plainText.length) {
+            // Thêm ký tự hiện tại
+            i++;
+            const partialText = plainText.substring(0, i);
+            
+            // Tạo HTML với text đã gõ cho đến hiện tại
+            currentHTML = createPartialHTML(htmlText, partialText);
+            element.innerHTML = currentHTML;
+            
+            scrollIfNeeded();
+            setTimeout(typeChar, speed);
+        } else {
+            // Hiển thị HTML hoàn chỉnh khi kết thúc
+            element.innerHTML = htmlText;
+            finishTyping(element, messageId);
+        }
+    }
+    
+    typeChar();
+}
+
+function createPartialHTML(fullHTML, partialText) {
+    // Tạo DOM tạm để xử lý HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = fullHTML;
+    
+    let textIndex = 0;
+    let result = '';
+    
+    // Đệ quy qua các node để tạo HTML một phần
+    function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const textContent = node.textContent;
+            const remainingChars = partialText.length - textIndex;
+            
+            if (remainingChars <= 0) {
+                return '';
+            }
+            
+            const charsToTake = Math.min(textContent.length, remainingChars);
+            const partialNodeText = textContent.substring(0, charsToTake);
+            textIndex += charsToTake;
+            
+            return partialNodeText;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const tagName = node.tagName.toLowerCase();
+            const attributes = Array.from(node.attributes)
+                .map(attr => `${attr.name}="${attr.value}"`)
+                .join(' ');
+            
+            let childContent = '';
+            for (let child of node.childNodes) {
+                childContent += processNode(child);
+                if (textIndex >= partialText.length) break;
+            }
+            
+            if (childContent || textIndex < partialText.length) {
+                return `<${tagName}${attributes ? ' ' + attributes : ''}>${childContent}</${tagName}>`;
+            }
+            
+            return '';
+        }
+        
+        return '';
+    }
+    
+    for (let child of tempDiv.childNodes) {
+        result += processNode(child);
+        if (textIndex >= partialText.length) break;
+    }
+    
+    return result;
+}
+
+function scrollIfNeeded() {
+    // Chỉ cuộn khi thực sự cần thiết và user đang ở cuối conversation
+    const messagesContainer = document.getElementById('chatMessages');
+    const isAtBottom = messagesContainer.scrollTop + messagesContainer.clientHeight >= messagesContainer.scrollHeight - 50;
+    
+    // Chỉ cuộn khi user đang ở gần cuối và cần thiết
+    if (isAtBottom) {
+        // Sử dụng scrollTo thay vì scrollTop += để tránh tích lũy lỗi
+        const newScrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+        if (newScrollTop > messagesContainer.scrollTop) {
+            messagesContainer.scrollTop = newScrollTop;
+        }
+    }
+}
+
+function finishTyping(element, messageId) {
+    // Khi hoàn thành typing
+    element.classList.remove('typewriter-text');
+    
+    // Hiển thị feedback buttons nếu có
+    if (messageId) {
+        const feedbackButtons = element.parentElement.querySelector('.feedback-buttons');
+        if (feedbackButtons) {
+            setTimeout(() => {
+                feedbackButtons.style.display = 'flex';
+            }, 300);
+        }
+    }
+}
+}
+
+function smoothScrollTo(element, targetScrollTop, duration) {
+    const start = element.scrollTop;
+    const change = targetScrollTop - start;
+    const startTime = performance.now();
+    
+    function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function (ease-out)
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        
+        element.scrollTop = start + (change * easeOut);
+        
+        if (progress < 1) {
+            requestAnimationFrame(animateScroll);
+        }
+    }
+    
+    requestAnimationFrame(animateScroll);
+}
+
+function addRecommendations(type, items) {
+    // Delay để recommendations xuất hiện sau khi bot message hoàn thành
+    setTimeout(() => {
+        const messagesContainer = document.getElementById('chatMessages');
+        const recommendationsDiv = document.createElement('div');
+        recommendationsDiv.className = 'recommendations';
+        recommendationsDiv.style.opacity = '0';
+        recommendationsDiv.style.transform = 'translateY(20px)';
+        recommendationsDiv.style.transition = 'all 0.8s ease';
+    
+    let title = '';
+    switch(type) {
+        case 'products':
+            title = '🛋️ Sản phẩm gợi ý:';
+            break;
+        case 'projects':
+            title = '🏠 Dự án tham khảo:';
+            break;
+        case 'news':
+            title = '📰 Tin tức liên quan:';
+            break;
+    }
+    
+    let html = `<div style="font-weight: bold; margin-bottom: 10px; color: #333;">${title}</div>`;
+    
+    items.forEach(item => {
+        let url = '';
+        let meta = '';
+        let description = '';
+        
+        if (type === 'products') {
+            url = `/products/${item.slug}/`;
+            meta = `${item.category} • ${parseInt(item.price).toLocaleString('vi-VN')} VNĐ`;
+            description = item.description ? item.description.substring(0, 150) + '...' : '';
+        } else if (type === 'projects') {
+            url = `/projects/${item.slug}/`;
+            meta = `${item.type} • ${item.location}`;
+            if (item.gallery_count > 0) {
+                meta += ` • ${item.gallery_count} ảnh`;
+            }
+            description = item.description ? item.description.substring(0, 150) + '...' : '';
+        } else if (type === 'news') {
+            url = `/news/${item.slug}/`;
+            meta = `${item.category}`;
+            if (item.published_at) {
+                meta += ` • ${item.published_at}`;
+            }
+            description = item.summary ? item.summary.substring(0, 150) + '...' : '';
+        }
+        
+        html += `
+            <div class="recommendation-item" onclick="window.open('${url}', '_blank')">
+                ${item.image ? `
+                    <img src="${item.image}" alt="${item.title || item.name}" class="recommendation-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="recommendation-image-placeholder" style="display:none;">
+                        ${type === 'products' ? '🛋️' : type === 'projects' ? '🏠' : '📰'}
+                    </div>
+                ` : `<div class="recommendation-image-placeholder">
+                    ${type === 'products' ? '🛋️' : type === 'projects' ? '🏠' : '�'}
+                </div>`}
+                <div class="recommendation-content">
+                    <div class="recommendation-title">${item.title || item.name}</div>
+                    <div class="recommendation-meta">${meta}</div>
+                    ${description ? `<div class="recommendation-description">${description}</div>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    recommendationsDiv.innerHTML = html;
+    messagesContainer.appendChild(recommendationsDiv);
+    
+        // Cuộn mượt để hiển thị recommendations CHẬM và tự nhiên
+        setTimeout(() => {
+            // Lấy vị trí hiện tại
+            const currentScrollTop = messagesContainer.scrollTop;
+            const targetScrollTop = recommendationsDiv.offsetTop - 50; // Hiển thị với một ít margin từ trên
+            
+            // Chỉ cuộn nếu recommendations không hiển thị đầy đủ
+            if (targetScrollTop > currentScrollTop) {
+                // Cuộn từ từ đến vị trí recommendations
+                smoothScrollTo(messagesContainer, targetScrollTop, 800); // 800ms để cuộn mượt
+            }
+            
+            // Fade in effect sau khi đã cuộn
+            setTimeout(() => {
+                recommendationsDiv.style.opacity = '1';
+                recommendationsDiv.style.transform = 'translateY(0)';
+            }, 200);
+            
+        }, 300);
+        
+    }, 800); // Delay 800ms sau khi bot message hoàn thành
+}
+
+function showTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    typingIndicator.style.display = 'flex';
+    
+    // Cuộn mượt đến typing indicator
+    setTimeout(() => {
+        typingIndicator.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end'
+        });
+    }, 100);
+}
+
+function hideTypingIndicator() {
+    document.getElementById('typingIndicator').style.display = 'none';
+}
+
+function sendFeedback(messageId, rating) {
+    fetch('{% url "chatbot:feedback_api" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            session_id: sessionId,
+            message_id: messageId,
+            rating: rating
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Feedback sent successfully');
+        }
+    })
+    .catch(error => {
+        console.error('Error sending feedback:', error);
+    });
+}
+
+// Auto focus input when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('chatInput').focus();
+    
+    // Ngăn chặn scroll propagation từ chat container lên page
+    const chatMessages = document.getElementById('chatMessages');
+    if (chatMessages) {
+        chatMessages.addEventListener('wheel', function(e) {
+            // Ngăn chặn scroll event lan truyền lên document khi đã cuộn đến đầu/cuối
+            const scrollTop = this.scrollTop;
+            const scrollHeight = this.scrollHeight;
+            const height = this.clientHeight;
+            
+            if ((scrollTop === 0 && e.deltaY < 0) || 
+                (scrollTop + height >= scrollHeight && e.deltaY > 0)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+});
+</script>
+{% endblock %}

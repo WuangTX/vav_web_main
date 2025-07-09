@@ -97,10 +97,12 @@ def products(request):
 def product_detail(request, slug):
     """View for the product detail page"""
     product = get_object_or_404(Product, slug=slug)
+    detail_contents = product.detail_contents.all()
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
     
     context = {
         'product': product,
+        'detail_contents': detail_contents,
         'related_products': related_products,
     }
     return render(request, 'main/product_detail.html', context)
@@ -334,3 +336,16 @@ def news_by_category(request, category_slug):
         'featured_news': featured_news,
     }
     return render(request, 'main/news_list.html', context)
+
+# Custom Error Views
+def custom_403(request, exception):
+    """Custom 403 error page"""
+    return render(request, '403.html', status=403)
+
+def custom_404(request, exception):
+    """Custom 404 error page"""
+    return render(request, '404.html', status=404)
+
+def custom_500(request):
+    """Custom 500 error page"""
+    return render(request, '500.html', status=500)

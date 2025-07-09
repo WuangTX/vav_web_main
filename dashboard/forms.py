@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from main.models import Product, ProductCategory, Project, ProjectTimeline, ProjectGallery, News, NewsCategory
+from main.models import Product, ProductCategory, ProductDetailContent, Project, ProjectTimeline, ProjectGallery, News, NewsCategory
 
 class CategoryForm(forms.ModelForm):
     """Form for product category"""
@@ -26,6 +26,20 @@ class ProductForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+class ProductDetailContentForm(forms.ModelForm):
+    """Form for product detail content"""
+    class Meta:
+        model = ProductDetailContent
+        fields = ['content_type', 'title', 'content', 'image', 'image_caption', 'order']
+        widgets = {
+            'content_type': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tiêu đề (tùy chọn)'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Nội dung văn bản...'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'image_caption': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Chú thích cho hình ảnh (tùy chọn)'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
         }
 
 class ProjectForm(forms.ModelForm):

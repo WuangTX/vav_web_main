@@ -1,6 +1,13 @@
 from django.contrib import admin
-from .models import ProductCategory, Product, Project, ProjectGallery, ProjectTimeline, ContactMessage, NewsCategory, News
+from .models import ProductCategory, Product, ProductDetailContent, Project, ProjectGallery, ProjectTimeline, ContactMessage, NewsCategory, News
 
+
+class ProductDetailContentInline(admin.TabularInline):
+    """Inline admin for product detail content"""
+    model = ProductDetailContent
+    extra = 1
+    fields = ('content_type', 'title', 'content', 'image', 'image_caption', 'order')
+    ordering = ['order']
 
 class ProjectGalleryInline(admin.TabularInline):
     """Inline admin for project gallery images"""
@@ -27,6 +34,14 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'featured')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
+    inlines = [ProductDetailContentInline]
+
+@admin.register(ProductDetailContent)
+class ProductDetailContentAdmin(admin.ModelAdmin):
+    list_display = ('product', 'title', 'content_type', 'order', 'created_at')
+    list_filter = ('content_type', 'product__category')
+    search_fields = ('product__name', 'title', 'content')
+    ordering = ['product', 'order']
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
