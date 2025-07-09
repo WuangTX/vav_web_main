@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Khởi tạo Cohere client
-COHERE_API_KEY = "44Mhomk58aaLnmrHPSXzc56vSsXtNjwtQwMZRGIa"
+COHERE_API_KEY = "K45hKBPVa1G6YgjlIQKAF7Dp5JJ162gr7iCHvqR1"
 co = cohere.Client(COHERE_API_KEY)
 
 
