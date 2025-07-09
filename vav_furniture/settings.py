@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'vav_furniture.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vav_test',
+        'NAME': 'vav_furniture',
         'USER': 'postgres',
         'PASSWORD': '123456',
         'HOST': 'localhost',
