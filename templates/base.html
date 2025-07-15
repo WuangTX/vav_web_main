@@ -4,16 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Nội Thất Cao Cấp - VAV{% endblock %}</title>
-    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">    <!-- Font Awesome -->
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}Nội Thất Cao Cấp VAV - noithatvav.vn{% endblock %}</title>
+    <meta name="description" content="{% block description %}VAV Furniture - Chuyên cung cấp nội thất cao cấp, thiết kế đẹp, chất lượng tốt với giá cả hợp lý tại noithatvav.vn. Đội ngũ thiết kế chuyên nghiệp, tư vấn tận tâm.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}nội thất, furniture, VAV, nội thất cao cấp, thiết kế nội thất, bàn ghế, tủ kệ, giường ngủ, sofa, noithatvav{% endblock %}">
+    <meta name="author" content="VAV Furniture - noithatvav.vn">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="geo.region" content="VN">
+    <meta name="geo.placename" content="Vietnam">
+    <meta name="language" content="Vietnamese">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Nội Thất Cao Cấp VAV - noithatvav.vn{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}VAV Furniture - Chuyên cung cấp nội thất cao cấp, thiết kế đẹp, chất lượng tốt với giá cả hợp lý tại noithatvav.vn.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/og-image.jpg' %}{% endblock %}">
+    <meta property="og:locale" content="vi_VN">
+    <meta property="og:site_name" content="VAV Furniture - noithatvav.vn">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}Nội Thất Cao Cấp VAV - noithatvav.vn{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}VAV Furniture - Chuyên cung cấp nội thất cao cấp, thiết kế đẹp, chất lượng tốt tại noithatvav.vn.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/og-image.jpg' %}{% endblock %}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    
+    <!-- Preconnect for external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap&subset=latin,vietnamese" rel="stylesheet">
 
-    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Structured Data -->
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "VAV Furniture",
+        "url": "https://noithatvav.vn",
+        "logo": "https://noithatvav.vn{% static 'images/logo.png' %}",
+        "description": "VAV Furniture - Chuyên thiết kế, thi công, cung cấp sản phẩm chất lượng tốt",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "73 Nguyễn Viết Xuân",
+            "addressLocality": "Đà Nẵng",
+            "addressCountry": "VN"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+84-93-590-8007",
+            "contactType": "customer service"
+        },
+        "sameAs": [
+            "https://www.facebook.com/vavfurniture0203",
+        ]
+    }
+    </script>
+    {% endblock %}
+    
+    <!-- Custom Styles -->
     <style>
     /* Override social icons for contact page */
     .contact-info .social-icons a {
@@ -30,7 +105,7 @@
         background-color: transparent !important;
         transform: scale(1.1);
     }
-</style>
+    </style>
     
     {% block extra_css %}{% endblock %}
 </head>

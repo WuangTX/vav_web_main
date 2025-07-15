@@ -1,4 +1,3 @@
-
 """
 Django settings for vav_furniture project.
 
@@ -41,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     'main',
     'dashboard',
     'chatbot',
@@ -57,6 +58,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'vav_furniture.urls'
+
+# Site ID for sitemap framework
+SITE_ID = 1
 
 TEMPLATES = [
     {

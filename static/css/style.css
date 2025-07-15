@@ -16,8 +16,12 @@
 * {
     font-family: 'Roboto', sans-serif !important;
 }
+html{
+    scroll-behavior: smooth;
+}
 
 body {
+    scroll-behavior: smooth;
     font-family: 'Roboto', sans-serif;
     color: var(--dark-color);
     line-height: 1.6;
