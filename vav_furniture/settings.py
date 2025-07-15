@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!zuhu-6vm(eww#*5&xe8ady(tgk+0p&z)&53gqu5d_u%rj6wk*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Custom error pages
-ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn', '4.230.20.113', 'localhost', '127.0.0.1', '192.168.2.209']
+ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn','localhost', '127.0.0.1',]
 # ALLOWED_HOSTS = [] 
 
 
@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'vav_furniture.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vav_test',
+        'NAME': 'vav_furniture',
         'USER': 'postgres',
         'PASSWORD': '123456',
         'HOST': 'localhost',
