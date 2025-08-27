@@ -9,6 +9,9 @@
 <a href="{% url 'dashboard:project_add' %}" class="btn btn-sm btn-primary">
     <i class="fas fa-plus me-1"></i> Thêm Dự Án Mới
 </a>
+<a href="{% url 'dashboard:project_gallery_list' %}" class="btn btn-sm btn-outline-info ms-2">
+    <i class="fas fa-images me-1"></i> Thư viện ảnh
+</a>
 {% endblock %}
 
 {% block content %}
@@ -33,11 +36,11 @@
             <table class="table table-hover table-striped mb-0">
                 <thead>
                     <tr>
-                        <th>Ảnh</th>                        <th>Tiêu Đề</th>
+                        <th>Ảnh</th>                        
+                        <th>Tiêu Đề</th>
                         <th>Loại Dự Án</th>
                         <th>Khách Hàng</th>
                         <th>Vị Trí</th>
-                        <th>Tiến Độ</th>
                         <th>Hoàn Thành</th>
                         <th>Nổi Bật</th>
                         <th width="150">Hành Động</th>
@@ -52,17 +55,10 @@
                         <td>
                             <strong>{{ project.title }}</strong>
                             <div><small class="text-muted">{{ project.slug }}</small></div>
-                        </td>                        <td>{{ project.get_project_type_display }}</td>
+                        </td>                        
+                        <td>{{ project.get_project_type_display }}</td>
                         <td>{{ project.client }}</td>
                         <td>{{ project.location }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="progress me-2" style="width: 60px; height: 8px;">
-                                    <div class="progress-bar" style="width: {{ project.overall_progress }}%"></div>
-                                </div>
-                                <small>{{ project.overall_progress }}%</small>
-                            </div>
-                        </td>
                         <td>{{ project.completed_date|date:"d/m/Y" }}</td>
                         <td>
                             {% if project.featured %}
@@ -70,7 +66,8 @@
                             {% else %}
                             <span class="badge bg-secondary">Không</span>
                             {% endif %}
-                        </td>                        <td>
+                        </td>                        
+                        <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{% url 'dashboard:project_edit' project.id %}" class="btn btn-outline-primary" title="Chỉnh sửa">
                                     <i class="fas fa-edit"></i>
@@ -81,6 +78,9 @@
                                 <a href="{% url 'dashboard:gallery_manage' project.id %}" class="btn btn-outline-info" title="Quản lý Thư viện">
                                     <i class="fas fa-images"></i>
                                 </a>
+                                <a href="{% url 'dashboard:project_gallery_multiple_add_with_project' project.id %}" class="btn btn-outline-warning" title="Thêm nhiều ảnh">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </a>
                                 <a href="{% url 'dashboard:project_delete' project.id %}" class="btn btn-outline-danger" title="Xóa">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
@@ -89,7 +89,8 @@
                                 </a>
                             </div>
                         </td>
-                    </tr>                    {% empty %}
+                    </tr>                    
+                    {% empty %}
                     <tr>
                         <td colspan="9" class="text-center py-4">Không tìm thấy dự án nào</td>
                     </tr>

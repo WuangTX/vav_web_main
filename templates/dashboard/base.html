@@ -11,7 +11,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Dashboard Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -46,10 +46,14 @@
                             <a class="nav-link {% if '/dashboard/categories' in request.path %}active{% endif %}" href="{% url 'dashboard:category_list' %}">
                                 <i class="fas fa-tags me-2"></i> Danh Mục
                             </a>
-                        </li>
-                        <li class="nav-item">
+                        </li>                        <li class="nav-item">
                             <a class="nav-link {% if '/dashboard/projects' in request.path %}active{% endif %}" href="{% url 'dashboard:project_list' %}">
                                 <i class="fas fa-project-diagram me-2"></i> Dự Án
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/dashboard/news' in request.path %}active{% endif %}" href="{% url 'dashboard:news_list' %}">
+                                <i class="fas fa-newspaper me-2"></i> Tin Tức
                             </a>
                         </li>
                         <li class="nav-item">

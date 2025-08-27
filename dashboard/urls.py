@@ -17,6 +17,11 @@ urlpatterns = [
     path('products/edit/<int:pk>/', views.product_edit, name='product_edit'),
     path('products/delete/<int:pk>/', views.product_delete, name='product_delete'),
     
+    # Product Detail Content management
+    path('products/<int:product_pk>/detail-content/add/', views.product_detail_content_add, name='product_detail_content_add'),
+    path('detail-content/<int:pk>/edit/', views.product_detail_content_edit, name='product_detail_content_edit'),
+    path('detail-content/<int:pk>/delete/', views.product_detail_content_delete, name='product_detail_content_delete'),
+    
     # Product Category management
     path('categories/', views.category_list, name='category_list'),
     path('categories/add/', views.category_add, name='category_add'),
@@ -32,15 +37,33 @@ urlpatterns = [
     path('projects/<int:project_id>/timeline/add/', views.timeline_add, name='timeline_add'),
     path('projects/<int:project_id>/timeline/<int:timeline_id>/edit/', views.timeline_edit, name='timeline_edit'),
     path('projects/<int:project_id>/timeline/<int:timeline_id>/delete/', views.timeline_delete, name='timeline_delete'),
-    
-    # Project Gallery management
+      # Project Gallery management
     path('projects/<int:project_id>/gallery/', views.gallery_manage, name='gallery_manage'),
     path('projects/<int:project_id>/gallery/add/', views.gallery_add, name='gallery_add'),
     path('projects/<int:project_id>/gallery/<int:gallery_id>/edit/', views.gallery_edit, name='gallery_edit'),
     path('projects/<int:project_id>/gallery/<int:gallery_id>/delete/', views.gallery_delete, name='gallery_delete'),
     
-    # Contact messages management
+    # Multiple images upload for project gallery
+    path('projects/gallery/multiple-add/', views.project_gallery_multiple_add, name='project_gallery_multiple_add'),
+    path('projects/<int:project_id>/gallery/multiple-add/', views.project_gallery_multiple_add, name='project_gallery_multiple_add_with_project'),
+    path('projects/gallery/', views.project_gallery_list, name='project_gallery_list'),
+    path('projects/gallery/<int:id>/delete/', views.project_gallery_delete, name='project_gallery_delete'),
+      # Contact messages management
     path('messages/', views.message_list, name='message_list'),
     path('messages/<int:pk>/', views.message_detail, name='message_detail'),
     path('messages/delete/<int:pk>/', views.message_delete, name='message_delete'),
+    
+    # News management
+    path('news/', views.news_list, name='news_list'),
+    path('news/add/', views.news_add, name='news_add'),
+    path('news/edit/<int:pk>/', views.news_edit, name='news_edit'),
+    path('news/delete/<int:pk>/', views.news_delete, name='news_delete'),
+      # News Category management
+    path('news/categories/', views.news_category_list, name='news_category_list'),
+    path('news/categories/add/', views.news_category_add, name='news_category_add'),
+    path('news/categories/edit/<int:pk>/', views.news_category_edit, name='news_category_edit'),
+    path('news/categories/delete/<int:pk>/', views.news_category_delete, name='news_category_delete'),
+    
+    # CKEditor image upload
+    path('upload-image/', views.upload_image, name='upload_image'),
 ]

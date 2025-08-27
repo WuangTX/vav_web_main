@@ -1,0 +1,62 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Xóa Nội Dung Chi Tiết - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Xóa Nội Dung Chi Tiết</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:product_list' %}">Sản Phẩm</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:product_edit' product.pk %}">{{ product.name }}</a></li>
+        <li class="breadcrumb-item active">Xóa Nội Dung</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Xác Nhận Xóa
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-warning me-1"></i>
+                        Bạn có chắc chắn muốn xóa nội dung chi tiết này không? Hành động này không thể hoàn tác.
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6>Thông tin nội dung sẽ bị xóa:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Tiêu đề:</strong> {{ detail_content.title|default:"Không có tiêu đề" }}</li>
+                                <li><strong>Loại:</strong> {{ detail_content.get_content_type_display }}</li>
+                                <li><strong>Thứ tự:</strong> {{ detail_content.order }}</li>
+                                {% if detail_content.content %}
+                                    <li><strong>Nội dung:</strong> {{ detail_content.content|truncatewords:20 }}</li>
+                                {% endif %}
+                                {% if detail_content.image %}
+                                    <li><strong>Hình ảnh:</strong> Có</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>
+                            Xác Nhận Xóa
+                        </button>
+                        <a href="{% url 'dashboard:product_edit' product.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Hủy Bỏ
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

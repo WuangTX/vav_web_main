@@ -119,6 +119,85 @@
         </form>
     </div>
 </div>
+
+{% if product %}
+<!-- Product Detail Content Management -->
+<div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-list-alt me-2"></i>
+            Nội Dung Chi Tiết
+        </h5>
+        <a href="{% url 'dashboard:product_detail_content_add' product.pk %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            Thêm Nội Dung
+        </a>
+    </div>
+    <div class="card-body">
+        {% if detail_contents %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Thứ Tự</th>
+                            <th>Tiêu Đề</th>
+                            <th>Loại</th>
+                            <th>Nội Dung</th>
+                            <th>Hình Ảnh</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for content in detail_contents %}
+                        <tr>
+                            <td>{{ content.order }}</td>
+                            <td>{{ content.title|default:"Không có tiêu đề" }}</td>
+                            <td>
+                                <span class="badge bg-{% if content.content_type == 'text' %}primary{% elif content.content_type == 'image' %}success{% else %}info{% endif %}">
+                                    {{ content.get_content_type_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if content.content %}
+                                    {{ content.content|truncatewords:10 }}
+                                {% else %}
+                                    <em class="text-muted">Không có nội dung</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if content.image %}
+                                    <img src="{{ content.image.url }}" alt="Content image" class="img-thumbnail" style="max-width: 60px; max-height: 60px;">
+                                {% else %}
+                                    <em class="text-muted">Không có</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'dashboard:product_detail_content_edit' content.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'dashboard:product_detail_content_delete' content.pk %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-list-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có nội dung chi tiết</h5>
+                <p class="text-muted">Thêm nội dung chi tiết để hiển thị thông tin đầy đủ về sản phẩm</p>
+                <a href="{% url 'dashboard:product_detail_content_add' product.pk %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Thêm Nội Dung Đầu Tiên
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

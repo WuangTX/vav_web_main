@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Truy cập bị từ chối | VAV Furniture</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e74c3c 0%, #2c3e50 100%);
+            font-family: 'Roboto', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .error-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('{% static "images/furniture-pattern.png" %}') repeat;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .error-content {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+        
+        .error-number {
+            font-size: 12rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f8f9fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .error-description {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-error {
+            background: linear-gradient(45deg, #fff, #f8f9fa);
+            border: none;
+            color: #e74c3c;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-error:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: #e74c3c;
+        }
+        
+        .btn-error.outline {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.8);
+            color: white;
+        }
+        
+        .btn-error.outline:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .error-suggestions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .error-suggestions h4 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .suggestions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .suggestions-list li {
+            padding: 0.5rem 0;
+            color: rgba(255,255,255,0.9);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .suggestions-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestions-list li i {
+            color: #e74c3c;
+            margin-right: 10px;
+        }
+        
+        .furniture-icon {
+            font-size: 4rem;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .error-number {
+                font-size: 8rem;
+            }
+            
+            .error-title {
+                font-size: 2rem;
+            }
+            
+            .error-description {
+                font-size: 1rem;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-error {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .error-number {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-content {
+                padding: 1rem;
+            }
+            
+            .error-suggestions {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-page">
+        <div class="error-content">
+            <div class="furniture-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            
+            <div class="error-number">403</div>
+            
+            <h1 class="error-title">Truy cập bị từ chối</h1>
+            
+            <p class="error-description">
+                Xin lỗi, bạn không có quyền truy cập vào trang này. 
+                Trang này có thể yêu cầu đăng nhập hoặc chỉ dành cho quản trị viên. 
+                Vui lòng kiểm tra quyền truy cập của bạn.
+            </p>
+            
+            <div class="error-actions">
+                <a href="{% url 'home' %}" class="btn-error">
+                    <i class="fas fa-home"></i>
+                    Về trang chủ
+                </a>
+                <a href="{% url 'dashboard:login' %}" class="btn-error outline">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Đăng nhập
+                </a>
+                <a href="{% url 'contact' %}" class="btn-error outline">
+                    <i class="fas fa-phone"></i>
+                    Liên hệ
+                </a>
+            </div>
+            
+            <div class="error-suggestions">
+                <h4><i class="fas fa-question-circle"></i> Bạn có thể:</h4>
+                <ul class="suggestions-list">
+                    <li><i class="fas fa-arrow-right"></i> Đăng nhập với tài khoản có quyền truy cập</li>
+                    <li><i class="fas fa-arrow-right"></i> Liên hệ quản trị viên để được cấp quyền</li>
+                    <li><i class="fas fa-arrow-right"></i> Quay về trang chủ để xem nội dung công khai</li>
+                    <li><i class="fas fa-arrow-right"></i> Xem catalog sản phẩm</li>
+                    <li><i class="fas fa-arrow-right"></i> Đọc tin tức và blog nội thất</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.key === 'Backspace') {
+                window.history.back();
+            }
+        });
+        
+        // Show login prompt after some time
+        setTimeout(function() {
+            if (confirm('Bạn có muốn đăng nhập để truy cập trang này không?')) {
+                window.location.href = "{% url 'dashboard:login' %}";
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

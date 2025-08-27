@@ -1,15 +1,18 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Product, ProductCategory, Project, ContactMessage
-from django.db.models import Q
+from .models import Product, ProductCategory, Project, ContactMessage, News, NewsCategory
+from django.db.models import Q, Min, Max
+from django.core.paginator import Paginator
 
 def home(request):
     """View for the home page"""
-    featured_products = Product.objects.filter(featured=True)[:4]
+    featured_products = Product.objects.filter(featured=True)[:8]
     featured_projects = Project.objects.filter(featured=True)[:3]
+    featured_news = News.objects.filter(featured=True, status='published')[:3]
     
     context = {
         'featured_products': featured_products,
         'featured_projects': featured_projects,
+        'featured_news': featured_news,
     }
     return render(request, 'main/home.html', context)
 
@@ -19,28 +22,87 @@ def about(request):
 
 def products(request):
     """View for the products page"""
-    products = Product.objects.all()
+    products_list = Product.objects.all()
     categories = ProductCategory.objects.all()
+    
+    # Get price range for slider
+    price_range = Product.objects.aggregate(min_price=Min('price'), max_price=Max('price'))
+    min_price = price_range['min_price'] or 0
+    max_price = price_range['max_price'] or 1000000
     
     # Search functionality
     search_query = request.GET.get('search', '')
     if search_query:
-        products = products.filter(name__icontains=search_query) | products.filter(description__icontains=search_query)
+        products_list = products_list.filter(name__icontains=search_query) | products_list.filter(description__icontains=search_query)
+    
+    # Category filter
+    category_slug = request.GET.get('category', '')
+    category = None
+    if category_slug:
+        category = get_object_or_404(ProductCategory, slug=category_slug)
+        products_list = products_list.filter(category=category)
+    
+    # Price range filter
+    price_min = request.GET.get('price_min', '')
+    price_max = request.GET.get('price_max', '')
+    
+    if price_min:
+        try:
+            price_min = float(price_min)
+            products_list = products_list.filter(price__gte=price_min)
+        except ValueError:
+            price_min = ''
+    
+    if price_max:
+        try:
+            price_max = float(price_max)
+            products_list = products_list.filter(price__lte=price_max)
+        except ValueError:
+            price_max = ''
+    
+    # Sorting functionality
+    sort_option = request.GET.get('sort', '')
+    if sort_option == 'price_asc':
+        products_list = products_list.order_by('price')
+    elif sort_option == 'price_desc':
+        products_list = products_list.order_by('-price')
+    elif sort_option == 'name_asc':
+        products_list = products_list.order_by('name')
+    elif sort_option == 'name_desc':
+        products_list = products_list.order_by('-name')
+    elif sort_option == 'newest':
+        products_list = products_list.order_by('-created_at')
+    else:
+        # Default sorting
+        products_list = products_list.order_by('name')
+    
+    # Pagination
+    paginator = Paginator(products_list, 12)  # 12 products per page
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
     
     context = {
         'products': products,
         'categories': categories,
         'search_query': search_query,
+        'category': category,
+        'sort_option': sort_option,
+        'price_min': price_min,
+        'price_max': price_max,
+        'min_price_range': min_price,
+        'max_price_range': max_price,
     }
     return render(request, 'main/products.html', context)
 
 def product_detail(request, slug):
     """View for the product detail page"""
     product = get_object_or_404(Product, slug=slug)
+    detail_contents = product.detail_contents.all()
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
     
     context = {
         'product': product,
+        'detail_contents': detail_contents,
         'related_products': related_products,
     }
     return render(request, 'main/product_detail.html', context)
@@ -48,13 +110,68 @@ def product_detail(request, slug):
 def products_by_category(request, category_slug):
     """View to filter products by category"""
     category = get_object_or_404(ProductCategory, slug=category_slug)
-    products = Product.objects.filter(category=category)
+    products_list = Product.objects.filter(category=category)
     categories = ProductCategory.objects.all()
+    
+    # Get price range for slider
+    price_range = Product.objects.aggregate(min_price=Min('price'), max_price=Max('price'))
+    min_price = price_range['min_price'] or 0
+    max_price = price_range['max_price'] or 1000000
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products_list = products_list.filter(name__icontains=search_query) | products_list.filter(description__icontains=search_query)
+    
+    # Price range filter
+    price_min = request.GET.get('price_min', '')
+    price_max = request.GET.get('price_max', '')
+    
+    if price_min:
+        try:
+            price_min = float(price_min)
+            products_list = products_list.filter(price__gte=price_min)
+        except ValueError:
+            price_min = ''
+    
+    if price_max:
+        try:
+            price_max = float(price_max)
+            products_list = products_list.filter(price__lte=price_max)
+        except ValueError:
+            price_max = ''
+    
+    # Sorting functionality
+    sort_option = request.GET.get('sort', '')
+    if sort_option == 'price_asc':
+        products_list = products_list.order_by('price')
+    elif sort_option == 'price_desc':
+        products_list = products_list.order_by('-price')
+    elif sort_option == 'name_asc':
+        products_list = products_list.order_by('name')
+    elif sort_option == 'name_desc':
+        products_list = products_list.order_by('-name')
+    elif sort_option == 'newest':
+        products_list = products_list.order_by('-created_at')
+    else:
+        # Default sorting
+        products_list = products_list.order_by('name')
+    
+    # Pagination
+    paginator = Paginator(products_list, 12)  # 12 products per page
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
     
     context = {
         'category': category,
         'products': products,
         'categories': categories,
+        'search_query': search_query,
+        'sort_option': sort_option,
+        'price_min': price_min,
+        'price_max': price_max,
+        'min_price_range': min_price,
+        'max_price_range': max_price,
     }
     return render(request, 'main/products.html', context)
 
@@ -121,3 +238,114 @@ def contact(request):
         return render(request, 'main/contact.html', context)
     
     return render(request, 'main/contact.html')
+
+
+def news_list(request):
+    """View for the news list page"""
+    news_list = News.objects.filter(status='published').select_related('category')
+    categories = NewsCategory.objects.all()
+    
+    # Filter by category
+    category_slug = request.GET.get('category')
+    if category_slug:
+        category = get_object_or_404(NewsCategory, slug=category_slug)
+        news_list = news_list.filter(category=category)
+    else:
+        category = None
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        news_list = news_list.filter(
+            Q(title__icontains=search_query) |
+            Q(summary__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(tags__icontains=search_query)
+        )
+      # Pagination
+    paginator = Paginator(news_list, 3)  # 3 news articles per page
+    page_number = request.GET.get('page')
+    news = paginator.get_page(page_number)
+    
+    # Featured news for sidebar
+    featured_news = News.objects.filter(status='published', featured=True)[:5]
+    
+    context = {
+        'news': news,
+        'categories': categories,
+        'current_category': category,
+        'search_query': search_query,
+        'featured_news': featured_news,
+    }
+    return render(request, 'main/news_list.html', context)
+
+
+def news_detail(request, slug):
+    """View for the news detail page"""
+    news = get_object_or_404(News, slug=slug, status='published')
+    
+    # Increment view count
+    news.views += 1
+    news.save(update_fields=['views'])
+    
+    # Related news from same category
+    related_news = News.objects.filter(
+        category=news.category, 
+        status='published'
+    ).exclude(id=news.id)[:4]
+    
+    # Recent news for sidebar
+    recent_news = News.objects.filter(status='published').exclude(id=news.id)[:5]
+    
+    context = {
+        'news': news,
+        'related_news': related_news,
+        'recent_news': recent_news,
+    }
+    return render(request, 'main/news_detail.html', context)
+
+
+def news_by_category(request, category_slug):
+    """View to filter news by category"""
+    category = get_object_or_404(NewsCategory, slug=category_slug)
+    news_list = News.objects.filter(category=category, status='published')
+    categories = NewsCategory.objects.all()
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        news_list = news_list.filter(
+            Q(title__icontains=search_query) |
+            Q(summary__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(tags__icontains=search_query)
+        )
+      # Pagination
+    paginator = Paginator(news_list, 3)
+    page_number = request.GET.get('page')
+    news = paginator.get_page(page_number)
+    
+    # Featured news for sidebar
+    featured_news = News.objects.filter(status='published', featured=True)[:5]
+    
+    context = {
+        'news': news,
+        'categories': categories,
+        'current_category': category,
+        'search_query': search_query,
+        'featured_news': featured_news,
+    }
+    return render(request, 'main/news_list.html', context)
+
+# Custom Error Views
+def custom_403(request, exception):
+    """Custom 403 error page"""
+    return render(request, '403.html', status=403)
+
+def custom_404(request, exception):
+    """Custom 404 error page"""
+    return render(request, '404.html', status=404)
+
+def custom_500(request):
+    """Custom 500 error page"""
+    return render(request, '500.html', status=500)

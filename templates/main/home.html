@@ -2,21 +2,97 @@
 {% load static %}
 {% load humanize %}
 
-{% block title %}VAV Furniture - Nội Thất Cao Cấp{% endblock %}
+{% block title %}Nội Thất Cao Cấp{% endblock %}
 
 {% block content %}
-<!-- Hero Section with Large Banner -->
+<!-- Hero Section with Carousel -->
 <section class="hero-section">
-    <div class="hero-slider">
-        <div class="hero-slide" style="background-image: url('{% static 'images/hero-banner.jpg' %}');">
-            <div class="container">
-                <div class="hero-content">
-                    <h1 class="display-4 fw-bold">Nội Thất Đẳng Cấp</h1>
-                    <p class="lead mb-4">Không gian sống hoàn hảo với thiết kế tinh tế từ VAV Furniture</p>
-                    <div class="hero-buttons">
-                        <a href="{% url 'products' %}" class="btn btn-primary btn-lg me-3">Khám Phá Ngay</a>
-                        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">Liên Hệ Tư Vấn</a>
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">        <!-- Carousel Slides -->
+        <div class="carousel-inner">
+            <!-- Slide 1 -->
+            <div class="carousel-item active">
+                <div class="hero-slide" style="background-image: url('{% static 'images/hero-banner.jpg' %}');">
+                    <div class="container">
+                        <div class="hero-content">
+                            <h1 class="display-4 fw-bold">Nội Thất Đẳng Cấp</h1>
+                            <p class="lead mb-4">Không gian sống hoàn hảo với thiết kế tinh tế từ VAV Furniture</p>
+                            <div class="hero-buttons">
+                                <a href="{% url 'products' %}" class="btn btn-primary btn-lg me-3">Khám Phá Ngay</a>
+                                <a href="{% url 'contact' %}" class="btn btn-light btn-lg">Liên Hệ Tư Vấn</a>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="carousel-item">
+                <div class="hero-slide" style="background-image: url('{% static 'images/hero-2.jpg' %}');">
+                    <div class="container">
+                        <div class="hero-content">
+                            <h1 class="display-4 fw-bold">Thiết Kế Hiện Đại</h1>
+                            <p class="lead mb-4">Công nghệ và nghệ thuật kết hợp tạo nên những kiệt tác nội thất</p>
+                            <div class="hero-buttons">
+                                <a href="{% url 'projects' %}" class="btn btn-primary btn-lg me-3">Xem Dự Án</a>
+                                <a href="{% url 'about' %}" class="btn btn-light btn-lg">Về Chúng Tôi</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="carousel-item">
+                <div class="hero-slide" style="background-image: url('{% static 'images/hero-3.jpg' %}');">
+                    <div class="container">
+                        <div class="hero-content">
+                            <h1 class="display-4 fw-bold">Chất Lượng Vượt Trội</h1>
+                            <p class="lead mb-4">15 năm kinh nghiệm mang đến sự tin cậy và hoàn hảo trong từng sản phẩm</p>
+                            <div class="hero-buttons">
+                                <a href="{% url 'contact' %}" class="btn btn-primary btn-lg me-3">Liên Hệ Tư Vấn</a>
+                                <a href="{% url 'contact' %}" class="btn btn-light btn-lg">Báo Giá</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <div class="carousel-control-icon">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <div class="carousel-control-icon">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <span class="visually-hidden">Next</span>
+        </button>
+          <!-- Thumbnail Indicators -->
+        <div class="carousel-thumbnails">
+            <div class="container">                
+                <div class="thumbnail-wrapper">
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="thumbnail-btn active" aria-current="true">
+                        <div class="thumbnail-img" style="background-image: url('{% static 'images/hero-banner.jpg' %}'); background-size: cover; background-position: center;"></div>
+                        <div class="thumbnail-overlay">
+                            <span class="thumbnail-title"></span>
+                        </div>
+                    </button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" class="thumbnail-btn">
+                        <div class="thumbnail-img" style="background-image: url('{% static 'images/hero-2.jpg' %}'); background-size: cover; background-position: center;"></div>
+                        <div class="thumbnail-overlay">
+                            <span class="thumbnail-title"></span>
+                        </div>
+                    </button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" class="thumbnail-btn">
+                        <div class="thumbnail-img" style="background-image: url('{% static 'images/hero-3.jpg' %}'); background-size: cover; background-position: center;"></div>
+                        <div class="thumbnail-overlay">
+                            <span class="thumbnail-title"></span>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -28,7 +104,16 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <img src="{% static 'images/about-image.jpg' %}" alt="Về VAV Furniture" class="img-fluid rounded shadow">
+                <div class="video-container">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.youtube.com/embed/ssPSQ7oEs_4?autoplay=1&mute=1&playsinline=1&controls=0&loop=1&playlist=ssPSQ7oEs_4"
+                                title="VAV Furniture - Giới thiệu"
+                                allow="autoplay; encrypted-media"
+                                allowfullscreen
+                                class="rounded shadow">
+                        </iframe>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-6">
                 <div class="section-heading mb-4">
@@ -43,106 +128,136 @@
     </div>
 </section>
 
-<!-- Featured Products Section -->
-<section class="products-section py-5 bg-light">
+
+<!-- Projects Gallery Section -->
+<section class="projects-section bg-light">
     <div class="container">
-        <div class="section-heading text-center mb-5">
-            <h6 class="text-primary">Sản Phẩm Nổi Bật</h6>
-            <h2>Khám Phá Bộ Sưu Tập Nội Thất</h2>
-            <p class="text-muted">Những sản phẩm nội thất cao cấp và độc đáo từ VAV Furniture</p>
+        <div class="section-heading text-center py-5 mb-0">
+            <h6 class="text-primary">Dự Án Tiêu Biểu</h6>
+            <h2>Các Dự Án Nội Thất Nổi Bật</h2>
+            <p class="text-muted">Những không gian sống đẳng cấp được thiết kế và thi công bởi VAV Furniture</p>
         </div>
-        
-        <div class="row g-4">
-            {% if featured_products %}
-                {% for product in featured_products %}
-                <!-- Product Item {{ forloop.counter }} -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="product-card">                        <div class="product-image">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
-                            </div>
-                        </div>
-                        <div class="product-info p-3">
-                            <h5>{{ product.name }}</h5>
-                            <p class="text-muted">{{ product.category.name }}</p>
-                            <div class="product-price">
-                                <span class="price">{{ product.price|floatformat:0|intcomma }} ₫</span>
+    </div>
+    
+    <!-- Featured Projects Grid - Full Width -->
+    <div class="featured-projects-grid-fullwidth">
+            {% if featured_projects %}
+                <!-- Main Featured Project (Large) -->
+                {% with featured_projects|first as main_project %}
+                <div class="main-project-card" data-project-slug="{{ main_project.slug }}">
+                    <div class="image-bg" style="background-image: url('{{ main_project.image.url }}');"></div>
+                    <div class="overlay project-overlay-gradient">
+                        <div class="project-content-main">
+                            <h2 class="main-project-title">{{ main_project.title }}</h2>
+                            {% if main_project.location %}
+                                <p class="main-project-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ main_project.location }}
+                                </p>
+                            {% endif %}
+                            <p class="main-project-description">{{ main_project.description|truncatewords:20 }}</p>
+                            <div class="main-project-actions">
+                                <a href="{% url 'project_detail' main_project.slug %}" class="btn-main-view">
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
+                {% endwith %}
+                
+                <!-- Secondary Projects (Smaller) -->
+                <div class="secondary-projects">
+                    {% for project in featured_projects|slice:"1:3" %}
+                    <div class="secondary-project-card" data-project-slug="{{ project.slug }}">
+                        <div class="image-bg-small" style="background-image: url('{{ project.image.url }}');"></div>
+                        <div class="overlay project-overlay-small">
+                            <div class="project-content-small">
+                                <h3 class="small-project-title">{{ project.title }}</h3>
+                                {% if project.location %}
+                                    <p class="small-project-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ project.location }}
+                                    </p>
+                                {% endif %}
+                                <div class="small-project-actions">
+                                    <a href="{% url 'project_detail' project.slug %}" class="btn-small-view">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
             {% else %}
-                <!-- Fallback Product Items if no featured products -->
-                <!-- Product Item 1 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{% static 'images/product-1.jpg' %}" alt="Ghế Sofa Hiện Đại" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                <!-- Fallback Featured Projects -->
+                <!-- Main Featured Project -->
+                <div class="main-project-card">
+                    <div class="image-bg" style="background-image: url('{% static 'images/project-1.jpg' %}');"></div>
+                    <div class="overlay project-overlay-gradient">
+                        <div class="project-content-main">
+                            <div class="project-badge-premium">DỰ ÁN NỔI BẬT</div>
+                            <h2 class="main-project-title">Biệt Thự Vinhomes Luxury</h2>
+                            <p class="main-project-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                TP. Hồ Chí Minh
+                            </p>
+                            <p class="main-project-description">Không gian sống cao cấp với thiết kế hiện đại, kết hợp hoàn hảo giữa công năng và thẩm mỹ. Dự án mang đến trải nghiệm sống đẳng cấp cho gia đình.</p>
+                            <div class="main-project-actions">
+                                <a href="#" class="btn-main-view">
+                                </a>
                             </div>
-                        </div>
-                        <div class="product-info p-3">
-                            <h5>Ghế Sofa Hiện Đại</h5>
-                            <p class="text-muted">Phòng Khách</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Product Item 2 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{% static 'images/product-2.jpg' %}" alt="Bàn Ăn Gỗ Óc Chó" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                <!-- Secondary Projects -->
+                <div class="secondary-projects">
+                    <div class="secondary-project-card">
+                        <div class="image-bg-small" style="background-image: url('{% static 'images/project-2.jpg' %}');"></div>
+                        <div class="overlay project-overlay-small">
+                            <div class="project-content-small">
+                                <div class="project-badge-small">DỰ ÁN</div>
+                                <h3 class="small-project-title">Căn Hộ Masteri</h3>
+                                <p class="small-project-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Hà Nội
+                                </p>
+                                <div class="small-project-actions">
+                                    <a href="#" class="btn-small-view">
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="product-info p-3">
-                            <h5>Bàn Ăn Gỗ Óc Chó</h5>
-                            <p class="text-muted">Phòng Ăn</p>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Product Item 3 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{% static 'images/product-3.jpg' %}" alt="Giường Ngủ Cao Cấp" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                    
+                    <div class="secondary-project-card">
+                        <div class="image-bg-small" style="background-image: url('{% static 'images/project-3.jpg' %}');"></div>
+                        <div class="overlay project-overlay-small">
+                            <div class="project-content-small">
+                                <div class="project-badge-small">DỰ ÁN</div>
+                                <h3 class="small-project-title">Văn Phòng ABC Corp</h3>
+                                <p class="small-project-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Đà Nẵng
+                                </p>
+                                <div class="small-project-actions">
+                                    <a href="#" class="btn-small-view">
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="product-info p-3">
-                            <h5>Giường Ngủ Cao Cấp</h5>
-                            <p class="text-muted">Phòng Ngủ</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product Item 4 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{% static 'images/product-4.jpg' %}" alt="Tủ Quần Áo Hiện Đại" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
-                            </div>
-                        </div>
-                        <div class="product-info p-3">
-                            <h5>Tủ Quần Áo Hiện Đại</h5>
-                            <p class="text-muted">Phòng Ngủ</p>
                         </div>
                     </div>
                 </div>
             {% endif %}
         </div>
-        
-        <div class="text-center mt-5">
-            <a href="{% url 'products' %}" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
+    
+    <div class="container">
+        <div class="text-center py-5">
+            <a href="{% url 'projects' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-th-large me-2"></i>
+                Xem Tất Cả Dự Án
+            </a>
         </div>
     </div>
 </section>
@@ -204,79 +319,161 @@
     </div>
 </section>
 
-<!-- Projects Gallery Section -->
-<section class="projects-section py-5 bg-light">
+<!-- Featured Products Section -->
+<section class="products-section py-5 bg-light">
     <div class="container">
         <div class="section-heading text-center mb-5">
-            <h6 class="text-primary">Dự Án Tiêu Biểu</h6>
-            <h2>Các Dự Án Nội Thất Nổi Bật</h2>
-            <p class="text-muted">Những không gian sống đẳng cấp được thiết kế và thi công bởi VAV Furniture</p>
+            <h6 class="text-primary">Sản Phẩm Nổi Bật</h6>
+            <h2>Khám Phá Bộ Sưu Tập Nội Thất</h2>
+            <p class="text-muted">Những sản phẩm nội thất cao cấp và độc đáo từ VAV Furniture</p>
         </div>
         
-        <div class="row g-4">
-            {% if featured_projects %}
-                {% for project in featured_projects %}
-                <!-- Project Item {{ forloop.counter }} -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid">
-                            <div class="project-overlay">
-                                <div class="project-content">
-                                    <h5 class="text-white">{{ project.title }}</h5>
-                                    <p class="text-white-50">{{ project.get_project_type_display }} - {{ project.location }}</p>
-                                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-sm btn-light">Xem Chi Tiết</a>
-                                </div>
+        <div class="row g-4">            {% if featured_products %}
+                {% for product in featured_products %}
+                <!-- Product Item {{ forloop.counter }} -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h6>{{ product.name }}</h6>
+                            <p class="text-muted">{{ product.category.name }}</p>
+                            <div class="product-price">
+                                <span class="price">{{ product.price|floatformat:0|intcomma }} ₫</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
-            {% else %}
-                <!-- Project Item 1 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <img src="{% static 'images/project-1.jpg' %}" alt="Biệt Thự Vinhomes" class="img-fluid">
-                            <div class="project-overlay">
-                                <div class="project-content">
-                                    <h5 class="text-white">Biệt Thự Vinhomes</h5>
-                                    <p class="text-white-50">Không gian sang trọng, hiện đại</p>
-                                    <a href="#" class="btn btn-sm btn-light">Xem Chi Tiết</a>
-                                </div>
+                {% endfor %}            {% else %}
+                <!-- Fallback Product Items if no featured products -->
+                <!-- Product Item 1 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-1.jpg' %}" alt="Ghế Sofa Hiện Đại" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Project Item 2 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <img src="{% static 'images/project-2.jpg' %}" alt="Căn Hộ Masteri" class="img-fluid">
-                            <div class="project-overlay">
-                                <div class="project-content">
-                                    <h5 class="text-white">Căn Hộ Masteri</h5>
-                                    <p class="text-white-50">Phong cách tối giản, tinh tế</p>
-                                    <a href="#" class="btn btn-sm btn-light">Xem Chi Tiết</a>
-                                </div>
-                            </div>
+                        <div class="product-info p-3">
+                            <h5>Ghế Sofa Hiện Đại</h5>
+                            <p class="text-muted">Phòng Khách</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Project Item 3 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <img src="{% static 'images/project-3.jpg' %}" alt="Văn Phòng ABC Corp" class="img-fluid">
-                            <div class="project-overlay">
-                                <div class="project-content">
-                                    <h5 class="text-white">Văn Phòng ABC Corp</h5>
-                                    <p class="text-white-50">Không gian làm việc hiện đại</p>
-                                    <a href="#" class="btn btn-sm btn-light">Xem Chi Tiết</a>
-                                </div>
+                <!-- Product Item 2 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-2.jpg' %}" alt="Bàn Ăn Gỗ Óc Chó" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
                             </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Bàn Ăn Gỗ Óc Chó</h5>
+                            <p class="text-muted">Phòng Ăn</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 3 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-3.jpg' %}" alt="Giường Ngủ Cao Cấp" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Giường Ngủ Cao Cấp</h5>
+                            <p class="text-muted">Phòng Ngủ</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 4 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-4.jpg' %}" alt="Tủ Quần Áo Hiện Đại" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Tủ Quần Áo Hiện Đại</h5>
+                            <p class="text-muted">Phòng Ngủ</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 5 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-5.jpg' %}" alt="Bàn Làm Việc Gỗ" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Bàn Làm Việc Gỗ</h5>
+                            <p class="text-muted">Phòng Làm Việc</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 6 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-6.jpg' %}" alt="Kệ Tivi Hiện Đại" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Kệ Tivi Hiện Đại</h5>
+                            <p class="text-muted">Phòng Khách</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 7 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-7.jpg' %}" alt="Ghế Ăn Gỗ Cao Cấp" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Ghế Ăn Gỗ Cao Cấp</h5>
+                            <p class="text-muted">Phòng Ăn</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 8 -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/product-8.jpg' %}" alt="Tủ Sách Gỗ Tự Nhiên" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-sm btn-outline-light">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info p-3">
+                            <h5>Tủ Sách Gỗ Tự Nhiên</h5>
+                            <p class="text-muted">Phòng Đọc Sách</p>
                         </div>
                     </div>
                 </div>
@@ -284,10 +481,70 @@
         </div>
         
         <div class="text-center mt-5">
-            <a href="{% url 'projects' %}" class="btn btn-primary">Xem Tất Cả Dự Án</a>
+            <a href="{% url 'products' %}" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
         </div>
     </div>
 </section>
+
+
+<!-- News Section -->
+{% if featured_news %}
+<section class="news-section py-5">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <h6 class="text-primary">Tin Tức Nổi Bật</h6>
+            <h2>Cập Nhật Tin Tức Mới Nhất</h2>
+            <p class="text-muted">Theo dõi những thông tin mới nhất về xu hướng nội thất và hoạt động của VAV Furniture</p>
+        </div>
+          <div class="row g-4">
+            {% for article in featured_news %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="news-card h-100 smooth-load">
+                        <div class="news-image card-image-hover">
+                            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="img-fluid"
+                                 data-hover-src="{{ article.image.url }}"
+                                 data-detail1-src="{{ article.image.url }}"
+                                 data-detail2-src="{{ article.image.url }}">
+                            <div class="news-category">{{ article.category.name }}</div>
+                            <div class="image-preview-overlay">
+                                <div class="image-preview-content">
+                                    <i class="fas fa-newspaper mb-2" style="font-size: 20px;"></i>
+                                    <p class="mb-0">Đọc tin tức</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="news-content p-4">
+                            <div class="news-meta mb-2">
+                                <span class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    {{ article.published_at|date:"d/m/Y" }}
+                                </span>
+                                <span class="text-muted ms-3">
+                                    <i class="fas fa-user me-1"></i>
+                                    {{ article.author }}
+                                </span>
+                            </div>
+                            <h5 class="news-title">
+                                <a href="{% url 'news_detail' article.slug %}" class="text-decoration-none text-dark">
+                                    {{ article.title }}
+                                </a>
+                            </h5>
+                            <p class="news-summary text-muted">{{ article.summary|truncatechars:120 }}</p>
+                            <a href="{% url 'news_detail' article.slug %}" class="btn btn-outline-primary btn-sm">
+                                Đọc Thêm <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'news_list' %}" class="btn btn-primary">Xem Tất Cả Tin Tức</a>
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <!-- Testimonials Section -->
 <section class="testimonials-section py-5">
@@ -360,11 +617,915 @@
             <div class="col-lg-8 mb-4 mb-lg-0">
                 <h2 class="mb-2">Bạn Muốn Tạo Không Gian Sống Mơ Ước?</h2>
                 <p class="lead mb-0">Liên hệ với VAV Furniture ngay hôm nay để được tư vấn miễn phí!</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
+            </div>            <div class="col-lg-4 text-lg-end">
                 <a href="{% url 'contact' %}" class="btn btn-light btn-lg">Liên Hệ Ngay</a>
             </div>
         </div>
     </div>
 </section>
+
+{% block extra_css %}
+<style>
+.hero-buttons .btn {
+    min-width: 180px; /* Đảm bảo cả hai button có cùng chiều rộng tối thiểu */
+}
+
+/* Hero Carousel Fixes */
+.hero-section {
+    position: relative;
+    height: 95vh;
+    min-height: 780px;
+    overflow: hidden;
+}
+
+.carousel {
+    height: 100%;
+}
+
+.carousel-inner {
+    height: 100%;
+}
+
+.carousel-item {
+    height: 100%;
+}
+
+.hero-slide {
+    height: 90vh;
+    min-height: 780px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width: 650px;
+    padding: 2rem;
+}
+
+/* Custom Carousel Controls */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    opacity: 1;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.carousel-control-prev {
+    left: 30px;
+}
+
+.carousel-control-next {
+    right: 30px;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background: rgba(192, 57, 43, 0.9);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-control-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-control-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+/* Hide default Bootstrap icons */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    display: none;
+}
+
+/* Thumbnail Indicators */
+.carousel-thumbnails {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.thumbnail-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 0 20px;
+}
+
+.thumbnail-btn {
+    position: relative;
+    width: 90px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    background: none;
+    padding: 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.thumbnail-btn:hover,
+.thumbnail-btn.active {
+    border-color: #c0392b;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail-img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+.thumbnail-btn:hover .thumbnail-img {
+    transform: scale(1.1);
+}
+
+.thumbnail-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
+    padding: 10px 8px 5px;
+}
+
+.thumbnail-title {
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    display: block;
+    line-height: 1.2;
+}
+
+.thumbnail-btn.active .thumbnail-overlay {
+    background: linear-gradient(transparent, #c0392b);
+}
+
+/* Projects Section */
+.projects-section {
+    padding-bottom: 0 !important;
+    margin-bottom: 0;
+}
+
+.projects-section .container {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Featured Projects Grid Layout - Full Width */
+.featured-projects-grid-fullwidth {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1px;
+    height: 600px;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: stretch;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    box-sizing: border-box;
+    border-radius: 0 !important;
+}
+
+.main-project-card {
+    border-radius: 0 !important;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: none !important;
+    transition: none;
+    height: 100%;
+    min-height: 0;
+}
+
+.main-project-card:hover {
+    transform: none;
+    box-shadow: none !important;
+}
+
+.secondary-projects {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+    height: 100%;
+    min-height: 0;
+}
+
+.secondary-project-card {
+    border-radius: 0 !important;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: none !important;
+    transition: none;
+    height: 100%;
+    min-height: 0;
+}
+
+.secondary-project-card:hover {
+    transform: none;
+    box-shadow: none !important;
+}
+
+/* Project Background Images - Only these elements should scale on hover */
+.image-bg,
+.image-bg-small {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: transform 0.4s ease;
+}
+
+/* Only scale the background image on hover */
+.main-project-card:hover .image-bg,
+.secondary-project-card:hover .image-bg-small {
+    transform: scale(1.08);
+}
+
+/* Overlay Layer - Contains all text and buttons */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    padding: 35px;
+    transition: background 0.3s ease;
+}
+
+/* Overlay Gradients */
+.project-overlay-gradient {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.6) 70%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+}
+
+.project-overlay-small {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.5) 0%,
+        rgba(0, 0, 0, 0.7) 70%,
+        rgba(0, 0, 0, 0.85) 100%
+    );
+    padding: 25px;
+}
+
+.main-project-card:hover .project-overlay-gradient {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.5) 70%,
+        rgba(0, 0, 0, 0.7) 100%
+    );
+}
+
+.secondary-project-card:hover .project-overlay-small {
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.6) 70%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+}
+
+/* Project Content */
+.project-content-main,
+.project-content-small {
+    color: white;
+    width: 100%;
+    position: relative;
+    z-index: 3;
+}
+
+.project-content-main {
+    max-width: 85%;
+}
+
+.project-content-small {
+    max-width: 100%;
+}
+
+/* Project Badges */
+.project-badge-premium,
+.project-badge-small {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.project-badge-premium {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.project-badge-small {
+    background: linear-gradient(135deg, #4834d4, #686de0);
+    color: white;
+    font-size: 11px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 12px rgba(72, 52, 212, 0.3);
+}
+
+/* Project Titles */
+.main-project-title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.small-project-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 6px;
+    color: white;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Project Locations */
+.main-project-location,
+.small-project-location {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.main-project-location i,
+.small-project-location i {
+    margin-right: 6px;
+    color: #ff6b6b;
+}
+
+.small-project-location {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+/* Project Descriptions */
+.main-project-description {
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 15px;
+    font-weight: 400;
+}
+
+/* Project Action Buttons */
+.main-project-actions,
+.small-project-actions {
+    margin-top: auto;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+    .featured-projects-grid-fullwidth {
+        height: 550px;
+        gap: 1px;
+        width: 100vw !important;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        left: 50%;
+        right: 50%;
+        position: relative;
+        border-radius: 0 !important;
+    }
+    
+    .main-project-title {
+        font-size: 1.8rem;
+    }
+    
+    .overlay.project-overlay-gradient {
+        padding: 25px;
+    }
+    
+    .overlay.project-overlay-small {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 991px) {
+    .featured-projects-grid-fullwidth {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        gap: 1px;
+        width: 100vw !important;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        left: 50%;
+        right: 50%;
+        position: relative;
+        border-radius: 0 !important;
+    }
+    
+    .main-project-card {
+        height: 400px;
+        width: 100%;
+        border-radius: 0 !important;
+    }
+    
+    .secondary-projects {
+        grid-template-rows: none;
+        grid-template-columns: 1fr 1fr;
+        height: 300px;
+        width: 100%;
+        gap: 1px;
+    }
+    
+    .secondary-project-card {
+        height: 100%;
+        width: 100%;
+        min-height: 0;
+        border-radius: 0 !important;
+    }
+    
+    .main-project-title {
+        font-size: 1.6rem;
+    }
+    
+    .small-project-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-projects-grid-fullwidth {
+        gap: 1px;
+        width: 100vw !important;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        left: 50%;
+        right: 50%;
+        position: relative;
+        border-radius: 0 !important;
+    }
+    
+    .main-project-card {
+        height: 350px;
+        width: 100%;
+        border-radius: 0 !important;
+    }
+    
+    .secondary-projects {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        height: auto;
+        gap: 1px;
+        width: 100%;
+    }
+    
+    .secondary-project-card {
+        height: 250px;
+        width: 100%;
+        min-height: 250px;
+        border-radius: 0 !important;
+    }
+    
+    .overlay.project-overlay-gradient {
+        padding: 20px;
+    }
+    
+    .overlay.project-overlay-small {
+        padding: 15px;
+    }
+    
+    .main-project-title {
+        font-size: 1.5rem;
+    }
+    
+    .small-project-title {
+        font-size: 1rem;
+    }
+    
+    .main-project-description {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 575px) {
+    .featured-projects-grid-fullwidth {
+        width: 100vw !important;
+        gap: 1px;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        left: 50%;
+        right: 50%;
+        position: relative;
+        border-radius: 0 !important;
+    }
+    
+    .main-project-card {
+        height: 320px;
+        width: 100%;
+        border-radius: 0 !important;
+    }
+    
+    .secondary-project-card {
+        height: 200px;
+        width: 100%;
+        min-height: 200px;
+        border-radius: 0 !important;
+    }
+    
+    .secondary-projects {
+        width: 100%;
+        gap: 1px;
+    }
+    
+    .overlay.project-overlay-gradient {
+        padding: 18px;
+    }
+    
+    .overlay.project-overlay-small {
+        padding: 12px;
+    }
+    
+    .main-project-title {
+        font-size: 1.3rem;
+        margin-bottom: 6px;
+    }
+    
+    .small-project-title {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+    
+    .main-project-description {
+        font-size: 12px;
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+    
+    .main-project-location,
+    .small-project-location {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .small-project-location {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .project-badge-premium {
+        font-size: 10px;
+        padding: 5px 10px;
+        margin-bottom: 8px;
+    }
+    
+    .project-badge-small {
+        font-size: 9px;
+        padding: 4px 8px;
+        margin-bottom: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-projects-grid-fullwidth {
+        gap: 1px;
+        width: 100vw !important;
+        margin-bottom: 0;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        left: 50%;
+        right: 50%;
+        position: relative;
+        border-radius: 0 !important;
+    }
+    
+    .main-project-card {
+        height: 280px;
+        width: 100%;
+        border-radius: 0 !important;
+    }
+    
+    .secondary-project-card {
+        height: 180px;
+        width: 100%;
+        min-height: 180px;
+        border-radius: 0 !important;
+    }
+    
+    .secondary-projects {
+        gap: 1px;
+        width: 100%;
+    }
+    
+    .overlay.project-overlay-gradient,
+    .overlay.project-overlay-small {
+        padding: 15px;
+    }
+    
+    .main-project-title {
+        font-size: 1.2rem;
+    }
+    
+    .small-project-title {
+        font-size: 0.9rem;
+    }
+    
+    .main-project-description {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .btn-main-view {
+        padding: 8px 16px;
+        font-size: 10px;
+    }
+    
+    .btn-small-view {
+        padding: 6px 12px;
+        font-size: 9px;
+    }
+}
+
+/* Project Cards Style - Blog Format */
+.projects-section .project-card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.projects-section .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.projects-section .project-image {
+    position: relative;
+    height: 400px;
+    overflow: visible; /* Allow image to overflow */
+    cursor: pointer;
+    margin: -8px; /* Negative margin to allow overflow */
+    border-radius: 8px;
+}
+
+.projects-section .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.projects-section .project-card:hover .project-image img {
+    transform: scale(1.05);
+}
+
+/* Project Label */
+.project-label {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 3;
+}
+
+/* Project Content Overlay */
+.project-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
+    color: white;
+    padding: 60px 30px 30px 30px;
+    z-index: 2;
+}
+
+.project-meta-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0; /* Removed margin for image to overflow */
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.project-author {
+    color: #fff;
+}
+
+.project-date {
+    color: #ccc;
+}
+
+.project-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0; /* Removed margin for image to overflow */
+    color: white;
+}
+
+.project-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .projects-section .project-image {
+        height: 350px;
+    }
+    
+    .project-content {
+        padding: 40px 20px 20px 20px;
+    }
+    
+    .project-title {
+        font-size: 1.3rem;
+    }
+    
+    .project-meta-top {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .projects-section .project-image {
+        height: 300px;
+    }
+    
+    .project-content {
+        padding: 30px 15px 15px 15px;
+    }
+    
+    .project-title {
+        font-size: 1.1rem;
+    }
+    
+    .project-description {
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing hero carousel...');
+    
+    // Check if Bootstrap is loaded
+    if (typeof bootstrap === 'undefined') {
+        console.error('❌ Bootstrap is not loaded!');
+        return;
+    }
+    
+    const heroCarousel = document.getElementById('heroCarousel');
+    if (!heroCarousel) {
+        console.error('❌ Hero carousel element not found!');
+        return;
+    }
+    
+    console.log('✅ Found carousel element');
+    
+    // Initialize Bootstrap carousel
+    const carousel = new bootstrap.Carousel(heroCarousel, {
+        interval: 5000,  // Auto-advance every 5 seconds
+        wrap: true,      // Enable infinite loop
+        touch: true,     // Enable touch/swipe support
+        pause: false     // Don't pause on hover for better visibility
+    });
+    
+    console.log('✅ Carousel initialized');
+    
+    // Start cycling immediately
+    carousel.cycle();
+    
+    // Handle thumbnail clicks
+    const thumbnailButtons = document.querySelectorAll('.thumbnail-btn');
+    console.log(`✅ Found ${thumbnailButtons.length} thumbnail buttons`);
+    
+    thumbnailButtons.forEach((btn, index) => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log(`🖱️ Thumbnail ${index} clicked`);
+            carousel.to(index);
+        });
+    });
+    
+    // Update thumbnail active states when slide changes
+    heroCarousel.addEventListener('slide.bs.carousel', function(event) {
+        console.log(`🎠 Slide changing from ${event.from} to ${event.to}`);
+        
+        // Update thumbnail active class
+        thumbnailButtons.forEach((btn, index) => {
+            if (index === event.to) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    });
+    
+    // Visual debugging - log carousel status every 3 seconds
+    setInterval(() => {
+        const activeSlide = heroCarousel.querySelector('.carousel-item.active');
+        const activeIndex = Array.from(heroCarousel.querySelectorAll('.carousel-item')).indexOf(activeSlide);
+        console.log(`📊 Current active slide: ${activeIndex}`);
+    }, 4000);
+      console.log('🎉 Hero carousel setup completed successfully!');
+      // Project card click handlers - Featured projects layout
+    const mainProjectCards = document.querySelectorAll('.main-project-card, .secondary-project-card');
+    mainProjectCards.forEach((card) => {
+        card.addEventListener('click', function(e) {
+            // Don't navigate if clicking on button
+            if (e.target.closest('.btn-main-view, .btn-small-view')) {
+                return;
+            }
+            
+            const slug = this.getAttribute('data-project-slug');
+            if (slug) {
+                window.location.href = `/projects/${slug}/`;
+            }
+        });
+    });
+    
+    // Original project card click handlers (fallback)
+    const projectCards = document.querySelectorAll('.projects-section .project-card');
+    projectCards.forEach((card, index) => {
+        card.addEventListener('click', function() {
+            const slug = this.getAttribute('data-project-slug');
+            if (slug) {
+                window.location.href = `/projects/${slug}/`;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
 {% endblock %}

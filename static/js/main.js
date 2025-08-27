@@ -3,6 +3,16 @@
  */
 
 // Wait for the DOM to be fully loaded
+window.addEventListener('scroll', function() {
+  const navbar = document.querySelector('.navbar');
+  if (window.scrollY > 50) {
+    navbar.classList.add('scrolled');
+  } else {
+    navbar.classList.remove('scrolled');
+  }
+});
+
+
 document.addEventListener("DOMContentLoaded", function() {
     // Initialize any components or functionality
     initializeComponents();

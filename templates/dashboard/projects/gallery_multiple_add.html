@@ -1,0 +1,381 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 15px;
+        padding: 15px;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        background: #f8f9fa;
+        min-height: 150px;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-preview {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .image-preview .remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-preview .remove-btn:hover {
+        background: #dc3545;
+    }
+    
+    .upload-area {
+        border: 2px dashed #6c757d;
+        border-radius: 8px;
+        padding: 40px 20px;
+        text-align: center;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .upload-area:hover {
+        border-color: #007bff;
+        background: #e7f3ff;
+    }
+    
+    .upload-area.dragover {
+        border-color: #007bff;
+        background: #e7f3ff;
+    }
+    
+    .upload-icon {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    
+    .file-info {
+        background: #e9ecef;
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .progress-bar-container {
+        margin-top: 15px;
+        display: none;
+    }
+    
+    .form-section {
+        background: white;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .form-section h5 {
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-images"></i> {{ title }}
+                </h2>
+                <div>
+                    {% if project %}
+                        <a href="{% url 'dashboard:project_detail' project.id %}" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left"></i> Quay lại dự án
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'dashboard:project_gallery_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-list"></i> Danh sách thư viện
+                    </a>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="multipleImageForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="form-section">
+                            <h5><i class="fas fa-info-circle"></i> Thông tin cơ bản</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.project.id_for_label }}" class="form-label">
+                                    Dự án <span class="text-danger">*</span>
+                                </label>
+                                {{ form.project }}
+                                {% if form.project.errors %}
+                                    <div class="text-danger mt-1">{{ form.project.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h5><i class="fas fa-cloud-upload-alt"></i> Chọn nhiều ảnh</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.images.id_for_label }}" class="form-label">
+                                    Ảnh thư viện <span class="text-danger">*</span>
+                                </label>
+                                
+                                <!-- Custom upload area -->
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <h5>Kéo thả hoặc nhấn để chọn ảnh</h5>
+                                    <p class="text-muted">Chọn nhiều ảnh cùng lúc (JPG, PNG, WEBP)</p>
+                                    <p class="text-muted"><small>Hoặc giữ Ctrl/Cmd + Click để chọn nhiều file</small></p>
+                                </div>
+                                
+                                <!-- Hidden file input -->
+                                {{ form.images }}
+                                
+                                {% if form.images.errors %}
+                                    <div class="text-danger mt-1">{{ form.images.errors.0 }}</div>
+                                {% endif %}
+                                
+                                <div class="file-info" id="fileInfo" style="display: none;">
+                                    <strong>Đã chọn: </strong><span id="fileCount">0</span> file
+                                </div>
+                            </div>
+                            
+                            <!-- Image preview container -->
+                            <div class="image-preview-container" id="imagePreviewContainer">
+                                <div class="text-muted">
+                                    <i class="fas fa-image fa-2x mb-2"></i>
+                                    <p>Xem trước ảnh sẽ hiển thị tại đây</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress bar -->
+                            <div class="progress-bar-container" id="progressContainer">
+                                <div class="progress">
+                                    <div class="progress-bar" id="uploadProgress" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <small class="text-muted" id="progressText">Đang tải lên...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-section">
+                            <h5><i class="fas fa-cog"></i> Thao tác</h5>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                    <i class="fas fa-cloud-upload-alt"></i> Tải lên tất cả ảnh
+                                </button>
+                                
+                                <a href="{% url 'dashboard:project_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h5><i class="fas fa-info-circle"></i> Hướng dẫn</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> Chọn nhiều ảnh cùng lúc</li>
+                                <li><i class="fas fa-check text-success"></i> Kéo thả ảnh vào khung</li>
+                                <li><i class="fas fa-check text-success"></i> Định dạng: JPG, PNG, WEBP</li>
+                                <li><i class="fas fa-check text-success"></i> Kích thước tối đa: 5MB/ảnh</li>
+                                <li><i class="fas fa-check text-success"></i> Tự động đặt thứ tự</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('{{ form.images.id_for_label }}');
+    const uploadArea = document.getElementById('uploadArea');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileCount = document.getElementById('fileCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    
+    let selectedFiles = [];
+
+    // Make file input hidden
+    fileInput.style.display = 'none';
+
+    // Upload area click handler
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+
+    // Drag and drop handlers
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        selectedFiles = Array.from(files);
+        updateFileInfo();
+        showImagePreviews();
+    }
+
+    function updateFileInfo() {
+        if (selectedFiles.length > 0) {
+            fileInfo.style.display = 'block';
+            fileCount.textContent = selectedFiles.length;
+        } else {
+            fileInfo.style.display = 'none';
+        }
+    }
+
+    function showImagePreviews() {
+        imagePreviewContainer.innerHTML = '';
+        
+        if (selectedFiles.length === 0) {
+            imagePreviewContainer.innerHTML = `
+                <div class="text-muted text-center w-100">
+                    <i class="fas fa-image fa-2x mb-2"></i>
+                    <p>Xem trước ảnh sẽ hiển thị tại đây</p>
+                </div>
+            `;
+            return;
+        }
+
+        selectedFiles.forEach((file, index) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'image-preview';
+                    previewDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${index + 1}">
+                        <button type="button" class="remove-btn" onclick="removeImage(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    imagePreviewContainer.appendChild(previewDiv);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    window.removeImage = function(index) {
+        selectedFiles.splice(index, 1);
+        
+        // Update file input
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+        
+        updateFileInfo();
+        showImagePreviews();
+    };
+
+    // Form submission handler
+    document.getElementById('multipleImageForm').addEventListener('submit', function(e) {
+        if (selectedFiles.length === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn ít nhất một ảnh!');
+            return;
+        }
+
+        // Show progress
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải lên...';
+        progressContainer.style.display = 'block';
+        
+        // Simulate progress (real progress would need AJAX)
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 10;
+            document.getElementById('uploadProgress').style.width = progress + '%';
+            if (progress >= 90) {
+                clearInterval(interval);
+            }
+        }, 200);
+    });
+
+    // Validate file types and sizes
+    function validateFiles(files) {
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        for (let file of files) {
+            if (!validTypes.includes(file.type)) {
+                alert(`File ${file.name} không đúng định dạng. Chỉ chấp nhận JPG, PNG, WEBP.`);
+                return false;
+            }
+            if (file.size > maxSize) {
+                alert(`File ${file.name} quá lớn. Kích thước tối đa 5MB.`);
+                return false;
+            }
+        }
+        return true;
+    }
+});
+</script>
+{% endblock %}

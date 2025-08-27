@@ -1,0 +1,927 @@
+<!-- Chatbot Widget -->
+<div id="chatbot-widget" class="chatbot-widget">
+    <div id="chatbot-toggle" class="chatbot-toggle" onclick="toggleChatbot()">
+        <div class="chat-icon"><i class="fas fa-robot"></i></div>
+        <div class="notification-badge" id="notificationBadge" style="display: none;">!</div>
+    </div>
+    
+    <div id="chatbot-window" class="chatbot-window">
+        <div class="chatbot-header">
+            <div class="chatbot-header-content">
+                <div class="chatbot-avatar">🤖</div>
+                <div class="chatbot-title">
+                    <strong>VAV Assistant</strong>
+                    <span>Trợ lý ảo</span>
+                </div>
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">×</button>
+        </div>
+        
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chatbot-message bot">
+                <div class="chatbot-message-content">
+                    👋 Xin chào! Tôi có thể giúp bạn tìm sản phẩm, xem dự án và tư vấn nội thất.
+                    <br><br>📞 <strong>0935908007</strong> | 💬 Hỏi "liên hệ" để biết thêm!
+                    <br><br>Bạn cần gì?
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbot-typing" id="chatbotTyping" style="display: none;">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span>Đang trả lời...</span>
+        </div>
+        
+        <div class="chatbot-input-container">
+            <input type="text" 
+                   id="chatbotInput" 
+                   class="chatbot-input" 
+                   placeholder="Nhập câu hỏi..."
+                   onkeypress="handleChatbotKeyPress(event)">
+            <button id="chatbotSendBtn" class="chatbot-send-btn" onclick="sendChatbotMessage()">
+                ➤
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.chatbot-widget {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chatbot-toggle {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+}
+
+.chat-icon {
+    font-size: 24px;
+    color: white;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background: #ff4757;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.chatbot-window {
+    position: absolute;
+    bottom: 30px;
+    right: 45px;
+    width: 380px;
+    height: 550px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #e1e8ed;
+}
+
+.chatbot-window.active {
+    display: flex;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chatbot-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chatbot-header-content {
+    display: flex;
+    align-items: center;
+}
+
+.chatbot-avatar {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.chatbot-title strong {
+    display: block;
+    font-size: 14px;
+}
+
+.chatbot-title span {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.chatbot-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.chatbot-close:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    scroll-behavior: smooth;
+}
+
+.chatbot-message {
+    margin-bottom: 15px;
+    display: flex;
+}
+
+.chatbot-message.user {
+    justify-content: flex-end;
+}
+
+.chatbot-message-content {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chatbot-message.bot .chatbot-message-content {
+    background: white;
+    border: 1px solid #e1e8ed;
+    color: #333;
+}
+
+.chatbot-message.user .chatbot-message-content {
+    background: #667eea;
+    color: white;
+}
+
+.chatbot-recommendations {
+    margin-top: 10px;
+    margin-right: auto;
+    max-width: 65%;
+    align-self: flex-start;
+}
+
+.chatbot-recommendation-item {
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.chatbot-recommendation-item:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    border-color: #667eea;
+}
+
+.chatbot-recommendation-item:hover .chatbot-recommendation-image {
+    transform: scale(1.05);
+}
+
+.chatbot-recommendation-image {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    border: 1px solid #e1e8ed;
+    transition: transform 0.3s ease;
+}
+
+.chatbot-recommendation-image-placeholder {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #666;
+    border: 1px solid #e1e8ed;
+}
+
+.chatbot-recommendation-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.chatbot-recommendation-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.chatbot-recommendation-meta {
+    color: #667eea;
+    font-size: 11px;
+    line-height: 1.3;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.chatbot-recommendation-description {
+    color: #666;
+    font-size: 10px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.chatbot-typing {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    color: #666;
+    font-size: 12px;
+}
+
+.typing-dots {
+    display: inline-flex;
+    margin-right: 8px;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #667eea;
+    margin: 0 1px;
+    animation: typing 1.5s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-8px);
+    }
+}
+
+.chatbot-input-container {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #e1e8ed;
+    display: flex;
+    gap: 10px;
+}
+
+.chatbot-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+}
+
+.chatbot-input:focus {
+    border-color: #667eea;
+}
+
+.chatbot-send-btn {
+    width: 40px;
+    height: 40px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.chatbot-send-btn:hover:not(:disabled) {
+    background: #5a6fd8;
+}
+
+.chatbot-send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .chatbot-widget {
+        bottom: 95px;
+        right: 30px;
+    }
+    
+    .chatbot-window {
+        width: 320px;
+        height: 500px;
+    }
+    
+    .chatbot-toggle {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .chat-icon {
+        font-size: 22px;
+    }
+    
+    .chatbot-recommendation-image {
+        height: 100px;
+    }
+    
+    .chatbot-recommendation-image-placeholder {
+        height: 100px;
+        font-size: 28px;
+    }
+    
+    .chatbot-recommendation-title {
+        font-size: 12px;
+    }
+    
+    .chatbot-recommendation-meta {
+        font-size: 10px;
+    }
+    
+    .chatbot-recommendation-description {
+        font-size: 9px;
+    }
+}
+
+/* Typewriter effect for widget */
+.chatbot-typewriter-text {
+    border-right: 2px solid #667eea;
+    animation: chatbot-blink-caret 1s step-end infinite;
+}
+
+@keyframes chatbot-blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #667eea; }
+}
+</style>
+
+<script>
+let chatbotSessionId = null;
+let isChatbotOpen = false;
+
+function toggleChatbot() {
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const notificationBadge = document.getElementById('notificationBadge');
+    
+    if (isChatbotOpen) {
+        chatbotWindow.classList.remove('active');
+        isChatbotOpen = false;
+    } else {
+        chatbotWindow.classList.add('active');
+        isChatbotOpen = true;
+        notificationBadge.style.display = 'none';
+        
+        // Focus on input when opened
+        setTimeout(() => {
+            document.getElementById('chatbotInput').focus();
+        }, 100);
+    }
+}
+
+function handleChatbotKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendChatbotMessage();
+    }
+}
+
+function sendChatbotMessage() {
+    const input = document.getElementById('chatbotInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addChatbotMessage('user', message);
+    
+    // Clear input and disable send button
+    input.value = '';
+    const sendBtn = document.getElementById('chatbotSendBtn');
+    sendBtn.disabled = true;
+    
+    // Show typing indicator
+    showChatbotTyping();
+    
+    // Send to API
+    fetch('/chatbot/api/chat/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            message: message,
+            session_id: chatbotSessionId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideChatbotTyping();
+        
+        if (data.response) {
+            chatbotSessionId = data.session_id;
+            
+            // Add bot response
+            addChatbotMessage('bot', data.response);
+            
+            // Determine priority order based on topic
+            const recommendations = [];
+            
+            if (data.products && data.products.length > 0) {
+                recommendations.push({ type: 'products', items: data.products, priority: getTopicPriority(message, 'products') });
+            }
+            
+            if (data.projects && data.projects.length > 0) {
+                recommendations.push({ type: 'projects', items: data.projects, priority: getTopicPriority(message, 'projects') });
+            }
+            
+            if (data.news && data.news.length > 0) {
+                recommendations.push({ type: 'news', items: data.news, priority: getTopicPriority(message, 'news') });
+            }
+            
+            // Sort by priority (higher first)
+            recommendations.sort((a, b) => b.priority - a.priority);
+            
+            // Add recommendations in priority order
+            recommendations.forEach(rec => {
+                addChatbotRecommendations(rec.type, rec.items);
+            });
+        } else {
+            addChatbotMessage('bot', 'Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại sau.');
+        }
+        
+        sendBtn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Chatbot error:', error);
+        hideChatbotTyping();
+        addChatbotMessage('bot', 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.');
+        sendBtn.disabled = false;
+    });
+}
+
+function getTopicPriority(message, type) {
+    const messageLower = message.toLowerCase();
+    
+    // Keywords for each topic
+    const topicKeywords = {
+        'news': ['tin', 'tức', 'news', 'bài', 'viết', 'thông', 'tin', 'mới', 'nhất'],
+        'projects': ['dự', 'án', 'project', 'thiết', 'kế', 'design', 'quy', 'trình', 'biệt', 'thự', 'villa', 'căn', 'hộ', 'văn', 'phòng', 'không', 'gian', 'thi', 'công'],
+        'products': ['sản', 'phẩm', 'product', 'sofa', 'bàn', 'ghế', 'giường', 'tủ', 'furniture', 'nội', 'thất', 'đồ', 'mua', 'bán', 'giá', 'kệ', 'đèn', 'thảm', 'rèm', 'nệm', 'gương', 'chair', 'table', 'bed', 'cabinet', 'wardrobe']
+    };
+    
+    // Count matching keywords
+    let score = 0;
+    const keywords = topicKeywords[type] || [];
+    
+    keywords.forEach(keyword => {
+        if (messageLower.includes(keyword)) {
+            score += 10;
+            
+            // Bonus for exact word match
+            const regex = new RegExp(`\\b${keyword}\\b`, 'i');
+            if (regex.test(messageLower)) {
+                score += 5;
+            }
+        }
+    });
+    
+    // Special high priority keywords
+    const highPriorityKeywords = {
+        'news': ['tin tức', 'bài viết', 'tin mới'],
+        'projects': ['quy trình thiết kế', 'dự án', 'thiết kế', 'thi công'],
+        'products': ['sản phẩm', 'mua sắm', 'furniture']
+    };
+    
+    const highKeywords = highPriorityKeywords[type] || [];
+    highKeywords.forEach(keyword => {
+        if (messageLower.includes(keyword)) {
+            score += 20;
+        }
+    });
+    
+    return score;
+}
+
+function addChatbotMessage(type, content) {
+    const messagesContainer = document.getElementById('chatbotMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chatbot-message ${type}`;
+    
+    if (type === 'bot') {
+        // Tạo message với nội dung trống trước cho bot
+        messageDiv.innerHTML = `
+            <div class="chatbot-message-content">
+                <span class="chatbot-typewriter-content"></span>
+            </div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        
+        // Cuộn để hiển thị message mới nhưng không xuống hết cuối
+        const messageRect = messageDiv.getBoundingClientRect();
+        const containerRect = messagesContainer.getBoundingClientRect();
+        
+        if (messageRect.bottom > containerRect.bottom) {
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Bắt đầu hiệu ứng typewriter
+        chatbotTypeWriterEffect(messageDiv.querySelector('.chatbot-typewriter-content'), content);
+    } else {
+        // User message hiển thị ngay
+        messageDiv.innerHTML = `
+            <div class="chatbot-message-content">
+                ${content}
+            </div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+}
+
+function chatbotTypeWriterEffect(element, text) {
+    let i = 0;
+    const speed = 5; // Tốc độ gõ (ms) - tương tự chat chính
+    
+    // Thêm class typewriter
+    element.classList.add('chatbot-typewriter-text');
+    
+    // Kiểm tra nếu text chứa HTML
+    const hasHTML = /<[^>]*>/.test(text);
+    
+    if (hasHTML) {
+        // Xử lý HTML với typewriter effect
+        chatbotTypeWriterWithHTML(element, text, speed);
+    } else {
+        // Xử lý text thuần như cũ
+        chatbotTypeWriterPlainText(element, text, speed);
+    }
+}
+
+function chatbotTypeWriterPlainText(element, text, speed) {
+    let i = 0;
+    
+    function typeChar() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            
+            chatbotScrollIfNeeded(element);
+            setTimeout(typeChar, speed);
+        } else {
+            chatbotFinishTyping(element);
+        }
+    }
+    
+    typeChar();
+}
+
+function chatbotTypeWriterWithHTML(element, htmlText, speed) {
+    // Tạo DOM tạm thời để parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlText;
+    
+    // Lấy toàn bộ text content (không có tags) để hiển thị từng ký tự
+    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+    
+    let i = 0;
+    
+    function typeChar() {
+        if (i < plainText.length) {
+            // Thêm ký tự hiện tại
+            i++;
+            const partialText = plainText.substring(0, i);
+            
+            // Tạo HTML với text đã gõ cho đến hiện tại
+            const currentHTML = chatbotCreatePartialHTML(htmlText, partialText);
+            element.innerHTML = currentHTML;
+            
+            chatbotScrollIfNeeded(element);
+            setTimeout(typeChar, speed);
+        } else {
+            // Hiển thị HTML hoàn chỉnh khi kết thúc
+            element.innerHTML = htmlText;
+            chatbotFinishTyping(element);
+        }
+    }
+    
+    typeChar();
+}
+
+function chatbotCreatePartialHTML(fullHTML, partialText) {
+    // Tạo DOM tạm để xử lý HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = fullHTML;
+    
+    let textIndex = 0;
+    let result = '';
+    
+    // Đệ quy qua các node để tạo HTML một phần
+    function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const textContent = node.textContent;
+            const remainingChars = partialText.length - textIndex;
+            
+            if (remainingChars <= 0) {
+                return '';
+            }
+            
+            const charsToTake = Math.min(textContent.length, remainingChars);
+            const partialNodeText = textContent.substring(0, charsToTake);
+            textIndex += charsToTake;
+            
+            return partialNodeText;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const tagName = node.tagName.toLowerCase();
+            const attributes = Array.from(node.attributes)
+                .map(attr => `${attr.name}="${attr.value}"`)
+                .join(' ');
+            
+            let childContent = '';
+            for (let child of node.childNodes) {
+                childContent += processNode(child);
+                if (textIndex >= partialText.length) break;
+            }
+            
+            if (childContent || textIndex < partialText.length) {
+                return `<${tagName}${attributes ? ' ' + attributes : ''}>${childContent}</${tagName}>`;
+            }
+            
+            return '';
+        }
+        
+        return '';
+    }
+    
+    for (let child of tempDiv.childNodes) {
+        result += processNode(child);
+        if (textIndex >= partialText.length) break;
+    }
+    
+    return result;
+}
+
+function chatbotScrollIfNeeded(element) {
+    // Cuộn mượt để theo dõi text đang được gõ
+    const messagesContainer = document.getElementById('chatbotMessages');
+    const messageElement = element.closest('.chatbot-message');
+    const messageRect = messageElement.getBoundingClientRect();
+    const containerRect = messagesContainer.getBoundingClientRect();
+    
+    // Chỉ cuộn khi cần thiết (khi text vượt khỏi view)
+    if (messageRect.bottom > containerRect.bottom - 30) {
+        messagesContainer.scrollTop += 1; // Cuộn từ từ
+    }
+}
+
+function chatbotFinishTyping(element) {
+    // Khi hoàn thành typing
+    element.classList.remove('chatbot-typewriter-text');
+}
+
+function chatbotSmoothScrollTo(element, targetScrollTop, duration) {
+    const start = element.scrollTop;
+    const change = targetScrollTop - start;
+    const startTime = performance.now();
+    
+    function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function (ease-out)
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        
+        element.scrollTop = start + (change * easeOut);
+        
+        if (progress < 1) {
+            requestAnimationFrame(animateScroll);
+        }
+    }
+    
+    requestAnimationFrame(animateScroll);
+}
+
+function addChatbotRecommendations(type, items) {
+    // Delay để recommendations xuất hiện sau khi bot message hoàn thành
+    setTimeout(() => {
+        const messagesContainer = document.getElementById('chatbotMessages');
+        const recommendationsDiv = document.createElement('div');
+        recommendationsDiv.className = 'chatbot-recommendations';
+        recommendationsDiv.style.opacity = '0';
+        recommendationsDiv.style.transform = 'translateY(15px)';
+        recommendationsDiv.style.transition = 'all 0.6s ease';
+    
+    let title = '';
+    switch(type) {
+        case 'products':
+            title = '🛋️ Sản phẩm gợi ý:';
+            break;
+        case 'projects':
+            title = '🏠 Dự án tham khảo:';
+            break;
+        case 'news':
+            title = '📰 Tin tức liên quan:';
+            break;
+    }
+    
+    let html = `<div style="font-weight: bold; margin-bottom: 8px; color: #333; font-size: 12px;">${title}</div>`;
+    
+    items.slice(0, 3).forEach(item => { // Limit to 3 items for widget
+        let url = '';
+        let meta = '';
+        let description = '';
+        
+        if (type === 'products') {
+            url = `/products/${item.slug}/`;
+            meta = `${item.category} • ${parseInt(item.price).toLocaleString('vi-VN')} VNĐ`;
+            description = item.description ? item.description.substring(0, 80) + '...' : '';
+        } else if (type === 'projects') {
+            url = `/projects/${item.slug}/`;
+            meta = `${item.type} • ${item.location}`;
+            if (item.gallery_count > 0) {
+                meta += ` • ${item.gallery_count} ảnh`;
+            }
+            description = item.description ? item.description.substring(0, 80) + '...' : '';
+        } else if (type === 'news') {
+            url = `/news/${item.slug}/`;
+            meta = `${item.category}`;
+            if (item.published_at) {
+                meta += ` • ${item.published_at}`;
+            }
+            description = item.summary ? item.summary.substring(0, 80) + '...' : '';
+        }
+        
+        html += `
+            <div class="chatbot-recommendation-item" onclick="window.open('${url}', '_blank')">
+                ${item.image ? `
+                    <img src="${item.image}" 
+                         alt="${item.title || item.name}" 
+                         class="chatbot-recommendation-image" 
+                         onload="this.style.opacity='1'" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+                         style="opacity:0; transition: opacity 0.3s;">
+                    <div class="chatbot-recommendation-image-placeholder" style="display:none;">
+                        ${type === 'products' ? '�️' : type === 'projects' ? '🏠' : '📰'}
+                    </div>
+                ` : `<div class="chatbot-recommendation-image-placeholder">
+                    ${type === 'products' ? '🛋️' : type === 'projects' ? '🏠' : '�'}
+                </div>`}
+                <div class="chatbot-recommendation-content">
+                    <div class="chatbot-recommendation-title">${item.title || item.name}</div>
+                    <div class="chatbot-recommendation-meta">${meta}</div>
+                    ${description ? `<div class="chatbot-recommendation-description">${description}</div>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    recommendationsDiv.innerHTML = html;
+    messagesContainer.appendChild(recommendationsDiv);        // Cuộn mượt để hiển thị recommendations CHẬM và tự nhiên
+        setTimeout(() => {
+            // Lấy vị trí hiện tại
+            const currentScrollTop = messagesContainer.scrollTop;
+            const targetScrollTop = recommendationsDiv.offsetTop - 30; // Hiển thị với margin từ trên
+            
+            // Chỉ cuộn nếu recommendations không hiển thị đầy đủ
+            if (targetScrollTop > currentScrollTop) {
+                // Cuộn từ từ đến vị trí recommendations
+                chatbotSmoothScrollTo(messagesContainer, targetScrollTop, 600); // 600ms để cuộn mượt
+            }
+            
+            // Fade in effect sau khi đã cuộn
+            setTimeout(() => {
+                recommendationsDiv.style.opacity = '1';
+                recommendationsDiv.style.transform = 'translateY(0)';
+            }, 150);
+            
+        }, 200);
+        
+    }, 700); // Delay 700ms sau khi bot message hoàn thành
+}
+
+function showChatbotTyping() {
+    const typingIndicator = document.getElementById('chatbotTyping');
+    typingIndicator.style.display = 'flex';
+    
+    // Cuộn mượt đến typing indicator
+    setTimeout(() => {
+        typingIndicator.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end'
+        });
+    }, 100);
+}
+
+function hideChatbotTyping() {
+    document.getElementById('chatbotTyping').style.display = 'none';
+}
+
+// Show notification badge periodically
+function showChatbotNotification() {
+    if (!isChatbotOpen) {
+        document.getElementById('notificationBadge').style.display = 'flex';
+    }
+}
+
+// Show notification after 30 seconds if user hasn't interacted
+setTimeout(showChatbotNotification, 30000);
+</script>

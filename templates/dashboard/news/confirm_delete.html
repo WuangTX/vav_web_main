@@ -1,0 +1,47 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Xóa Tin Tức{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Xác Nhận Xóa Tin Tức
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if news.image %}
+                            <img src="{{ news.image.url }}" alt="{{ news.title }}" 
+                                 class="img-thumbnail mb-3" style="max-height: 200px;">
+                        {% endif %}
+                        <h6>{{ news.title }}</h6>
+                        <p class="text-muted">{{ news.category.name }} • {{ news.created_at|date:"d/m/Y" }}</p>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa tin tức này không? 
+                        Hành động này không thể hoàn tác.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'dashboard:news_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay Lại
+                        </a>
+                        
+                        <form method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Xóa Tin Tức
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

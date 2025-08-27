@@ -1,4 +1,3 @@
-
 """
 Django settings for vav_furniture project.
 
@@ -24,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!zuhu-6vm(eww#*5&xe8ady(tgk+0p&z)&53gqu5d_u%rj6wk*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn', '4.230.20.113', 'localhost', '127.0.0.1']
+# Custom error pages
+ALLOWED_HOSTS = ['noithatvav.vn', 'www.noithatvav.vn','localhost', '127.0.0.1',]
 # ALLOWED_HOSTS = [] 
 
 
@@ -40,8 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     'main',
     'dashboard',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +58,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'vav_furniture.urls'
+
+# Site ID for sitemap framework
+SITE_ID = 1
 
 TEMPLATES = [
     {
@@ -129,7 +135,7 @@ LOGOUT_REDIRECT_URL = 'dashboard:login'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
@@ -143,3 +149,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

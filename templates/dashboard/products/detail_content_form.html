@@ -1,0 +1,152 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">{{ title }}</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:product_list' %}">Sản Phẩm</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:product_edit' product.pk %}">{{ product.name }}</a></li>
+        <li class="breadcrumb-item active">{{ title }}</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-edit me-1"></i>
+                    {{ title }}
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.content_type.id_for_label }}" class="form-label">Loại Nội Dung</label>
+                                {{ form.content_type }}
+                                {% if form.content_type.errors %}
+                                    <div class="text-danger">{{ form.content_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.order.id_for_label }}" class="form-label">Thứ Tự</label>
+                                {{ form.order }}
+                                {% if form.order.errors %}
+                                    <div class="text-danger">{{ form.order.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Tiêu Đề</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">Nội Dung</label>
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                                <div class="text-danger">{{ form.content.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Hình Ảnh</label>
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                                <div class="text-danger">{{ form.image.errors }}</div>
+                            {% endif %}
+                            {% if detail_content.image %}
+                                <div class="mt-2">
+                                    <img src="{{ detail_content.image.url }}" alt="Current image" class="img-thumbnail" style="max-width: 200px;">
+                                    <p class="text-muted mt-1">Hình ảnh hiện tại</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.image_caption.id_for_label }}" class="form-label">Chú Thích Hình Ảnh</label>
+                            {{ form.image_caption }}
+                            {% if form.image_caption.errors %}
+                                <div class="text-danger">{{ form.image_caption.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                {% if detail_content %}Cập Nhật{% else %}Thêm Mới{% endif %}
+                            </button>
+                            <a href="{% url 'dashboard:product_edit' product.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Quay Lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Hướng Dẫn
+                </div>
+                <div class="card-body">
+                    <h6>Loại Nội Dung:</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Văn Bản:</strong> Chỉ hiển thị nội dung văn bản</li>
+                        <li><strong>Hình Ảnh:</strong> Chỉ hiển thị hình ảnh với chú thích</li>
+                        <li><strong>Văn Bản & Hình Ảnh:</strong> Hiển thị cả văn bản và hình ảnh</li>
+                    </ul>
+                    
+                    <h6 class="mt-3">Lưu Ý:</h6>
+                    <ul class="list-unstyled">
+                        <li>• Thứ tự càng nhỏ sẽ hiển thị trước</li>
+                        <li>• Hình ảnh nên có kích thước phù hợp</li>
+                        <li>• Nội dung hỗ trợ xuống dòng tự động</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentTypeSelect = document.getElementById('{{ form.content_type.id_for_label }}');
+    const contentField = document.querySelector('#{{ form.content.id_for_label }}').closest('.mb-3');
+    const imageField = document.querySelector('#{{ form.image.id_for_label }}').closest('.mb-3');
+    const captionField = document.querySelector('#{{ form.image_caption.id_for_label }}').closest('.mb-3');
+    
+    function toggleFields() {
+        const selectedType = contentTypeSelect.value;
+        
+        if (selectedType === 'text') {
+            contentField.style.display = 'block';
+            imageField.style.display = 'none';
+            captionField.style.display = 'none';
+        } else if (selectedType === 'image') {
+            contentField.style.display = 'none';
+            imageField.style.display = 'block';
+            captionField.style.display = 'block';
+        } else if (selectedType === 'text_image') {
+            contentField.style.display = 'block';
+            imageField.style.display = 'block';
+            captionField.style.display = 'block';
+        }
+    }
+    
+    contentTypeSelect.addEventListener('change', toggleFields);
+    toggleFields(); // Initial call
+});
+</script>
+{% endblock %}

@@ -1,17 +1,17 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Quản Lý Tiến Độ - {{ project.title }}{% endblock %}
+{% block title %}Quản Lý Quy Trình - {{ project.title }}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2>Quản Lý Tiến Độ Dự Án</h2>
+        <h2>Quản Lý Quy Trình Dự Án</h2>
         <p class="text-muted">{{ project.title }}</p>
     </div>
     <div>
         <a href="{% url 'dashboard:timeline_add' project.id %}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Thêm Mốc Thời Gian
+            <i class="fas fa-plus me-2"></i>Thêm Quy Trình
         </a>
         <a href="{% url 'dashboard:project_list' %}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-2"></i>Quay Lại
@@ -21,7 +21,7 @@
 
 <!-- Project Overview -->
 <div class="row mb-4">
-    <div class="col-lg-8">
+    <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
@@ -30,140 +30,87 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <p><strong>Khách hàng:</strong> {{ project.client }}</p>
+                    </div>
+                    <div class="col-md-3">
                         <p><strong>Địa điểm:</strong> {{ project.location }}</p>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <p><strong>Loại dự án:</strong> {{ project.get_project_type_display }}</p>
+                    </div>
+                    <div class="col-md-3">
                         <p><strong>Ngày hoàn thành:</strong> {{ project.completed_date|date:"d/m/Y" }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-chart-pie me-2"></i>Tổng Quan Tiến Độ
-                </h5>
-            </div>
-            <div class="card-body text-center">
-                <div class="display-6 text-primary mb-2">{{ project.overall_progress }}%</div>
-                <p class="mb-2">Tiến Độ Tổng</p>
-                <div class="progress mb-3">
-                    <div class="progress-bar" style="width: {{ project.overall_progress }}%"></div>
-                </div>
-                <p class="small text-muted">Trạng thái: {{ project.current_status }}</p>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Timeline Entries -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">
-            <i class="fas fa-timeline me-2"></i>Các Mốc Thời Gian
-        </h5>
-    </div>
-    <div class="card-body">
-        {% if timeline_entries %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Thứ Tự</th>
-                        <th>Tiêu Đề</th>
-                        <th>Trạng Thái</th>
-                        <th>Ngày Bắt Đầu</th>
-                        <th>Ngày Kết Thúc</th>
-                        <th>Tiến Độ</th>
-                        <th>Hoàn Thành</th>
-                        <th>Hành Động</th>
-                    </tr>
-                </thead>
-                <tbody id="timeline-table">
-                    {% for entry in timeline_entries %}
-                    <tr>
-                        <td>
-                            <span class="badge bg-secondary">{{ entry.order }}</span>
-                        </td>
-                        <td>
-                            <strong>{{ entry.title }}</strong>
-                            {% if entry.description %}
-                            <br><small class="text-muted">{{ entry.description|truncatewords:10 }}</small>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge status-{{ entry.status }}">
-                                {{ entry.get_status_display }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if entry.start_date %}
-                                {{ entry.start_date|date:"d/m/Y" }}
-                            {% else %}
-                                <span class="text-muted">Chưa xác định</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.end_date %}
-                                {{ entry.end_date|date:"d/m/Y" }}
-                                {% if entry.days_remaining is not None and not entry.is_completed %}
-                                    {% if entry.days_remaining > 0 %}
-                                        <br><small class="text-warning">Còn {{ entry.days_remaining }} ngày</small>
-                                    {% elif entry.days_remaining == 0 %}
-                                        <br><small class="text-danger">Hết hạn hôm nay</small>
-                                    {% else %}
-                                        <br><small class="text-danger">Quá hạn</small>
-                                    {% endif %}
-                                {% endif %}
-                            {% else %}
-                                <span class="text-muted">Chưa xác định</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="progress me-2" style="width: 60px; height: 8px;">
-                                    <div class="progress-bar {% if entry.is_completed %}bg-success{% else %}bg-warning{% endif %}" 
-                                         style="width: {{ entry.progress_percentage }}%"></div>
-                                </div>
-                                <small>{{ entry.progress_percentage }}%</small>
-                            </div>
-                        </td>
-                        <td>
-                            {% if entry.is_completed %}
-                                <i class="fas fa-check-circle text-success"></i>
-                            {% else %}
-                                <i class="fas fa-clock text-warning"></i>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{% url 'dashboard:timeline_edit' project.id entry.id %}" 
-                                   class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'dashboard:timeline_delete' project.id entry.id %}" 
-                                   class="btn btn-sm btn-outline-danger" title="Xóa">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="card">        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Quy Trình Thực Hiện
+            </h5>
         </div>
-        {% else %}
+        <div class="card-body">
+            {% if timeline_entries %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Thứ Tự</th>
+                            <th>Giai Đoạn</th>
+                            <th>Tiêu Đề</th>
+                            <th>Mô Tả</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in timeline_entries %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">{{ entry.order }}</span>
+                            </td>
+                            <td>
+                                <span class="badge status-{{ entry.status }}">
+                                    {{ entry.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ entry.title }}</strong>
+                            </td>
+                            <td>
+                                {% if entry.description %}
+                                    {{ entry.description|truncatewords:15 }}
+                                {% else %}
+                                    <span class="text-muted">Chưa có mô tả</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'dashboard:timeline_edit' project.id entry.id %}" 
+                                       class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'dashboard:timeline_delete' project.id entry.id %}" 
+                                       class="btn btn-sm btn-outline-danger" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>        {% else %}
         <div class="text-center py-5">
-            <i class="fas fa-timeline fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">Chưa có mốc thời gian nào</h5>
-            <p class="text-muted">Hãy thêm mốc thời gian đầu tiên cho dự án này.</p>
+            <i class="fas fa-list-alt fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Chưa có quy trình nào</h5>
+            <p class="text-muted">Hãy thêm quy trình thực hiện đầu tiên cho dự án này.</p>
             <a href="{% url 'dashboard:timeline_add' project.id %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Thêm Mốc Thời Gian
+                <i class="fas fa-plus me-2"></i>Thêm Quy Trình
             </a>
         </div>
         {% endif %}
@@ -173,10 +120,10 @@
 
 {% block extra_css %}
 <style>
-.status-planning { background-color: #6c757d !important; }
-.status-design { background-color: #007bff !important; }
+.status-consultation { background-color: #007bff !important; }
+.status-planning { background-color: #28a745 !important; }
 .status-production { background-color: #ffc107 !important; color: #000 !important; }
 .status-installation { background-color: #fd7e14 !important; }
-.status-completed { background-color: #28a745 !important; }
+.status-completion { background-color: #6f42c1 !important; }
 </style>
 {% endblock %}

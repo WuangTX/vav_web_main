@@ -1,195 +1,307 @@
-{% extends 'dashboard/base.html' %}
+{% extends "dashboard/base.html" %}
 {% load static %}
 
 {% block title %}
-{% if action == 'add' %}Thêm Mốc Thời Gian{% else %}Chỉnh Sửa Mốc Thời Gian{% endif %} - {{ project.title }}
+    {% if action == 'edit' %}Chỉnh Sửa Timeline{% else %}Thêm Timeline{% endif %} - {{ project.title }} | Dashboard
+{% endblock %}
+
+{% block page_title %}
+    {% if action == 'edit' %}Chỉnh Sửa Timeline{% else %}Thêm Timeline Mới{% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:project_list' %}">Dự Án</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:project_edit' project.id %}">{{ project.title }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:timeline_manage' project.id %}">Timeline</a></li>
+        <li class="breadcrumb-item active">
+            {% if action == 'edit' %}Chỉnh Sửa{% else %}Thêm Mới{% endif %}
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8 mx-auto">
+    <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-{% if action == 'add' %}plus{% else %}edit{% endif %} me-2"></i>
-                    {% if action == 'add' %}Thêm Mốc Thời Gian Mới{% else %}Chỉnh Sửa Mốc Thời Gian{% endif %}
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>
+                    {% if action == 'edit' %}Chỉnh Sửa Timeline: {{ timeline.title }}{% else %}Thêm Timeline Mới{% endif %}
                 </h5>
-                <p class="mb-0 text-muted">Dự án: {{ project.title }}</p>
             </div>
             <div class="card-body">
-                <form method="post" novalidate>
+                <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
                     
                     <!-- Hidden project field -->
-                    <input type="hidden" name="project" value="{{ project.id }}">
+                    {{ form.project }}
                     
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="{{ form.status.id_for_label }}" class="form-label">
-                                    Trạng Thái <span class="text-danger">*</span>
+                                    <i class="fas fa-flag me-1"></i>Trạng Thái *
                                 </label>
                                 {{ form.status }}
                                 {% if form.status.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.status.errors.0 }}
+                                        {% for error in form.status.errors %}{{ error }}{% endfor %}
                                     </div>
                                 {% endif %}
+                                <div class="form-text">Chọn giai đoạn hiện tại của dự án</div>
                             </div>
                         </div>
+                        
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="{{ form.order.id_for_label }}" class="form-label">
-                                    Thứ Tự
+                                    <i class="fas fa-sort-numeric-up me-1"></i>Thứ Tự *
                                 </label>
                                 {{ form.order }}
                                 {% if form.order.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.order.errors.0 }}
+                                        {% for error in form.order.errors %}{{ error }}{% endfor %}
                                     </div>
                                 {% endif %}
-                                <div class="form-text">Thứ tự hiển thị trong timeline</div>
+                                <div class="form-text">Số thứ tự để sắp xếp timeline</div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="{{ form.title.id_for_label }}" class="form-label">
-                            Tiêu Đề <span class="text-danger">*</span>
+                            <i class="fas fa-heading me-1"></i>Tiêu Đề *
                         </label>
                         {{ form.title }}
                         {% if form.title.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.title.errors.0 }}
+                                {% for error in form.title.errors %}{{ error }}{% endfor %}
                             </div>
                         {% endif %}
+                        <div class="form-text">Tên giai đoạn trong quy trình thực hiện</div>
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="{{ form.description.id_for_label }}" class="form-label">
-                            Mô Tả
+                            <i class="fas fa-align-left me-1"></i>Mô Tả
                         </label>
                         {{ form.description }}
                         {% if form.description.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.description.errors.0 }}
+                                {% for error in form.description.errors %}{{ error }}{% endfor %}
                             </div>
                         {% endif %}
+                        <div class="form-text">Mô tả chi tiết về giai đoạn này</div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.start_date.id_for_label }}" class="form-label">
-                                    Ngày Bắt Đầu
-                                </label>
-                                {{ form.start_date }}
-                                {% if form.start_date.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.start_date.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.end_date.id_for_label }}" class="form-label">
-                                    Ngày Kết Thúc
-                                </label>
-                                {{ form.end_date }}
-                                {% if form.end_date.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.end_date.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.progress_percentage.id_for_label }}" class="form-label">
-                                    Tiến Độ (%)
-                                </label>
-                                <div class="input-group">
-                                    {{ form.progress_percentage }}
-                                    <span class="input-group-text">%</span>
-                                </div>
-                                {% if form.progress_percentage.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.progress_percentage.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="form-text">Từ 0 đến 100</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <div class="form-check mt-4">
-                                    {{ form.is_completed }}
-                                    <label class="form-check-label" for="{{ form.is_completed.id_for_label }}">
-                                        Đã hoàn thành
-                                    </label>
-                                </div>
-                                {% if form.is_completed.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.is_completed.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'dashboard:timeline_manage' project.id %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Quay Lại
-                        </a>
+                    <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-2"></i>
-                            {% if action == 'add' %}Thêm Mốc Thời Gian{% else %}Cập Nhật{% endif %}
+                            {% if action == 'edit' %}Cập Nhật{% else %}Thêm Mới{% endif %}
                         </button>
+                        <a href="{% url 'dashboard:timeline_manage' project.id %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Hủy
+                        </a>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Thông Tin Dự Án
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                         class="rounded me-3" width="60" height="60" style="object-fit: cover;">
+                    <div>
+                        <h6 class="mb-1">{{ project.title }}</h6>
+                        <small class="text-muted">{{ project.get_project_type_display }}</small>
+                    </div>
+                </div>
+                
+                <div class="project-info">
+                    <div class="info-item mb-2">
+                        <small class="text-muted d-block">Khách Hàng</small>
+                        <span>{{ project.client }}</span>
+                    </div>
+                    <div class="info-item mb-2">
+                        <small class="text-muted d-block">Địa Điểm</small>
+                        <span>{{ project.location }}</span>
+                    </div>
+                    <div class="info-item">
+                        <small class="text-muted d-block">Ngày Hoàn Thành</small>
+                        <span>{{ project.completed_date|date:"d/m/Y" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Gợi Ý
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <small>
+                        <strong>Các giai đoạn phổ biến:</strong><br>
+                        • Tư vấn & Thiết kế<br>
+                        • Lập kế hoạch & Vật liệu<br>
+                        • Sản xuất & Chế tác<br>
+                        • Thi công & Lắp đặt<br>
+                        • Nghiệm thu & Bàn giao
+                    </small>
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.card {
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+    transform: translateY(-1px);
+}
+
+.alert-info {
+    background: rgba(23, 162, 184, 0.1);
+    border: 1px solid rgba(23, 162, 184, 0.2);
+    border-radius: 8px;
+}
+
+.info-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-update progress to 100% when marking as completed
-    const completedCheckbox = document.getElementById('{{ form.is_completed.id_for_label }}');
-    const progressInput = document.getElementById('{{ form.progress_percentage.id_for_label }}');
-    
-    if (completedCheckbox && progressInput) {
-        completedCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                progressInput.value = 100;
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
             }
+            form.classList.add('was-validated');
         });
     }
     
-    // Validate dates
-    const startDateInput = document.getElementById('{{ form.start_date.id_for_label }}');
-    const endDateInput = document.getElementById('{{ form.end_date.id_for_label }}');
-    
-    if (startDateInput && endDateInput) {
-        function validateDates() {
-            const startDate = new Date(startDateInput.value);
-            const endDate = new Date(endDateInput.value);
-            
-            if (startDateInput.value && endDateInput.value && startDate > endDate) {
-                endDateInput.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
-            } else {
-                endDateInput.setCustomValidity('');
-            }
-        }
+    // Auto-resize textarea
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
         
-        startDateInput.addEventListener('change', validateDates);
-        endDateInput.addEventListener('change', validateDates);
+        // Initial resize
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+    
+    // Status change helper
+    const statusSelect = document.querySelector('select[name="status"]');
+    const titleInput = document.querySelector('input[name="title"]');
+    
+    if (statusSelect && titleInput) {
+        statusSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const statusText = selectedOption.text;
+            
+            // Suggest title based on status if title is empty
+            if (!titleInput.value.trim()) {
+                const titleSuggestions = {
+                    'consultation': 'Tư Vấn & Thiết Kế',
+                    'planning': 'Lập Kế Hoạch & Vật Liệu',
+                    'production': 'Sản Xuất & Chế Tác',
+                    'installation': 'Thi Công & Lắp Đặt',
+                    'completion': 'Nghiệm Thu & Bàn Giao'
+                };
+                
+                if (titleSuggestions[this.value]) {
+                    titleInput.value = titleSuggestions[this.value];
+                }
+            }
+        });
     }
 });
 </script>
